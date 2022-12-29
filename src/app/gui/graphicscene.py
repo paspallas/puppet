@@ -1,6 +1,7 @@
 from PyQt5.QtGui import QColor
 from PyQt5.QtWidgets import QGraphicsRectItem, QGraphicsScene, QWidget
 
+from app.model.bone import Bone
 from app.model.sprite import Sprite
 
 
@@ -12,6 +13,7 @@ class GraphicScene(QGraphicsScene):
 
     def _setup(self) -> None:
         self.setBackgroundBrush(QColor("#41444D"))
+        self.setSceneRect(-1024, -1024, 2048, 2048)
 
         # add some test sprites
         self._sprite1 = Sprite("F:/devel/kai-mag/test/yoko.png")
@@ -22,4 +24,4 @@ class GraphicScene(QGraphicsScene):
         self.addItem(self._sprite2)
         self.addItem(self._sprite3)
 
-        # self.setSceneRect(0, 0, self.width(), self.height())
+        self.addItem(Bone())

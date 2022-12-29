@@ -12,6 +12,6 @@ class MainWindow(QMainWindow):
         self.setupUi()
 
     def setupUi(self):
-        self.setWindowTitle("Puppet")
+        self.setWindowTitle("MegaPuppet")
         self.setMinimumSize(800, 600)
         self.setCentralWidget(self._view)

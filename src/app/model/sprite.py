@@ -10,13 +10,13 @@ class Sprite(QGraphicsPixmapItem):
 
         self._pixmap = None
 
-        self.setItemFlags()
+        self._setItemFlags()
         self._setPixmapFromFile(path)
         self.setAlphaMask()
 
         self.setPixmap(self._pixmap)
 
-    def setItemFlags(self):
+    def _setItemFlags(self):
         flags = (
             QGraphicsItem.ItemIsSelectable
             | QGraphicsItem.ItemIsMovable
