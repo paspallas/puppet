@@ -16,17 +16,19 @@ class GraphicView(QGraphicsView):
         PanControl(self)
         ZoomControl(self)
 
-        self._scene = GraphicScene(self)
         self._setup()
 
     def _setup(self) -> None:
-        self.setScene(self._scene)
+        self.setScene(GraphicScene(self))
+
         self.setFrameStyle(QFrame.NoFrame)
         self.setContentsMargins(0, 0, 0, 0)
         self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOn)
         self.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOn)
+        self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+
         self.setViewportUpdateMode(QGraphicsView.FullViewportUpdate)
         self.setRenderHints(QPainter.Antialiasing | QPainter.SmoothPixmapTransform)
+
         self.setTransformationAnchor(QGraphicsView.AnchorUnderMouse)
-        self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         self.setMouseTracking(True)

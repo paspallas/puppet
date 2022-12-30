@@ -27,7 +27,8 @@ class Bone(QGraphicsItem):
     def paint(self, painter: QPainter, option, widget: QWidget = None) -> None:
         painter.setRenderHint(QPainter.Antialiasing)
 
-        pen = QPen(QColor(Qt.transparent), 0, Qt.SolidLine, Qt.RoundCap, Qt.RoundJoin)
+        pen = QPen(QColor(Qt.black), 0, Qt.SolidLine, Qt.RoundCap, Qt.RoundJoin)
+        pen.setCosmetic(True)
         brush = QBrush(QColor(70, 70, 70, 255))
 
         painter.setPen(pen)
@@ -45,8 +46,8 @@ class Bone(QGraphicsItem):
         path = QPainterPath()
         path.setFillRule(Qt.WindingFill)
 
-        path.addEllipse(10, 10, 32, 32)
-        path.moveTo(10 + 32, 10 + 16)
+        # arco dentro del rectangulo definido en sentido horario
+        path.arcTo(10, 10, 32, 32, -180, -180)
         path.lineTo(10 + 16, 100)
         path.lineTo(10, 10 + 16)
         path.closeSubpath()

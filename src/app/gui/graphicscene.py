@@ -1,5 +1,6 @@
-from PyQt5.QtGui import QColor
-from PyQt5.QtWidgets import QGraphicsRectItem, QGraphicsScene, QWidget
+from PyQt5.QtCore import Qt, QLineF, QRectF
+from PyQt5.QtGui import QBrush, QColor, QPainter, QPen
+from PyQt5.QtWidgets import QGraphicsItem, QGraphicsRectItem, QGraphicsScene, QWidget
 
 from app.model.bone import Bone
 from app.model.sprite import Sprite
@@ -12,7 +13,6 @@ class GraphicScene(QGraphicsScene):
         self._setup()
 
     def _setup(self) -> None:
-        self.setBackgroundBrush(QColor("#41444D"))
         self.setSceneRect(-1024, -1024, 2048, 2048)
 
         # add some test sprites
@@ -25,3 +25,21 @@ class GraphicScene(QGraphicsScene):
         self.addItem(self._sprite3)
 
         self.addItem(Bone())
+
+    # override
+    def drawBackground(self, painter: QPainter, rect: QRectF) -> None:
+        painter.setRenderHint(QPainter.Antialiasing)
+        painter.fillRect(rect, QBrush(QColor("#41444D")))
+
+        l = rect.left()
+        r = rect.right()
+        t = rect.top()
+        b = rect.bottom()
+
+        lines = [QLineF(l, 0, r, 0), QLineF(0, t, 0, b)]
+
+        pen = QPen(QColor("#202020"), 0, Qt.DashLine)
+        pen.setCosmetic(True)
+        painter.setPen(pen)
+
+        painter.drawLines(*lines)

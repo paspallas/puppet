@@ -11,6 +11,8 @@ class Sprite(QGraphicsPixmapItem):
         self._pixmap = None
 
         self._setItemFlags()
+        self.setAcceptHoverEvents(True)
+
         self._setPixmapFromFile(path)
         self.setAlphaMask()
 
@@ -25,7 +27,6 @@ class Sprite(QGraphicsPixmapItem):
         )
 
         self.setFlags(flags)
-        self.setAcceptHoverEvents(True)
 
     def _setPixmapFromFile(self, path: str):
         self._pixmap = QPixmap(path)
