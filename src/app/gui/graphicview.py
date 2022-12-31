@@ -2,11 +2,10 @@ from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QPainter
 from PyQt5.QtWidgets import QFrame, QGraphicsView, QSizePolicy, QWidget
 
-from app.gui.control.pancontrol import PanControl
-from app.gui.control.zoomcontrol import ZoomControl
 from app.model.sprite import Sprite
 
 from .graphicscene import GraphicScene
+from .navcontrol import PanControl, ZoomControl
 
 
 class GraphicView(QGraphicsView):
