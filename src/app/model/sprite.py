@@ -1,5 +1,5 @@
 from PyQt5.QtCore import QPoint, Qt
-from PyQt5.QtGui import QBrush, QColor, QPainter, QPixmap, QTransform
+from PyQt5.QtGui import QBrush, QColor, QKeyEvent, QPainter, QPixmap, QTransform
 from PyQt5.QtWidgets import QGraphicsItem, QGraphicsPixmapItem, QWidget
 
 DEFAULT_ALPHA_MASK = "#FF00FF"
@@ -107,3 +107,11 @@ class Sprite(QGraphicsPixmapItem):
 
         transform.setMatrix(m11, m12, m13, m21, -m22, m23, m31, m32, m33)
         self.setTransform(transform)
+
+    def keyPressEvent(self, e: QKeyEvent):
+        super().keyPressEvent(e)
+
+        if e.key() == Qt.Key.Key_V:
+            self.flipVertical()
+        elif e.key() == Qt.Key.Key_H:
+            self.flipHorizontal()

@@ -24,8 +24,8 @@ class GraphicScene(QGraphicsScene):
         self._sprite6 = Sprite("F:/devel/kai-mag/test/feet.png")
 
         self.addItem(self._sprite1)
-        # self.addItem(self._sprite2)
-        # self.addItem(self._sprite3)
+        self.addItem(self._sprite2)
+        self.addItem(self._sprite3)
         # self.addItem(self._sprite4)
         # self.addItem(self._sprite5)
         # self.addItem(self._sprite6)
