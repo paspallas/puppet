@@ -9,8 +9,8 @@ from .navcontrol import PanControl, ZoomControl
 
 
 class GraphicView(QGraphicsView):
-    def __init__(self, parent: QWidget):
-        super().__init__(parent)
+    def __init__(self, parent: QWidget, scene: GraphicScene):
+        super().__init__(scene, parent)
 
         PanControl(self)
         ZoomControl(self)
@@ -18,8 +18,6 @@ class GraphicView(QGraphicsView):
         self._setup()
 
     def _setup(self) -> None:
-        self.setScene(GraphicScene(self))
-
         self.setFrameStyle(QFrame.NoFrame)
         self.setContentsMargins(0, 0, 0, 0)
         self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOn)

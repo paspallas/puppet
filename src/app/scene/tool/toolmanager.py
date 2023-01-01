@@ -6,7 +6,7 @@ from PyQt5.QtWidgets import QGraphicsScene
 from .toolinterface import AbstractTool
 
 
-class ToolManager(QOject):
+class ToolManager(QObject):
     """Manage tool operations in the graphics scene"""
 
     def __init__(self, scene: QGraphicsScene):
@@ -31,7 +31,7 @@ class ToolManager(QOject):
                 self._tool.onMouseMove(e)
             return False
 
-        elif e.type() == QEvent.QGraphicsSceneMouseRelease:
+        elif e.type() == QEvent.GraphicsSceneMouseRelease:
             if self._tool is not None:
                 self._tool.onMouseRelease(e)
             return False
