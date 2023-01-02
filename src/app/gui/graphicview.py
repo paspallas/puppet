@@ -1,4 +1,4 @@
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import QPoint, Qt
 from PyQt5.QtGui import QPainter
 from PyQt5.QtWidgets import QFrame, QGraphicsView, QSizePolicy, QWidget
 
@@ -11,6 +11,8 @@ from .navcontrol import PanControl, ZoomControl
 class GraphicView(QGraphicsView):
     def __init__(self, parent: QWidget, scene: GraphicScene):
         super().__init__(scene, parent)
+
+        self._widgets = dict()
 
         PanControl(self)
         ZoomControl(self)
@@ -29,3 +31,33 @@ class GraphicView(QGraphicsView):
 
         self.setTransformationAnchor(QGraphicsView.AnchorUnderMouse)
         self.setMouseTracking(True)
+
+    def addFixedWidget(self, widget: QWidget, aligment):
+        widget.setParent(self.viewport())
+        self._widgets[widget] = aligment
+
+    def showEvent(self, event):
+        self._updateFixedWidgets()
+        super().showEvent(event)
+
+    def resizeEvent(self, event):
+        self._updateFixedWidgets()
+        super().resizeEvent(event)
+
+    def _updateFixedWidgets(self):
+        r = self.viewport().rect()
+
+        for w, a in self._widgets.items():
+            p = QPoint()
+
+            if a & Qt.AlignCenter:
+                p.setX((r.width() - w.width()) / 2)
+            elif a & Qt.AlignRight:
+                p.setX(r.width() - w.width())
+
+            if a & Qt.AlignVCenter:
+                p.setY((r.height() - w.height()) / 2)
+            elif a & Qt.AlignBottom:
+                p.SetY(r.height() - w.height())
+
+            w.move(p)

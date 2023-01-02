@@ -1,4 +1,4 @@
-from PyQt5.QtCore import QPoint, QRect, pyqtSlot
+from PyQt5.QtCore import QPoint, QRect, Qt, pyqtSlot
 from PyQt5.QtGui import QPainter, QPixmap
 from PyQt5.QtWidgets import QAction, QMainWindow, QMenu
 
@@ -7,6 +7,7 @@ from app.scene.tool.toolmanager import ToolManager
 from .filedialog import DialogFileIO
 from .graphicscene import GraphicScene
 from .graphicview import GraphicView
+from .scenetoolbox import PropertyBox
 
 
 class MainWindow(QMainWindow):
@@ -16,6 +17,8 @@ class MainWindow(QMainWindow):
         self._scene = GraphicScene(self, width=2048, height=2048)
         self._view = GraphicView(self, self._scene)
         self._toolmanager = ToolManager(self._scene)
+
+        self._view.addFixedWidget(PropertyBox(), Qt.AlignRight | Qt.AlignTop)
 
         self.setupUi()
         self.setupMenu()
