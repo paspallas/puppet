@@ -1,6 +1,12 @@
 from PyQt5.QtCore import Qt, QLineF, QRectF
 from PyQt5.QtGui import QBrush, QColor, QPainter, QPen, QTransform
-from PyQt5.QtWidgets import QGraphicsItem, QGraphicsRectItem, QGraphicsScene, QWidget
+from PyQt5.QtWidgets import (
+    QGraphicsItem,
+    QGraphicsRectItem,
+    QGraphicsScene,
+    QWidget,
+    QPushButton,
+)
 
 from app.model.bone import Bone
 from app.model.sprite import Sprite
@@ -14,25 +20,27 @@ class GraphicScene(QGraphicsScene):
         self._setup()
 
     def _setup(self) -> None:
-
+        pass
         # add some test sprites
-        self._sprite1 = Sprite("F:/devel/kai-mag/test/yoko.png")
-        self._sprite2 = Sprite("F:/devel/kai-mag/test/leg.png")
-        self._sprite3 = Sprite("F:/devel/kai-mag/test/upper_leg.png")
-        self._sprite4 = Sprite("F:/devel/kai-mag/test/upper_leg.png")
-        self._sprite5 = Sprite("F:/devel/kai-mag/test/hand.png")
-        self._sprite6 = Sprite("F:/devel/kai-mag/test/feet.png")
+        # self._sprite1 = Sprite("F:/devel/kai-mag/test/yoko.png")
+        # self._sprite2 = Sprite("F:/devel/kai-mag/test/leg.png")
+        # self._sprite3 = Sprite("F:/devel/kai-mag/test/upper_leg.png")
+        # self._sprite4 = Sprite("F:/devel/kai-mag/test/upper_leg.png")
+        # self._sprite5 = Sprite("F:/devel/kai-mag/test/hand.png")
+        # self._sprite6 = Sprite("F:/devel/kai-mag/test/feet.png")
 
-        self.addItem(self._sprite1)
-        self.addItem(self._sprite2)
-        self.addItem(self._sprite3)
+        # self.addItem(self._sprite1)
+        # self.addItem(self._sprite2)
+        # self.addItem(self._sprite3)
+
+        # self._button = self.addWidget(QPushButton("click"))
+        # self._button.setFlag(QGraphicsItem.ItemIgnoresTransformations)
         # self.addItem(self._sprite4)
         # self.addItem(self._sprite5)
         # self.addItem(self._sprite6)
 
         # self.addItem(Bone())
 
-    # override
     def drawBackground(self, painter: QPainter, rect: QRectF) -> None:
         painter.setRenderHint(QPainter.Antialiasing)
         painter.fillRect(rect, QBrush(QColor("#41444D")))

@@ -1,4 +1,4 @@
-from PyQt5.QtCore import QPoint, Qt
+from PyQt5.QtCore import QPoint, QRect, Qt
 from PyQt5.QtGui import QBrush, QColor, QKeyEvent, QPainter, QPixmap, QTransform
 from PyQt5.QtWidgets import QGraphicsItem, QGraphicsPixmapItem, QWidget
 
@@ -6,24 +6,28 @@ DEFAULT_ALPHA_MASK = "#FF00FF"
 
 
 class Sprite(QGraphicsPixmapItem):
-    def __init__(self, path: str, parent: QWidget = None):
+    def __init__(self, pixmap: QPixmap, parent: QWidget = None):
         super().__init__(parent=parent)
 
-        self._pixmap = None
+        self._pixmap = pixmap
+
         self._opacity = 100
         self._tint = None
         self._vertically_flipped = False
         self._horizontally_flipped = False
 
         self._setItemFlags()
-
-        self._setPixmapFromFile(path)
         self.setAlphaMask()
-
         self.setPixmap(self._pixmap)
 
-        self.setOpacity(50.0)
-        self.setTintColor(QColor(255, 0, 0, 100))
+    @classmethod
+    def fromSpriteSheet(cls, x: int, y: int, w: int, h: int, sprite_sheet: QPixmap):
+        pixmap = QPixmap(w, h)
+        painter = QPainter(pixmap)
+        painter.drawPixmap(QPoint(0, 0), sprite_sheet, QRect(x, y, w, h))
+        painter.end()
+
+        return cls(pixmap)
 
     def _setItemFlags(self):
         flags = (
@@ -35,12 +39,6 @@ class Sprite(QGraphicsPixmapItem):
 
         self.setFlags(flags)
         self.setAcceptHoverEvents(True)
-
-    def _setPixmapFromFile(self, path: str):
-        self._pixmap = QPixmap(path)
-
-    def _setPixmapFromSpriteSheet(self):
-        pass
 
     def setAlphaMask(self):
         self._pixmap.setMask(
