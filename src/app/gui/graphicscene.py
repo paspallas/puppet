@@ -1,5 +1,5 @@
 from PyQt5.QtCore import Qt, QLineF, QRectF, pyqtSlot
-from PyQt5.QtGui import QBrush, QColor, QPainter, QPen, QTransform
+from PyQt5.QtGui import QBrush, QColor, QPainter, QPen, QTransform, QKeyEvent
 from PyQt5.QtWidgets import (
     QGraphicsItem,
     QGraphicsRectItem,
@@ -22,21 +22,29 @@ class GraphicScene(QGraphicsScene):
     def addSprite(self, sprite: Sprite):
         self.addItem(sprite)
 
+    def keyPressEvent(self, e: QKeyEvent):
+        if e.key() == Qt.Key.Key_Backspace:
+            items = self.selectedItems()
+
+            for item in items:
+                self.removeItem(item)
+
     def drawBackground(self, painter: QPainter, rect: QRectF) -> None:
         painter.setRenderHint(QPainter.Antialiasing)
-        painter.fillRect(rect, QBrush(QColor("#505050")))
+        painter.setPen(QPen(Qt.NoPen))
 
-        # checkerboard pattern
-        # SIZE = 32
+        # draw checkerboard pattern
+        SQUARE_SIZE = 32
 
-        # for y in range(0, int(rect.height() / SIZE)):
-        #     ty = y * SIZE + rect.top()
+        left = int(rect.left() - rect.left() % SQUARE_SIZE)
+        top = int(rect.top() - rect.top() % SQUARE_SIZE)
 
-        #     for x in range(0, int(rect.width() / SIZE)):
-        #         tx = x * SIZE + rect.left()
+        for y in range(top, int(rect.bottom()), SQUARE_SIZE):
+            for x in range(left, int(rect.right()), SQUARE_SIZE):
+                is_dark = (x / SQUARE_SIZE + y / SQUARE_SIZE) % 2
 
-        #         color = QColor("#505050") if (x + y) % 2 else QColor("#767676")
-        #         painter.fillRect(QRectF(tx, ty, SIZE, SIZE), QBrush(color))
+                color = QColor("#505050") if is_dark else QColor("#767676")
+                painter.fillRect(QRectF(x, y, SQUARE_SIZE, SQUARE_SIZE), QBrush(color))
 
         # l = rect.left()
         # r = rect.right()
@@ -51,6 +59,3 @@ class GraphicScene(QGraphicsScene):
         # painter.setPen(pen)
 
         # painter.drawLines(*lines)
-
-    # def dragEnterEvent(self, e: QGraphicsSceneDragDropEvent):
-    #     pass

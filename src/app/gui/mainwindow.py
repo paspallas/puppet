@@ -39,13 +39,24 @@ class MainWindow(QMainWindow):
             self._scene.addSprite
         )
 
+    def _fullScreen(self):
+        if self.windowState() & Qt.WindowMaximized:
+            self.setWindowState(Qt.WindowFullScreen)
+        else:
+            self.setWindowState(Qt.WindowMaximized)
+
     def setupMenu(self):
         menubar = self.menuBar()
 
-        file_menu: QMenu = menubar.addMenu("File")
-        edit_menu: QMenu = menubar.addMenu("Edit")
-
-        settings_menu: QMenu = menubar.addMenu("Settings")
+        file_menu: QMenu = menubar.addMenu("&File")
+        edit_menu: QMenu = menubar.addMenu("&Edit")
+        view_menu: QMenu = menubar.addMenu("&View")
 
         file_menu.addAction("Save", lambda: print("saved"))
         file_menu.addAction("Open", lambda: print("open"))
+
+        fullscreen = QAction("Full Screen", self)
+        fullscreen.setShortcut("F11")
+        fullscreen.triggered.connect(self._fullScreen)
+
+        view_menu.addAction(fullscreen)

@@ -22,8 +22,8 @@ class GraphicView(QGraphicsView):
     def _setup(self) -> None:
         self.setFrameStyle(QFrame.NoFrame)
         self.setContentsMargins(0, 0, 0, 0)
-        self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
-        self.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOn)
+        self.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOn)
         self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
 
         self.setViewportUpdateMode(QGraphicsView.FullViewportUpdate)

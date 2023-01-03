@@ -1,10 +1,13 @@
 from PyQt5.QtCore import QPoint, QRect, Qt
 from PyQt5.QtGui import QBrush, QColor, QKeyEvent, QPainter, QPixmap, QTransform
 from PyQt5.QtWidgets import (
+    QAction,
     QGraphicsItem,
     QGraphicsPixmapItem,
-    QWidget,
+    QGraphicsSceneContextMenuEvent,
     QGraphicsSceneMouseEvent,
+    QMenu,
+    QWidget,
 )
 
 DEFAULT_ALPHA_MASK = "#FF00FF"
@@ -147,6 +150,15 @@ class Sprite(QGraphicsPixmapItem):
             self.flipVertical()
         elif e.key() == Qt.Key.Key_H:
             self.flipHorizontal()
+
+    def contextMenuEvent(self, e: QGraphicsSceneContextMenuEvent):
+        menu = QMenu()
+        clone = menu.addAction("Clone", self.cloneAction)
+        selected = menu.exec_(e.screenPos())
+
+    def cloneAction(self):
+        clone = self.copy()
+        self.scene().addItem(clone)
 
 
 class SpriteGroup:

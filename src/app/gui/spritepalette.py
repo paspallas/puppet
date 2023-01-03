@@ -67,11 +67,14 @@ class SpritePaletteView(QGraphicsView):
     def __init__(self, scene: QGraphicsScene, parent: QWidget = None):
         super().__init__(scene, parent)
 
-        self.setContentsMargins(0, 0, 0, 0)
         self.setFrameStyle(QFrame.NoFrame)
-        self.setRenderHints(QPainter.Antialiasing | QPainter.SmoothPixmapTransform)
+        self.setContentsMargins(0, 0, 0, 0)
         self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+
+        self.setViewportUpdateMode(QGraphicsView.FullViewportUpdate)
+        self.setRenderHints(QPainter.Antialiasing | QPainter.SmoothPixmapTransform)
+
         self.setTransformationAnchor(QGraphicsView.AnchorUnderMouse)
         self.setMouseTracking(True)
 
