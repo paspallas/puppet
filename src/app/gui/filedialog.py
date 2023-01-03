@@ -11,14 +11,14 @@ class DialogFileIO(QFileDialog):
         self._options = self.Options()
         self._options |= self.DontUseNativeDialog
 
-    def openFile(self, filter: str) -> (str, str):
-        path, _ = self.getOpenFileName(
-            self, "Open File", "", filter=filter, options=self._options
+    def openFiles(self, filter: str, hint: str = "Open File") -> [str]:
+        paths, _ = self.getOpenFileNames(
+            self, hint, "", filter=filter, options=self._options
         )
 
-        if path and len(path) > 0:
-            return path, QFileInfo(path).fileName()
-        return None, None
+        if len(paths) > 0:
+            return paths
+        return None
 
     def saveFile(self, filter: str) -> (str, str):
         path, _ = self.getSaveFileName(

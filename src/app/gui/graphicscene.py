@@ -1,4 +1,4 @@
-from PyQt5.QtCore import Qt, QLineF, QRectF
+from PyQt5.QtCore import Qt, QLineF, QRectF, pyqtSlot
 from PyQt5.QtGui import QBrush, QColor, QPainter, QPen, QTransform
 from PyQt5.QtWidgets import (
     QGraphicsItem,
@@ -17,6 +17,10 @@ class GraphicScene(QGraphicsScene):
         super().__init__(parent)
 
         self.setSceneRect(-width / 2.0, -height / 2.0, width, height)
+
+    @pyqtSlot(Sprite)
+    def addSprite(self, sprite: Sprite):
+        self.addItem(sprite)
 
     def drawBackground(self, painter: QPainter, rect: QRectF) -> None:
         painter.setRenderHint(QPainter.Antialiasing)

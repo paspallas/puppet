@@ -1,7 +1,7 @@
 from pathlib import Path
 
-from PyQt5.QtCore import QPoint, QRectF, QSize, QSizeF, Qt, pyqtSlot
-from PyQt5.QtGui import QBrush, QColor, QPainter, QPixmap
+from PyQt5.QtCore import QPoint, QRectF, QSize, QSizeF, Qt, pyqtSlot, pyqtSignal
+from PyQt5.QtGui import QBrush, QColor, QPainter, QPixmap, QMouseEvent
 from PyQt5.QtWidgets import (
     QBoxLayout,
     QDockWidget,
@@ -61,6 +61,9 @@ class SpritePaletteScene(QGraphicsScene):
 
 
 class SpritePaletteView(QGraphicsView):
+
+    selectedSpriteChanged = pyqtSignal(Sprite)
+
     def __init__(self, scene: QGraphicsScene, parent: QWidget = None):
         super().__init__(scene, parent)
 
@@ -75,8 +78,21 @@ class SpritePaletteView(QGraphicsView):
         ZoomControl(self)
         PanControl(self)
 
+    def mousePressEvent(self, e: QMouseEvent):
+        selected_sprite = self.itemAt(e.pos())
+
+        if isinstance(selected_sprite, Sprite):
+            copy = selected_sprite.copy()
+            copy.unlock()
+
+            self.selectedSpriteChanged.emit(copy)
+
+        super().mousePressEvent(e)
+
 
 class SpritePalette(QWidget):
+    selectedSpriteChanged = pyqtSignal(Sprite)
+
     def __init__(self, parent: QWidget = None):
         super().__init__(parent)
 
@@ -102,30 +118,43 @@ class SpritePalette(QWidget):
         box.addLayout(content)
         self.setLayout(box)
 
+        self.makeConnections()
+
+    def makeConnections(self):
+        self._view.selectedSpriteChanged.connect(self.onSelectedSpriteChanged)
+
+    @pyqtSlot(Sprite)
+    def onSelectedSpriteChanged(self, sprite: Sprite):
+        self.selectedSpriteChanged.emit(sprite)
+
     @pyqtSlot()
     def addSpriteSheet(self) -> None:
-        path, _ = DialogFileIO().openFile("Sprite sheet (*.png)")
+        paths = DialogFileIO().openFiles(
+            "Sprite Sheets (*.png)", "Open one or more spritesheet images"
+        )
 
-        if path:
-            name = Path(path).stem
-            self._sprite_sheet_list.addItem(name)
+        if paths:
+            for path in paths:
+                name = Path(path).stem
+                self._sprite_sheet_list.addItem(name)
 
-            sheet = SpriteSheet(path)
-            sprites, _ = sheet.find_sprites()
+                sheet = SpriteSheet(path)
+                sprites, _ = sheet.find_sprites()
 
-            sprite_sheet = QPixmap(path)
-            layer = [
-                Sprite.fromSpriteSheet(
-                    *sprite.top_left, sprite.width, sprite.height, sprite_sheet
-                )
-                for sprite in sprites
-            ]
+                sprite_sheet = QPixmap(path)
+                layer = [
+                    Sprite.fromSpriteSheet(
+                        *sprite.top_left, sprite.width, sprite.height, sprite_sheet
+                    )
+                    for sprite in sprites
+                ]
 
-            self._scene.addSpriteSheet(name, layer)
+                self._scene.addSpriteSheet(name, layer)
 
 
 class SpritePaletteDock(QDockWidget):
     def __init__(self, parent: QWidget = None):
         super().__init__("Sprite Palette", parent)
 
-        self.setWidget(SpritePalette(self))
+        self.palette = SpritePalette(self)
+        self.setWidget(self.palette)

@@ -26,12 +26,18 @@ class MainWindow(QMainWindow):
 
         self.setupUi()
         self.setupMenu()
+        self.makeConnections()
 
     def setupUi(self):
         self.setWindowTitle("MegaPuppet")
         self.setMinimumSize(800, 600)
         self.setCentralWidget(self._view)
         self.addDockWidget(Qt.BottomDockWidgetArea, self._sprite_palette)
+
+    def makeConnections(self):
+        self._sprite_palette.palette.selectedSpriteChanged.connect(
+            self._scene.addSprite
+        )
 
     def setupMenu(self):
         menubar = self.menuBar()

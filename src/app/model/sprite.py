@@ -1,6 +1,11 @@
 from PyQt5.QtCore import QPoint, QRect, Qt
 from PyQt5.QtGui import QBrush, QColor, QKeyEvent, QPainter, QPixmap, QTransform
-from PyQt5.QtWidgets import QGraphicsItem, QGraphicsPixmapItem, QWidget
+from PyQt5.QtWidgets import (
+    QGraphicsItem,
+    QGraphicsPixmapItem,
+    QWidget,
+    QGraphicsSceneMouseEvent,
+)
 
 DEFAULT_ALPHA_MASK = "#FF00FF"
 
@@ -30,6 +35,23 @@ class Sprite(QGraphicsPixmapItem):
         painter.end()
 
         return cls(pixmap, x, y)
+
+    def copy(self):
+        clone = Sprite(self._pixmap, self.x, self.y)
+        clone.setOpacity(self._opacity)
+
+        if self._tint is not None:
+            clone.setTintColor(self._tint)
+
+        if self._vertically_flipped:
+            clone.flipVertical()
+
+        if self._horizontally_flipped:
+            clone.flipHorizontal()
+
+        return clone
+
+    __copy__ = copy
 
     def _setItemFlags(self):
         flags = (
@@ -71,6 +93,7 @@ class Sprite(QGraphicsPixmapItem):
         self._tint = color
 
     def flipHorizontal(self) -> None:
+        """Flip the sprite in the X axis"""
         self._horizontally_flipped = not self._horizontally_flipped
 
         transform = self.transform()
@@ -90,6 +113,7 @@ class Sprite(QGraphicsPixmapItem):
         self.setTransform(transform)
 
     def flipVertical(self) -> None:
+        """Flip the sprite in the Y axis"""
         self._vertically_flipped = not self._vertically_flipped
 
         transform = self.transform()
@@ -109,8 +133,12 @@ class Sprite(QGraphicsPixmapItem):
         self.setTransform(transform)
 
     def lock(self) -> None:
-        """Lock the sprite position"""
+        """Lock sprite movement"""
         self.setFlag(QGraphicsItem.ItemIsMovable, False)
+
+    def unlock(self) -> None:
+        """Unlock sprite movement"""
+        self.setFlag(QGraphicsItem.ItemIsMovable, True)
 
     def keyPressEvent(self, e: QKeyEvent):
         super().keyPressEvent(e)
@@ -122,7 +150,7 @@ class Sprite(QGraphicsPixmapItem):
 
 
 class SpriteGroup:
-    """Sprite collection from a spritesheet"""
+    """Collection of sprites from a spritesheet"""
 
     def __init__(self):
         self._collection = []
