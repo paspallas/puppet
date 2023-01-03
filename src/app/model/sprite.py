@@ -6,11 +6,13 @@ DEFAULT_ALPHA_MASK = "#FF00FF"
 
 
 class Sprite(QGraphicsPixmapItem):
-    def __init__(self, pixmap: QPixmap, parent: QWidget = None):
+    def __init__(self, pixmap: QPixmap, x: int = 0, y: int = 0, parent: QWidget = None):
         super().__init__(parent=parent)
 
         self._pixmap = pixmap
 
+        self.x = x
+        self.y = y
         self._opacity = 100
         self._tint = None
         self._vertically_flipped = False
@@ -27,7 +29,7 @@ class Sprite(QGraphicsPixmapItem):
         painter.drawPixmap(QPoint(0, 0), sprite_sheet, QRect(x, y, w, h))
         painter.end()
 
-        return cls(pixmap)
+        return cls(pixmap, x, y)
 
     def _setItemFlags(self):
         flags = (
@@ -106,6 +108,10 @@ class Sprite(QGraphicsPixmapItem):
         transform.setMatrix(m11, m12, m13, m21, -m22, m23, m31, m32, m33)
         self.setTransform(transform)
 
+    def lock(self) -> None:
+        """Lock the sprite position"""
+        self.setFlag(QGraphicsItem.ItemIsMovable, False)
+
     def keyPressEvent(self, e: QKeyEvent):
         super().keyPressEvent(e)
 
@@ -113,3 +119,21 @@ class Sprite(QGraphicsPixmapItem):
             self.flipVertical()
         elif e.key() == Qt.Key.Key_H:
             self.flipHorizontal()
+
+
+class SpriteGroup:
+    """Sprite collection from a spritesheet"""
+
+    def __init__(self):
+        self._collection = []
+
+    def add(self, sprite: Sprite):
+        self._collection.append(sprite)
+
+    def hide(self):
+        for sprite in self._collection:
+            sprite.hide()
+
+    def show(self):
+        for sprite in self._collection:
+            sprite.show()

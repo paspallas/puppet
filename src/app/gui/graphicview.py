@@ -22,8 +22,8 @@ class GraphicView(QGraphicsView):
     def _setup(self) -> None:
         self.setFrameStyle(QFrame.NoFrame)
         self.setContentsMargins(0, 0, 0, 0)
-        self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOn)
-        self.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOn)
+        self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        self.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
 
         self.setViewportUpdateMode(QGraphicsView.FullViewportUpdate)
@@ -53,11 +53,15 @@ class GraphicView(QGraphicsView):
             if a & Qt.AlignCenter:
                 p.setX((r.width() - w.width()) / 2)
             elif a & Qt.AlignRight:
-                p.setX(r.width() - w.width())
+                p.setX(r.width() - w.width() - 2)
+            elif a & Qt.AlignLeft:
+                p.setX(p.x() + 2)
 
             if a & Qt.AlignVCenter:
-                p.setY((r.height() - w.height()) / 2)
+                p.setY(((r.height() - w.height()) / 2))
             elif a & Qt.AlignBottom:
-                p.SetY(r.height() - w.height())
+                p.setY(r.height() - w.height() - 2)
+            elif a & Qt.AlignTop:
+                p.setY(p.y() + 2)
 
             w.move(p)

@@ -17,43 +17,36 @@ class GraphicScene(QGraphicsScene):
         super().__init__(parent)
 
         self.setSceneRect(-width / 2.0, -height / 2.0, width, height)
-        self._setup()
-
-    def _setup(self) -> None:
-        pass
-        # add some test sprites
-        # self._sprite1 = Sprite("F:/devel/kai-mag/test/yoko.png")
-        # self._sprite2 = Sprite("F:/devel/kai-mag/test/leg.png")
-        # self._sprite3 = Sprite("F:/devel/kai-mag/test/upper_leg.png")
-        # self._sprite4 = Sprite("F:/devel/kai-mag/test/upper_leg.png")
-        # self._sprite5 = Sprite("F:/devel/kai-mag/test/hand.png")
-        # self._sprite6 = Sprite("F:/devel/kai-mag/test/feet.png")
-
-        # self.addItem(self._sprite1)
-        # self.addItem(self._sprite2)
-        # self.addItem(self._sprite3)
-
-        # self._button = self.addWidget(QPushButton("click"))
-        # self._button.setFlag(QGraphicsItem.ItemIgnoresTransformations)
-        # self.addItem(self._sprite4)
-        # self.addItem(self._sprite5)
-        # self.addItem(self._sprite6)
-
-        # self.addItem(Bone())
 
     def drawBackground(self, painter: QPainter, rect: QRectF) -> None:
         painter.setRenderHint(QPainter.Antialiasing)
-        painter.fillRect(rect, QBrush(QColor("#41444D")))
+        painter.fillRect(rect, QBrush(QColor("#505050")))
 
-        l = rect.left()
-        r = rect.right()
-        t = rect.top()
-        b = rect.bottom()
+        # checkerboard pattern
+        # SIZE = 32
 
-        lines = [QLineF(l, 0, r, 0), QLineF(0, t, 0, b)]
+        # for y in range(0, int(rect.height() / SIZE)):
+        #     ty = y * SIZE + rect.top()
 
-        pen = QPen(QColor("#202020"), 0, Qt.DashLine)
-        pen.setCosmetic(True)
-        painter.setPen(pen)
+        #     for x in range(0, int(rect.width() / SIZE)):
+        #         tx = x * SIZE + rect.left()
 
-        painter.drawLines(*lines)
+        #         color = QColor("#505050") if (x + y) % 2 else QColor("#767676")
+        #         painter.fillRect(QRectF(tx, ty, SIZE, SIZE), QBrush(color))
+
+        # l = rect.left()
+        # r = rect.right()
+        # t = rect.top()
+        # b = rect.bottom()
+
+        # # center visual indicator
+        # lines = [QLineF(l, 0, r, 0), QLineF(0, t, 0, b)]
+
+        # pen = QPen(QColor("#202020"), 0, Qt.DashLine)
+        # pen.setCosmetic(True)
+        # painter.setPen(pen)
+
+        # painter.drawLines(*lines)
+
+    # def dragEnterEvent(self, e: QGraphicsSceneDragDropEvent):
+    #     pass
