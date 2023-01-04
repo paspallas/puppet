@@ -21,7 +21,7 @@ class Sprite(QGraphicsPixmapItem):
 
         self.x = x
         self.y = y
-        self._opacity = 50
+        self._opacity = 100
         self._tint = None
         self._vertically_flipped = False
         self._horizontally_flipped = False
@@ -29,6 +29,8 @@ class Sprite(QGraphicsPixmapItem):
         self._setItemFlags()
         self.setAlphaMask()
         self.setPixmap(self._pixmap)
+
+        self.setTintColor(QColor("red"))
 
     @staticmethod
     def fromSpriteSheet(x: int, y: int, w: int, h: int, sprite_sheet: QPixmap):
@@ -86,21 +88,34 @@ class Sprite(QGraphicsPixmapItem):
 
         return blended
 
-    def setOpacity(self, opacity: float) -> QPixmap:
-        self._opacity = opacity
-        self._blend()
+    def _overlay(self):
+        alpha_mask = self._blend()
+        tinted = QPixmap(alpha_mask)
 
-    def setTintColor(self, color: QColor) -> None:
-        self._tint = color
-        self._tint.setAlpha(50)
+        painter = QPainter(alpha_mask)
+        painter.setCompositionMode(QPainter.CompositionMode_SourceIn)
+        painter.fillRect(self._pixmap.rect(), self._tint)
+        painter.end()
 
-        tinted = QPixmap(self._blend())
-        painter = QPainter(tinted)
-        painter.setCompositionMode(QPainter.CompositionMode_SourceAtop)
-        painter.fillRect(self._pixmap.rect(), color)
+        painter.begin(tinted)
+        painter.setCompositionMode(QPainter.CompositionMode_Overlay)
+        painter.drawPixmap(QPoint(0, 0), alpha_mask, alpha_mask.rect())
         painter.end()
 
         self.setPixmap(tinted)
+
+    def setOpacity(self, opacity: float) -> QPixmap:
+        self._opacity = opacity
+
+        if self._tint is None:
+            self._blend()
+        else:
+            self._overlay()
+
+    def setTintColor(self, color: QColor) -> None:
+        self._tint = color
+        self._tint.setAlphaF(0.2)
+        self._overlay()
 
     def flipHorizontal(self) -> None:
         """Flip the sprite in the X axis"""
@@ -151,12 +166,12 @@ class Sprite(QGraphicsPixmapItem):
         self.setFlag(QGraphicsItem.ItemIsMovable, True)
 
     def keyPressEvent(self, e: QKeyEvent):
-        super().keyPressEvent(e)
-
         if e.key() == Qt.Key.Key_V:
             self.flipVertical()
         elif e.key() == Qt.Key.Key_H:
             self.flipHorizontal()
+        else:
+            super().keyPressEvent(e)
 
     def contextMenuEvent(self, e: QGraphicsSceneContextMenuEvent):
         menu = QMenu()

@@ -29,6 +29,8 @@ class GraphicScene(QGraphicsScene):
 
             for item in items:
                 self.removeItem(item)
+        else:
+            super().keyPressEvent(e)
 
     def drawBackground(self, painter: QPainter, rect: QRectF) -> None:
         painter.setRenderHint(QPainter.Antialiasing)
