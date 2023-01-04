@@ -25,6 +25,8 @@ class GraphicScene(QGraphicsScene):
 
     def keyPressEvent(self, e: QKeyEvent):
         if e.key() == Qt.Key.Key_Backspace:
+            e.accept()
+
             items = self.selectedItems()
 
             for item in items:

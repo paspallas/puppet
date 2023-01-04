@@ -78,7 +78,6 @@ class Sprite(QGraphicsPixmapItem):
         blended = QPixmap(self._pixmap.size())
         blended.fill(Qt.transparent)
 
-        # draw the unmodified pixmap alpha blended over the new transparent one
         painter = QPainter(blended)
         painter.setOpacity(self._opacity * 0.01)
         painter.drawPixmap(QPoint(), self._pixmap)
@@ -114,7 +113,6 @@ class Sprite(QGraphicsPixmapItem):
 
     def setTintColor(self, color: QColor) -> None:
         self._tint = color
-        self._tint.setAlphaF(0.2)
         self._overlay()
 
     def flipHorizontal(self) -> None:
@@ -167,8 +165,10 @@ class Sprite(QGraphicsPixmapItem):
 
     def keyPressEvent(self, e: QKeyEvent):
         if e.key() == Qt.Key.Key_V:
+            e.accept()
             self.flipVertical()
         elif e.key() == Qt.Key.Key_H:
+            e.accept()
             self.flipHorizontal()
         else:
             super().keyPressEvent(e)

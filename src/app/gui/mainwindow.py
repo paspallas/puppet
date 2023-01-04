@@ -60,11 +60,16 @@ class MainWindow(QMainWindow):
         file_menu.addAction("Save", lambda: print("saved"))
         file_menu.addAction("Open", lambda: print("open"))
 
+        sprite_palette = self._sprite_palette.toggleViewAction()
+        sprite_palette.setShortcut("F3")
+        view_menu.addAction(sprite_palette)
+
+        animation_timeline = self._animation_timeline.toggleViewAction()
+        animation_timeline.setShortcut("F4")
+        view_menu.addAction(animation_timeline)
+
+        view_menu.addSeparator()
         fullscreen = QAction("Full Screen", self)
         fullscreen.setShortcut("F11")
         fullscreen.triggered.connect(self._fullScreen)
-
-        view_menu.addAction(self._sprite_palette.toggleViewAction())
-        view_menu.addAction(self._animation_timeline.toggleViewAction())
-        view_menu.addSeparator()
         view_menu.addAction(fullscreen)
