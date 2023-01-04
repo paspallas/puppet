@@ -1,4 +1,4 @@
-from PyQt5.QtCore import QPoint, QRect, Qt
+from PyQt5.QtCore import QObject, QPoint, QRect, Qt, pyqtSlot
 from PyQt5.QtGui import QBrush, QColor, QKeyEvent, QPainter, QPixmap, QTransform
 from PyQt5.QtWidgets import (
     QAction,
@@ -17,11 +17,11 @@ class Sprite(QGraphicsPixmapItem):
     def __init__(self, pixmap: QPixmap, x: int = 0, y: int = 0, parent: QWidget = None):
         super().__init__(parent=parent)
 
-        self._pixmap = pixmap
+        self._pixmap: QPixmap = pixmap
 
         self.x = x
         self.y = y
-        self._opacity = 100
+        self._opacity = 50
         self._tint = None
         self._vertically_flipped = False
         self._horizontally_flipped = False
@@ -30,14 +30,14 @@ class Sprite(QGraphicsPixmapItem):
         self.setAlphaMask()
         self.setPixmap(self._pixmap)
 
-    @classmethod
-    def fromSpriteSheet(cls, x: int, y: int, w: int, h: int, sprite_sheet: QPixmap):
+    @staticmethod
+    def fromSpriteSheet(x: int, y: int, w: int, h: int, sprite_sheet: QPixmap):
         pixmap = QPixmap(w, h)
         painter = QPainter(pixmap)
         painter.drawPixmap(QPoint(0, 0), sprite_sheet, QRect(x, y, w, h))
         painter.end()
 
-        return cls(pixmap, x, y)
+        return Sprite(pixmap, x, y)
 
     def copy(self):
         clone = Sprite(self._pixmap, self.x, self.y)
@@ -72,28 +72,35 @@ class Sprite(QGraphicsPixmapItem):
             self._pixmap.createMaskFromColor(QColor(DEFAULT_ALPHA_MASK))
         )
 
-    def setOpacity(self, opacity: float) -> None:
-        if 0 <= opacity <= 100.0:
-            transparent = QPixmap(self._pixmap.size())
-            transparent.fill(Qt.transparent)
+    def _blend(self) -> QPixmap:
+        blended = QPixmap(self._pixmap.size())
+        blended.fill(Qt.transparent)
 
-            painter = QPainter(transparent)
-            painter.setOpacity(opacity * 0.01)
-            painter.drawPixmap(QPoint(), self._pixmap)
-            painter.end()
+        # draw the unmodified pixmap alpha blended over the new transparent one
+        painter = QPainter(blended)
+        painter.setOpacity(self._opacity * 0.01)
+        painter.drawPixmap(QPoint(), self._pixmap)
+        painter.end()
 
-            self._pixmap = transparent
-            self.setPixmap(self._pixmap)
-            self._opacity = opacity
+        self.setPixmap(blended)
+
+        return blended
+
+    def setOpacity(self, opacity: float) -> QPixmap:
+        self._opacity = opacity
+        self._blend()
 
     def setTintColor(self, color: QColor) -> None:
-        painter = QPainter(self._pixmap)
+        self._tint = color
+        self._tint.setAlpha(50)
+
+        tinted = QPixmap(self._blend())
+        painter = QPainter(tinted)
         painter.setCompositionMode(QPainter.CompositionMode_SourceAtop)
         painter.fillRect(self._pixmap.rect(), color)
         painter.end()
 
-        self.setPixmap(self._pixmap)
-        self._tint = color
+        self.setPixmap(tinted)
 
     def flipHorizontal(self) -> None:
         """Flip the sprite in the X axis"""
@@ -177,3 +184,19 @@ class SpriteGroup:
     def show(self):
         for sprite in self._collection:
             sprite.show()
+
+
+class SpriteObject(QObject):
+    def __init__(self, parent: QObject = None):
+        super().__init__(parent)
+
+        self._spriteItem: Sprite = None
+
+    def setSpriteItem(self, item: Sprite):
+        print("new sprite item")
+        self._spriteItem = item
+
+    @pyqtSlot(int)
+    def setOpacity(self, opacity: int) -> None:
+        print(f"opacity val: {opacity}")
+        self._spriteItem.setOpacity(opacity)

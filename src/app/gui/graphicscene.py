@@ -1,11 +1,12 @@
-from PyQt5.QtCore import Qt, QLineF, QRectF, pyqtSlot
-from PyQt5.QtGui import QBrush, QColor, QPainter, QPen, QTransform, QKeyEvent
+from PyQt5.QtCore import QLineF, QRectF, Qt, pyqtSignal, pyqtSlot
+from PyQt5.QtGui import QBrush, QColor, QKeyEvent, QPainter, QPen, QTransform
 from PyQt5.QtWidgets import (
     QGraphicsItem,
     QGraphicsRectItem,
     QGraphicsScene,
-    QWidget,
+    QGraphicsSceneMouseEvent,
     QPushButton,
+    QWidget,
 )
 
 from app.model.bone import Bone

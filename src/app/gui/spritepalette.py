@@ -21,7 +21,7 @@ from spriteutil.spritesheet import SpriteSheet
 
 from app.model.sprite import Sprite, SpriteGroup
 
-from .filedialog import DialogFileIO
+from .filedialog import DialogPreviewImage
 from .navcontrol import PanControl, ZoomControl
 
 
@@ -132,12 +132,11 @@ class SpritePalette(QWidget):
 
     @pyqtSlot()
     def addSpriteSheet(self) -> None:
-        paths = DialogFileIO().openFiles(
-            "Sprite Sheets (*.png)", "Open one or more spritesheet images"
+        dialog = DialogPreviewImage(
+            self, "Load Spritesheets", "", "Sprite Sheet (*.png)"
         )
-
-        if paths:
-            for path in paths:
+        if dialog.exec() == DialogPreviewImage.Accepted:
+            for path in dialog.getFilesSelected():
                 name = Path(path).stem
                 self._sprite_sheet_list.addItem(name)
 

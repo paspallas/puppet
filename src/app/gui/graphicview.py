@@ -1,5 +1,5 @@
-from PyQt5.QtCore import QPoint, Qt
-from PyQt5.QtGui import QPainter
+from PyQt5.QtCore import QPoint, Qt, pyqtSignal
+from PyQt5.QtGui import QPainter, QMouseEvent
 from PyQt5.QtWidgets import QFrame, QGraphicsView, QSizePolicy, QWidget
 
 from app.model.sprite import Sprite
@@ -9,6 +9,8 @@ from .navcontrol import PanControl, ZoomControl
 
 
 class GraphicView(QGraphicsView):
+    selectedItemChanged = pyqtSignal(Sprite)
+
     def __init__(self, parent: QWidget, scene: GraphicScene):
         super().__init__(scene, parent)
 
@@ -65,3 +67,12 @@ class GraphicView(QGraphicsView):
                 p.setY(p.y() + 2)
 
             w.move(p)
+
+    def mousePressEvent(self, e: QMouseEvent):
+        selected_sprite = self.itemAt(e.pos())
+
+        if isinstance(selected_sprite, Sprite):
+            self.selectedItemChanged.emit(selected_sprite)
+            print("sprite_changed")
+
+        super().mousePressEvent(e)

@@ -1,4 +1,4 @@
-from PyQt5.QtCore import QPoint, QRectF, QSize, QSizeF, Qt
+from PyQt5.QtCore import QPoint, QRectF, QSize, QSizeF, Qt, pyqtSlot
 from PyQt5.QtGui import QColor, QPainter
 from PyQt5.QtWidgets import (
     QGroupBox,
@@ -7,38 +7,51 @@ from PyQt5.QtWidgets import (
     QSpinBox,
     QVBoxLayout,
     QWidget,
+    QSlider,
 )
 
+from app.model.sprite import SpriteObject, Sprite
 
-class RotateGroupBox(QGroupBox):
+
+class PropertiesGroupBox(QGroupBox):
     def __init__(self, parent: QWidget = None):
         super().__init__(parent)
 
-        self.setTitle("Tool Box")
+        self.setTitle("Sprite Properties")
 
-        self.l_rotate = QSpinBox()
-        self.l_rotate.setRange(0, 360)
+        self.opacity = QSlider()
+        self.opacity.setRange(0, 100)
+        self.opacity.setValue(100)
+        self.opacity.setOrientation(Qt.Horizontal)
 
-        self.r_rotate = QSpinBox()
-        self.r_rotate.setRange(0, 360)
+        # self.l_rotate = QSpinBox()
+        # self.l_rotate.setRange(0, 360)
 
-        self.l_label = QLabel("left: ")
-        self.r_label = QLabel("rigth: ")
+        # self.r_rotate = QSpinBox()
+        # self.r_rotate.setRange(0, 360)
+
+        self.opacity_label = QLabel("opacity: ")
+        # self.r_label = QLabel("rigth: ")
 
         layout = QVBoxLayout(self)
 
         l1 = QHBoxLayout()
         l1.setContentsMargins(0, 0, 0, 0)
-        l1.addWidget(self.l_label)
-        l1.addWidget(self.l_rotate)
+        l1.addWidget(self.opacity_label)
+        l1.addWidget(self.opacity)
 
-        l2 = QHBoxLayout()
-        l2.setContentsMargins(0, 0, 0, 0)
-        l2.addWidget(self.r_label)
-        l2.addWidget(self.r_rotate)
+        # l2 = QHBoxLayout()
+        # l2.setContentsMargins(0, 0, 0, 0)
+        # l2.addWidget(self.r_label)
+        # l2.addWidget(self.r_rotate)
 
         layout.addLayout(l1)
-        layout.addLayout(l2)
+        # layout.addLayout(l2)
+
+        self.makeConnections()
+
+    def makeConnections(self):
+        self.opacity.valueChanged.connect(self.parent().handledItem.setOpacity)
 
 
 class PropertyBox(QWidget):
@@ -48,20 +61,22 @@ class PropertyBox(QWidget):
         self.setWindowFlags(Qt.FramelessWindowHint)
         self.setAttribute(Qt.WA_TranslucentBackground)
 
-        self.background_color = QColor("salmon")
-        self.foreground_color = QColor("red")
-        self.border_radius = 10
+        self.background_color = QColor("#424242")
+        self.foreground_color = QColor("#353535")
+        self.border_radius = 4
 
-        gr1 = RotateGroupBox()
-        gr2 = RotateGroupBox()
-        gr3 = RotateGroupBox()
-        gr4 = RotateGroupBox()
+        self.handledItem = SpriteObject()
+
+        gr1 = PropertiesGroupBox(self)
+        # gr2 = RotateGroupBox()
+        # gr3 = RotateGroupBox()
+        # gr4 = RotateGroupBox()
 
         layout = QVBoxLayout(self)
         layout.addWidget(gr1)
-        layout.addWidget(gr2)
-        layout.addWidget(gr3)
-        layout.addWidget(gr4)
+        # layout.addWidget(gr2)
+        # layout.addWidget(gr3)
+        # layout.addWidget(gr4)
 
     def paintEvent(self, event):
         painter = QPainter(self)
@@ -72,3 +87,8 @@ class PropertyBox(QWidget):
             QPoint(), QSizeF(self.size() - 0.5 * painter.pen().width() * QSize(1, 1))
         )
         painter.drawRoundedRect(rect, self.border_radius, self.border_radius)
+
+    @pyqtSlot(Sprite)
+    def onSelectedItemChanged(self, item: Sprite):
+        print("on sprite changed")
+        self.handledItem.setSpriteItem(item)
