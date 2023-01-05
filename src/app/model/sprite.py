@@ -10,6 +10,8 @@ from PyQt5.QtWidgets import (
     QWidget,
 )
 
+from app.util.pixmap import Image
+
 DEFAULT_ALPHA_MASK = "#FF00FF"
 
 
@@ -29,8 +31,6 @@ class Sprite(QGraphicsPixmapItem):
         self._setItemFlags()
         self.setAlphaMask()
         self.setPixmap(self._pixmap)
-
-        self.setTintColor(QColor("red"))
 
     @staticmethod
     def fromSpriteSheet(x: int, y: int, w: int, h: int, sprite_sheet: QPixmap):
@@ -56,8 +56,6 @@ class Sprite(QGraphicsPixmapItem):
 
         return clone
 
-    __copy__ = copy
-
     def _setItemFlags(self):
         flags = (
             QGraphicsItem.ItemIsSelectable
@@ -74,46 +72,17 @@ class Sprite(QGraphicsPixmapItem):
             self._pixmap.createMaskFromColor(QColor(DEFAULT_ALPHA_MASK))
         )
 
-    def _blend(self) -> QPixmap:
-        blended = QPixmap(self._pixmap.size())
-        blended.fill(Qt.transparent)
-
-        painter = QPainter(blended)
-        painter.setOpacity(self._opacity * 0.01)
-        painter.drawPixmap(QPoint(), self._pixmap)
-        painter.end()
-
-        self.setPixmap(blended)
-
-        return blended
-
-    def _overlay(self):
-        alpha_mask = self._blend()
-        tinted = QPixmap(alpha_mask)
-
-        painter = QPainter(alpha_mask)
-        painter.setCompositionMode(QPainter.CompositionMode_SourceIn)
-        painter.fillRect(self._pixmap.rect(), self._tint)
-        painter.end()
-
-        painter.begin(tinted)
-        painter.setCompositionMode(QPainter.CompositionMode_Overlay)
-        painter.drawPixmap(QPoint(0, 0), alpha_mask, alpha_mask.rect())
-        painter.end()
-
-        self.setPixmap(tinted)
-
     def setOpacity(self, opacity: float) -> QPixmap:
         self._opacity = opacity
 
         if self._tint is None:
-            self._blend()
+            self.setPixmap(Image.setAlpha(opacity, self._pixmap))
         else:
-            self._overlay()
+            self.setPixmap(Image.setTint(opacity, self._tint, self._pixmap))
 
     def setTintColor(self, color: QColor) -> None:
         self._tint = color
-        self._overlay()
+        self.setPixmap(Image.setTint(self._opacity, color, self._pixmap))
 
     def flipHorizontal(self) -> None:
         """Flip the sprite in the X axis"""
@@ -128,7 +97,7 @@ class Sprite(QGraphicsPixmapItem):
         m23 = transform.m23()  # Vertical Projection
         m31 = transform.m31()  # Horizontal Position (DX)
         m32 = transform.m32()  # Vertical Position (DY)
-        m33 = transform.m33()  # Addtional Projection Factor
+        m33 = transform.m33()  # Additional Projection Factor
 
         m31 = 0 if m31 > 0 else self.boundingRect().width() * m11
 
@@ -148,7 +117,7 @@ class Sprite(QGraphicsPixmapItem):
         m23 = transform.m23()  # Vertical Projection
         m31 = transform.m31()  # Horizontal Position (DX)
         m32 = transform.m32()  # Vertical Position (DY)
-        m33 = transform.m33()  # Addtional Projection Factor
+        m33 = transform.m33()  # Additional Projection Factor
 
         m32 = 0 if m32 > 0 else self.boundingRect().height() * m22
 
