@@ -8,7 +8,6 @@ from PyQt5.QtWidgets import (
     QListWidget,
     QPushButton,
     QSizePolicy,
-    QSlider,
     QSpacerItem,
     QSpinBox,
     QVBoxLayout,
@@ -16,6 +15,7 @@ from PyQt5.QtWidgets import (
 )
 
 from app.model.sprite import Sprite, SpriteObject
+from .control.slider import FancySlider
 
 
 class PropertiesGroupBox(QGroupBox):
@@ -24,7 +24,7 @@ class PropertiesGroupBox(QGroupBox):
 
         self.setTitle("Sprite Properties")
 
-        self.opacity = QSlider()
+        self.opacity = FancySlider()
         self.opacity.setRange(0, 100)
         self.opacity.setValue(100)
         self.opacity.setOrientation(Qt.Horizontal)
@@ -179,30 +179,3 @@ class SpriteListBox(QWidget):
             QPoint(), QSizeF(self.size() - 0.5 * painter.pen().width() * QSize(1, 1))
         )
         painter.drawRoundedRect(rect, 4, 4)
-
-
-# FancySlider::FancySlider(QWidget * parent)
-#     : QSlider(parent)
-# {
-# }
-
-# FancySlider::FancySlider(Qt::Orientation orientation, QWidget * parent)
-#     : QSlider(orientation, parent)
-# {
-# }
-
-# void FancySlider::sliderChange(QAbstractSlider::SliderChange change)
-# {
-#     QSlider::sliderChange(change);
-
-#     if (change == QAbstractSlider::SliderValueChange )
-#     {
-#         QStyleOptionSlider opt;
-#         initStyleOption(&opt);
-
-#         QRect sr = style()->subControlRect(QStyle::CC_Slider, &opt, QStyle::SC_SliderHandle, this);
-#         QPoint bottomRightCorner = sr.bottomLeft();
-
-#         QToolTip::showText(mapToGlobal( QPoint( bottomRightCorner.x(), bottomRightCorner.y() ) ), QString::number(value()), this);
-#     }
-# }
