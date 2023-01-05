@@ -114,8 +114,8 @@ class SpritePalette(QWidget):
         self._toolbar.addAction("+", self.addSpriteSheet)
 
         content = QHBoxLayout()
-        content.addWidget(self._sprite_sheet_list)
-        content.addWidget(self._view)
+        content.addWidget(self._sprite_sheet_list, stretch=1)
+        content.addWidget(self._view, stretch=2)
 
         box.addWidget(self._toolbar)
         box.addLayout(content)

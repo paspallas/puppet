@@ -8,7 +8,7 @@ from .animation.animedit import AnimEditorDock
 from .filedialog import DialogFileIO
 from .graphicscene import GraphicScene
 from .graphicview import GraphicView
-from .scenetoolbox import PropertyBox
+from .scenetoolbox import PropertyBox, SpriteListBox
 from .spritepalette import SpritePaletteDock
 
 
@@ -21,9 +21,11 @@ class MainWindow(QMainWindow):
         self._toolmanager = ToolManager(self._scene)
         self._sprite_palette = SpritePaletteDock(self)
         self._animation_timeline = AnimEditorDock(self)
-        self._sprite_property = PropertyBox()
 
+        self._sprite_property = PropertyBox()
+        self._sprite_list = SpriteListBox()
         self._view.addFixedWidget(self._sprite_property, Qt.AlignRight | Qt.AlignTop)
+        self._view.addFixedWidget(self._sprite_list, Qt.AlignRight | Qt.AlignBottom)
 
         self.setupUi()
         self.setupMenu()

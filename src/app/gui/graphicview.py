@@ -53,14 +53,14 @@ class GraphicView(QGraphicsView):
             p = QPoint()
 
             if a & Qt.AlignCenter:
-                p.setX((r.width() - w.width()) / 2)
+                p.setX(int((r.width() - w.width()) / 2))
             elif a & Qt.AlignRight:
-                p.setX(r.width() - w.width() - 2)
+                p.setX(int(r.width() - w.width() - 2))
             elif a & Qt.AlignLeft:
                 p.setX(p.x() + 2)
 
             if a & Qt.AlignVCenter:
-                p.setY(((r.height() - w.height()) / 2))
+                p.setY(int((r.height() - w.height()) / 2))
             elif a & Qt.AlignBottom:
                 p.setY(r.height() - w.height() - 2)
             elif a & Qt.AlignTop:
