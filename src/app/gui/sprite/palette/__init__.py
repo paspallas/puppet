@@ -1,1 +1,1 @@
-from .spritepalettedock import SpritePaletteDock
+from .spritepalettewidget import SpritePaletteWidget

@@ -84,24 +84,3 @@ class SpritePaletteWidget(QWidget):
                 ]
 
                 self._ui_spritePalScene.addSpriteSheet(name, layer)
-
-
-class SpritePaletteDock(QDockWidget):
-
-    sigSelectedSpriteChanged = pyqtSignal(Sprite)
-
-    def __init__(self, parent: QWidget = None):
-        super().__init__("Sprite Palette", parent)
-
-        self._ui_spritePaletteWid = SpritePaletteWidget(self)
-        self.setWidget(self._ui_spritePaletteWid)
-        self._forwardSignals()
-
-    @pyqtSlot(Sprite)
-    def onSelectedSpriteChanged(self, sprite: Sprite):
-        self._ui_spritePaletteWid.onSelectedSpriteChanged(sprite)
-
-    def _forwardSignals(self):
-        self._ui_spritePaletteWid.sigSelectedSpriteChanged.connect(
-            self.sigSelectedSpriteChanged
-        )

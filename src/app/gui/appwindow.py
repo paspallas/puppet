@@ -1,11 +1,11 @@
 from PyQt5.QtCore import Qt, pyqtSlot
-from PyQt5.QtWidgets import QAction, QMainWindow, QMenu
+from PyQt5.QtWidgets import QAction, QMainWindow, QMenu, QDockWidget
 
 from ..tool import ToolManager
-from .animation import AnimEditorDock
+from .animation import AnimationEditorWidget
 from .editor import EditorScene, EditorView
 from .sprite.box import SpriteListBox, SpritePropertyBox
-from .sprite.palette import SpritePaletteDock
+from .sprite.palette import SpritePaletteWidget
 
 
 class AppWindow(QMainWindow):
@@ -13,6 +13,7 @@ class AppWindow(QMainWindow):
         super().__init__()
 
         self._setupUi()
+        self._createDockWindows()
         self._setupMenu()
         self._makeConnections()
 
@@ -23,9 +24,6 @@ class AppWindow(QMainWindow):
         self._ui_graphScene = EditorScene(self, width=2048, height=2048)
         self._ui_graphView = EditorView(self._ui_graphScene, self)
         self._toolManager = ToolManager(self._ui_graphScene)
-
-        self._ui_spritePaletteDock = SpritePaletteDock(self)
-        self._ui_animTimelineDock = AnimEditorDock(self)
 
         self._ui_spritePropertyBox = SpritePropertyBox()
         self._ui_spriteListBox = SpriteListBox()
@@ -38,16 +36,27 @@ class AppWindow(QMainWindow):
         )
 
         self.setCentralWidget(self._ui_graphView)
-        self.addDockWidget(Qt.BottomDockWidgetArea, self._ui_spritePaletteDock)
-        self.addDockWidget(Qt.BottomDockWidgetArea, self._ui_animTimelineDock)
 
     def _makeConnections(self):
-        self._ui_spritePaletteDock.sigSelectedSpriteChanged.connect(
+        self._ui_spritePaletteWid.sigSelectedSpriteChanged.connect(
             self._ui_graphScene.addSprite
         )
         self._ui_graphView.selectedItemChanged.connect(
             self._ui_spritePropertyBox.onSelectedItemChanged
         )
+
+    def _createDockWindows(self):
+        self._ui_spritePaletteDock = QDockWidget("Sprite Palette", self)
+        self._ui_spritePaletteDock.setAllowedAreas(Qt.BottomDockWidgetArea)
+        self._ui_spritePaletteWid = SpritePaletteWidget(self._ui_spritePaletteDock)
+        self._ui_spritePaletteDock.setWidget(self._ui_spritePaletteWid)
+        self.addDockWidget(Qt.BottomDockWidgetArea, self._ui_spritePaletteDock)
+
+        self._ui_animEditorDock = QDockWidget("Animation Editor", self)
+        self._ui_animEditorDock.setAllowedAreas(Qt.BottomDockWidgetArea)
+        self._ui_animEditorWidget = AnimationEditorWidget(self._ui_animEditorDock)
+        self._ui_animEditorDock.setWidget(self._ui_animEditorWidget)
+        self.addDockWidget(Qt.BottomDockWidgetArea, self._ui_animEditorDock)
 
     def _fullScreen(self):
         if self.windowState() & Qt.WindowMaximized:
@@ -69,9 +78,9 @@ class AppWindow(QMainWindow):
         spritePalette_act.setShortcut("F3")
         view_menu.addAction(spritePalette_act)
 
-        animTimeline_act = self._ui_animTimelineDock.toggleViewAction()
-        animTimeline_act.setShortcut("F4")
-        view_menu.addAction(animTimeline_act)
+        animEditor_act = self._ui_animEditorDock.toggleViewAction()
+        animEditor_act.setShortcut("F4")
+        view_menu.addAction(animEditor_act)
 
         view_menu.addSeparator()
         fullscreen_act = QAction("Full Screen", self)

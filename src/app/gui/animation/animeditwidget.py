@@ -17,16 +17,8 @@ from PyQt5.QtWidgets import (
 )
 
 
-class AnimEditor(QWidget):
+class AnimationEditorWidget(QWidget):
     def __init__(self, parent: QWidget = None):
         super().__init__(parent)
 
         self._frameList = QListWidget()
-
-
-class AnimEditorDock(QDockWidget):
-    def __init__(self, parent: QWidget = None):
-        super().__init__("Animation Timeline", parent)
-
-        self.anim_editor = AnimEditor()
-        self.setWidget(self.anim_editor)

@@ -33,7 +33,7 @@ class SpritePaletteView(QGraphicsView):
 
         if isinstance(selectedSprite, Sprite):
             # QgraphicsScene takes the ownership of the object
-            # we need a copy to add it to another scene
+            # we need a copy for adding it to another scene
             copy = selectedSprite.copy()
             copy.unlock()
 
