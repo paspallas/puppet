@@ -1,14 +1,13 @@
-from PyQt5.QtCore import QPoint, QRect, Qt, pyqtSlot
-from PyQt5.QtGui import QPainter, QPixmap
-from PyQt5.QtWidgets import QAction, QMainWindow, QMenu, QGraphicsView, QGraphicsScene
+from PyQt5.QtCore import Qt, pyqtSlot
+from PyQt5.QtWidgets import QAction, QMainWindow, QMenu
 
 from app.scene.tool.toolmanager import ToolManager
 
-from .animation.animedit import AnimEditorDock
+from .animation import AnimEditorDock
 from .filedialog import DialogFileIO
 from .graphicscene import GraphicScene
 from .graphicview import GraphicView
-from .scenetoolbox import PropertyBox, SpriteListBox
+from .sprite import SpritePropertyBox, SpriteListBox
 from .spritepalette import SpritePaletteDock
 
 
@@ -16,34 +15,41 @@ class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
 
-        self._scene = GraphicScene(self, width=2048, height=2048)
-        self._view = GraphicView(self, self._scene)
-        self._toolmanager = ToolManager(self._scene)
-        self._sprite_palette = SpritePaletteDock(self)
-        self._animation_timeline = AnimEditorDock(self)
+        self._setupUi()
+        self._setupMenu()
+        self._makeConnections()
 
-        self._sprite_property = PropertyBox()
-        self._sprite_list = SpriteListBox()
-        self._view.addFixedWidget(self._sprite_property, Qt.AlignRight | Qt.AlignTop)
-        self._view.addFixedWidget(self._sprite_list, Qt.AlignRight | Qt.AlignBottom)
-
-        self.setupUi()
-        self.setupMenu()
-        self.makeConnections()
-
-    def setupUi(self):
-        self.setWindowTitle("MegaPuppet")
+    def _setupUi(self):
+        self.setWindowTitle("Puppet")
         self.setMinimumSize(800, 600)
-        self.setCentralWidget(self._view)
-        self.addDockWidget(Qt.BottomDockWidgetArea, self._sprite_palette)
-        self.addDockWidget(Qt.BottomDockWidgetArea, self._animation_timeline)
 
-    def makeConnections(self):
-        self._sprite_palette.palette.selectedSpriteChanged.connect(
-            self._scene.addSprite
+        self._ui_graphScene = GraphicScene(self, width=2048, height=2048)
+        self._ui_graphView = GraphicView(self, self._ui_graphScene)
+        self._toolManager = ToolManager(self._ui_graphScene)
+
+        self._ui_spritePaletteDock = SpritePaletteDock(self)
+        self._ui_animTimelineDock = AnimEditorDock(self)
+
+        self._ui_spritePropertyBox = SpritePropertyBox()
+        self._ui_spriteListBox = SpriteListBox()
+
+        self._ui_graphView.addFixedWidget(
+            self._ui_spritePropertyBox, Qt.AlignRight | Qt.AlignTop
         )
-        self._view.selectedItemChanged.connect(
-            self._sprite_property.onSelectedItemChanged
+        self._ui_graphView.addFixedWidget(
+            self._ui_spriteListBox, Qt.AlignRight | Qt.AlignBottom
+        )
+
+        self.setCentralWidget(self._ui_graphView)
+        self.addDockWidget(Qt.BottomDockWidgetArea, self._ui_spritePaletteDock)
+        self.addDockWidget(Qt.BottomDockWidgetArea, self._ui_animTimelineDock)
+
+    def _makeConnections(self):
+        self._ui_spritePaletteDock.palette.selectedSpriteChanged.connect(
+            self._ui_graphScene.addSprite
+        )
+        self._ui_graphView.selectedItemChanged.connect(
+            self._ui_spritePropertyBox.onSelectedItemChanged
         )
 
     def _fullScreen(self):
@@ -52,7 +58,7 @@ class MainWindow(QMainWindow):
         else:
             self.setWindowState(Qt.WindowMaximized)
 
-    def setupMenu(self):
+    def _setupMenu(self):
         menubar = self.menuBar()
 
         file_menu: QMenu = menubar.addMenu("&File")
@@ -62,16 +68,16 @@ class MainWindow(QMainWindow):
         file_menu.addAction("Save", lambda: print("saved"))
         file_menu.addAction("Open", lambda: print("open"))
 
-        sprite_palette = self._sprite_palette.toggleViewAction()
-        sprite_palette.setShortcut("F3")
-        view_menu.addAction(sprite_palette)
+        spritePalette_act = self._ui_spritePaletteDock.toggleViewAction()
+        spritePalette_act.setShortcut("F3")
+        view_menu.addAction(spritePalette_act)
 
-        animation_timeline = self._animation_timeline.toggleViewAction()
-        animation_timeline.setShortcut("F4")
-        view_menu.addAction(animation_timeline)
+        animTimeline_act = self._ui_animTimelineDock.toggleViewAction()
+        animTimeline_act.setShortcut("F4")
+        view_menu.addAction(animTimeline_act)
 
         view_menu.addSeparator()
-        fullscreen = QAction("Full Screen", self)
-        fullscreen.setShortcut("F11")
-        fullscreen.triggered.connect(self._fullScreen)
-        view_menu.addAction(fullscreen)
+        fullscreen_act = QAction("Full Screen", self)
+        fullscreen_act.setShortcut("F11")
+        fullscreen_act.triggered.connect(self._fullScreen)
+        view_menu.addAction(fullscreen_act)

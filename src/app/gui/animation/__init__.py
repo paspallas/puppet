@@ -1,0 +1,1 @@
+from .animedit import AnimEditorDock

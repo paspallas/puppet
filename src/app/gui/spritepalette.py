@@ -30,7 +30,6 @@ class SpritePaletteScene(QGraphicsScene):
         super().__init__(parent)
 
         self._sprite_sheets = dict()
-
         self.setSceneRect(10, -10, 300, 300)
 
     def addSpriteSheet(self, name: str, sprites: [Sprite]):
@@ -99,39 +98,41 @@ class SpritePalette(QWidget):
     def __init__(self, parent: QWidget = None):
         super().__init__(parent)
 
+        self._setupUi()
+        self._makeConnections()
+
+    def _setupUi(self):
         self._scene = SpritePaletteScene()
         self._view = SpritePaletteView(self._scene)
-
         self._sprite_sheet_list = QListWidget(self)
-        self._sprite_sheet_list.itemClicked.connect(
-            lambda item: self._scene.showLayer(item.text())
-        )
+
+        self._toolbar = QToolBar()
+        self._toolbar.setOrientation(Qt.Vertical)
+        self._toolbar.addAction("+", self._addSpriteSheet)
 
         box = QBoxLayout(QBoxLayout.LeftToRight, self)
         box.setContentsMargins(0, 0, 0, 0)
-        self._toolbar = QToolBar()
-        self._toolbar.setOrientation(Qt.Vertical)
-        self._toolbar.addAction("+", self.addSpriteSheet)
+        box.addWidget(self._toolbar)
 
         content = QHBoxLayout()
         content.addWidget(self._sprite_sheet_list, stretch=1)
         content.addWidget(self._view, stretch=2)
 
-        box.addWidget(self._toolbar)
         box.addLayout(content)
         self.setLayout(box)
 
-        self.makeConnections()
-
-    def makeConnections(self):
+    def _makeConnections(self):
         self._view.selectedSpriteChanged.connect(self.onSelectedSpriteChanged)
+        self._sprite_sheet_list.itemClicked.connect(
+            lambda item: self._scene.showLayer(item.text())
+        )
 
     @pyqtSlot(Sprite)
     def onSelectedSpriteChanged(self, sprite: Sprite):
         self.selectedSpriteChanged.emit(sprite)
 
     @pyqtSlot()
-    def addSpriteSheet(self) -> None:
+    def _addSpriteSheet(self) -> None:
         dialog = DialogPreviewImage(
             self, "Load Spritesheets", "", "Sprite Sheet (*.png)"
         )
