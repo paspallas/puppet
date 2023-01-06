@@ -4,17 +4,17 @@ from PyQt5.QtWidgets import QFrame, QGraphicsView, QSizePolicy, QWidget
 
 from app.model.sprite import Sprite
 
-from .graphicscene import GraphicScene
-from .viewcontrol import PanControl, ZoomControl
+from .editorscene import EditorScene
+from ..viewcontrol import PanControl, ZoomControl
 
 
-class GraphicView(QGraphicsView):
+class EditorView(QGraphicsView):
     selectedItemChanged = pyqtSignal(Sprite)
 
-    def __init__(self, parent: QWidget, scene: GraphicScene):
-        super().__init__(scene, parent)
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
 
-        self._widgets = dict()
+        self._fixedWidgets = dict()
 
         PanControl(self)
         ZoomControl(self)
@@ -36,7 +36,7 @@ class GraphicView(QGraphicsView):
 
     def addFixedWidget(self, widget: QWidget, aligment):
         widget.setParent(self.viewport())
-        self._widgets[widget] = aligment
+        self._fixedWidgets[widget] = aligment
 
     def showEvent(self, event):
         self._updateFixedWidgets()
@@ -49,7 +49,7 @@ class GraphicView(QGraphicsView):
     def _updateFixedWidgets(self):
         r = self.viewport().rect()
 
-        for w, a in self._widgets.items():
+        for w, a in self._fixedWidgets.items():
             p = QPoint()
 
             if a & Qt.AlignCenter:

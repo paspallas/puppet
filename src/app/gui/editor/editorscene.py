@@ -13,7 +13,7 @@ from app.model.bone import Bone
 from app.model.sprite import Sprite
 
 
-class GraphicScene(QGraphicsScene):
+class EditorScene(QGraphicsScene):
     def __init__(self, parent: QWidget, width: float = 640.0, height: float = 480.0):
         super().__init__(parent)
 

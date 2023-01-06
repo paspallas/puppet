@@ -17,7 +17,7 @@ from app.model.sprite import Sprite, SpriteGroup
 
 from .spritepalettescene import SpritePaletteScene
 from .spritepaletteview import SpritePaletteView
-from ...filedialog import DialogPreviewImage
+from ...dialog import OpenImageDialog
 
 
 class SpritePaletteWidget(QWidget):
@@ -61,10 +61,8 @@ class SpritePaletteWidget(QWidget):
 
     @pyqtSlot()
     def _addSpriteSheet(self) -> None:
-        dialog = DialogPreviewImage(
-            self, "Load Spritesheets", "", "Sprite Sheet (*.png)"
-        )
-        if dialog.exec() == DialogPreviewImage.Accepted:
+        dialog = OpenImageDialog(self, "Load Spritesheets", "", "Sprite Sheet (*.png)")
+        if dialog.exec() == OpenImageDialog.Accepted:
             for path in dialog.getFilesSelected():
                 name = Path(path).stem
                 self._ui_spritesheetList.addItem(name)

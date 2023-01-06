@@ -3,9 +3,9 @@ import sys
 import qtmodern.styles
 import qtmodern.windows
 from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QApplication, QStyleFactory
+from PyQt5.QtWidgets import QApplication
 
-from .gui.mainwindow import MainWindow
+from .gui.appwindow import AppWindow
 
 try:
     from PyQt5.QtWinExtras import QtWin
@@ -16,13 +16,12 @@ except ImportError:
 
 
 def start() -> None:
-    QApplication.setStyle(QStyleFactory.create("Fusion"))
     QApplication.setAttribute(Qt.AA_EnableHighDpiScaling, True)
 
     app = QApplication([])
     qtmodern.styles.dark(app)
 
-    main_window = MainWindow()
+    main_window = AppWindow()
     main_window.show()
 
     sys.exit(app.exec_())

@@ -4,14 +4,12 @@ from PyQt5.QtWidgets import QAction, QMainWindow, QMenu
 from app.scene.tool.toolmanager import ToolManager
 
 from .animation import AnimEditorDock
-from .filedialog import DialogFileIO
-from .graphicscene import GraphicScene
-from .graphicview import GraphicView
+from .editor import EditorScene, EditorView
 from .sprite.box import SpriteListBox, SpritePropertyBox
 from .sprite.palette import SpritePaletteDock
 
 
-class MainWindow(QMainWindow):
+class AppWindow(QMainWindow):
     def __init__(self):
         super().__init__()
 
@@ -23,8 +21,8 @@ class MainWindow(QMainWindow):
         self.setWindowTitle("Puppet")
         self.setMinimumSize(800, 600)
 
-        self._ui_graphScene = GraphicScene(self, width=2048, height=2048)
-        self._ui_graphView = GraphicView(self, self._ui_graphScene)
+        self._ui_graphScene = EditorScene(self, width=2048, height=2048)
+        self._ui_graphView = EditorView(self._ui_graphScene, self)
         self._toolManager = ToolManager(self._ui_graphScene)
 
         self._ui_spritePaletteDock = SpritePaletteDock(self)

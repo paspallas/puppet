@@ -3,39 +3,7 @@ from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import QFileDialog, QLabel, QVBoxLayout, QWidget
 
 
-class DialogFileIO:
-    """Utility class to simplify FileIO"""
-
-    @staticmethod
-    def openFiles(parent: QWidget, filter: str, hint: str = "Open file") -> [str]:
-        paths, _ = QFileDialog.getOpenFileNames(
-            parent,
-            hint,
-            "",
-            filter=filter,
-            options=QFileDialog.DontUseNativeDialog,
-        )
-
-        if len(paths) > 0:
-            return paths
-        return None
-
-    @staticmethod
-    def saveFile(parent: QWidget, filter: str, hint: str = "Save file") -> (str, str):
-        path, _ = QFileDialog.getSaveFileName(
-            parent,
-            hint,
-            "",
-            filter=filter,
-            options=QFileDialog.DontUseNativeDialog,
-        )
-
-        if path and len(path) > 0:
-            return path, QFileInfo(path).fileName()
-        return None, None
-
-
-class DialogPreviewImage(QFileDialog):
+class OpenImageDialog(QFileDialog):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
@@ -43,12 +11,12 @@ class DialogPreviewImage(QFileDialog):
         self.setFileMode(QFileDialog.ExistingFiles)
         self.setFixedSize(self.width() + 250, self.height())
 
-        self._preview = QLabel("Preview", self)
-        self._preview.setFixedSize(250, 250)
-        self._preview.setAlignment(Qt.AlignCenter)
+        self._ui_previewLbl = QLabel("Preview", self)
+        self._ui_previewLbl.setFixedSize(250, 250)
+        self._ui_previewLbl.setAlignment(Qt.AlignCenter)
 
         box = QVBoxLayout()
-        box.addWidget(self._preview)
+        box.addWidget(self._ui_previewLbl)
         box.addStretch()
 
         self.layout().addLayout(box, 1, 3, 1, 1)
@@ -64,12 +32,12 @@ class DialogPreviewImage(QFileDialog):
         pixmap = QPixmap(path)
 
         if pixmap.isNull():
-            self._preview.setText("Preview")
+            self._ui_previewLbl.setText("Preview")
         else:
-            self._preview.setPixmap(
+            self._ui_previewLbl.setPixmap(
                 pixmap.scaled(
-                    self._preview.width(),
-                    self._preview.height(),
+                    self._ui_previewLbl.width(),
+                    self._ui_previewLbl.height(),
                     Qt.KeepAspectRatio,
                     Qt.FastTransformation,
                 )

@@ -10,7 +10,7 @@ from PyQt5.QtWidgets import (
     QWidget,
 )
 
-from app.util.pixmap import Image
+from app.util import Image
 
 DEFAULT_ALPHA_MASK = "#FF00FF"
 
