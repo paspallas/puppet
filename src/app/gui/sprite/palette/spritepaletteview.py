@@ -9,7 +9,7 @@ from ...viewcontrol import PanControl, ZoomControl
 
 class SpritePaletteView(QGraphicsView):
 
-    selectedSpriteChanged = pyqtSignal(Sprite)
+    sigSelectedSpriteChanged = pyqtSignal(Sprite)
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -29,12 +29,14 @@ class SpritePaletteView(QGraphicsView):
         PanControl(self)
 
     def mousePressEvent(self, e: QMouseEvent):
-        selected_sprite = self.itemAt(e.pos())
+        selectedSprite = self.itemAt(e.pos())
 
-        if isinstance(selected_sprite, Sprite):
-            copy = selected_sprite.copy()
+        if isinstance(selectedSprite, Sprite):
+            # QgraphicsScene takes the ownership of the object
+            # we need a copy to add it to another scene
+            copy = selectedSprite.copy()
             copy.unlock()
 
-            self.selectedSpriteChanged.emit(copy)
+            self.sigSelectedSpriteChanged.emit(copy)
 
         super().mousePressEvent(e)

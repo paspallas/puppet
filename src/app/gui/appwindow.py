@@ -42,7 +42,7 @@ class AppWindow(QMainWindow):
         self.addDockWidget(Qt.BottomDockWidgetArea, self._ui_animTimelineDock)
 
     def _makeConnections(self):
-        self._ui_spritePaletteDock.palette.selectedSpriteChanged.connect(
+        self._ui_spritePaletteDock.sigSelectedSpriteChanged.connect(
             self._ui_graphScene.addSprite
         )
         self._ui_graphView.selectedItemChanged.connect(

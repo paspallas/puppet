@@ -21,12 +21,14 @@ from ...dialog import OpenImageDialog
 
 
 class SpritePaletteWidget(QWidget):
-    selectedSpriteChanged = pyqtSignal(Sprite)
+
+    sigSelectedSpriteChanged = pyqtSignal(Sprite)
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
         self._setupUi()
+        self._forwardSignals()
         self._makeConnections()
 
     def _setupUi(self):
@@ -47,10 +49,13 @@ class SpritePaletteWidget(QWidget):
         content.addWidget(self._ui_spritePalView, stretch=2)
         box.addLayout(content)
 
-    def _makeConnections(self):
-        self._ui_spritePalView.selectedSpriteChanged.connect(
-            self.onSelectedSpriteChanged
+    def _forwardSignals(self):
+        """Expose signals of the private widgets"""
+        self._ui_spritePalView.sigSelectedSpriteChanged.connect(
+            self.sigSelectedSpriteChanged
         )
+
+    def _makeConnections(self):
         self._ui_spritesheetList.itemClicked.connect(
             lambda item: self._ui_spritePalScene.showLayer(item.text())
         )
@@ -82,8 +87,21 @@ class SpritePaletteWidget(QWidget):
 
 
 class SpritePaletteDock(QDockWidget):
+
+    sigSelectedSpriteChanged = pyqtSignal(Sprite)
+
     def __init__(self, parent: QWidget = None):
         super().__init__("Sprite Palette", parent)
 
-        self.palette = SpritePaletteWidget(self)
-        self.setWidget(self.palette)
+        self._ui_spritePaletteWid = SpritePaletteWidget(self)
+        self.setWidget(self._ui_spritePaletteWid)
+        self._forwardSignals()
+
+    @pyqtSlot(Sprite)
+    def onSelectedSpriteChanged(self, sprite: Sprite):
+        self._ui_spritePaletteWid.onSelectedSpriteChanged(sprite)
+
+    def _forwardSignals(self):
+        self._ui_spritePaletteWid.sigSelectedSpriteChanged.connect(
+            self.sigSelectedSpriteChanged
+        )
