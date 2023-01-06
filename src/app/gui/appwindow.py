@@ -1,8 +1,7 @@
 from PyQt5.QtCore import Qt, pyqtSlot
 from PyQt5.QtWidgets import QAction, QMainWindow, QMenu
 
-from app.scene.tool.toolmanager import ToolManager
-
+from ..tool import ToolManager
 from .animation import AnimEditorDock
 from .editor import EditorScene, EditorView
 from .sprite.box import SpriteListBox, SpritePropertyBox

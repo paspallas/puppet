@@ -164,16 +164,3 @@ if __name__ == "__main__":
     win.show()
     win.raise_()
     sys.exit(app.exec_())
-
-
-# QGraphicsObject
-# necesitan estos metodos
-
-# def paint(self, painter: QPainter, option, widget: QWidget):
-#     rect = self._pixmap.rect().translated(-self._pixmap.rect().center())
-
-#     painter.setRenderHint(QPainter.SmoothPixmapTransform, False)
-#     painter.drawPixmap(rect, self._pixmap, self._pixmap.rect())
-
-# def boundingRect(self):
-#     return QRectF(self._pixmap.rect().translated(-self._pixmap.rect().center()))
