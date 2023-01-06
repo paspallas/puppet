@@ -7,8 +7,8 @@ from .animation import AnimEditorDock
 from .filedialog import DialogFileIO
 from .graphicscene import GraphicScene
 from .graphicview import GraphicView
-from .sprite import SpritePropertyBox, SpriteListBox
-from .spritepalette import SpritePaletteDock
+from .sprite.box import SpriteListBox, SpritePropertyBox
+from .sprite.palette import SpritePaletteDock
 
 
 class MainWindow(QMainWindow):

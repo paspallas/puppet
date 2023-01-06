@@ -15,7 +15,7 @@ from PyQt5.QtWidgets import (
 
 from app.model.sprite import Sprite, SpriteObject
 
-from ..widget import ColorButton, FancySlider
+from ...widget import ColorButton, FancySlider
 
 
 class PropertiesGroupBox(QGroupBox):

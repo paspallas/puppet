@@ -5,7 +5,7 @@ from PyQt5.QtWidgets import QFrame, QGraphicsView, QSizePolicy, QWidget
 from app.model.sprite import Sprite
 
 from .graphicscene import GraphicScene
-from .navcontrol import PanControl, ZoomControl
+from .viewcontrol import PanControl, ZoomControl
 
 
 class GraphicView(QGraphicsView):
