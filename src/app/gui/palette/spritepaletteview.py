@@ -4,7 +4,7 @@ from PyQt5.QtWidgets import QFrame, QGraphicsScene, QGraphicsView
 
 from app.model.sprite import Sprite, SpriteGroup
 
-from ...viewcontrol import PanControl, ZoomControl
+from ..viewcontrol import PanControl, ZoomControl
 
 
 class SpritePaletteView(QGraphicsView):

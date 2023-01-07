@@ -3,10 +3,10 @@ from importlib import import_module as imodule
 from PyQt5.QtCore import QCoreApplication, QEvent, QObject, Qt, pyqtSlot
 from PyQt5.QtWidgets import QGraphicsScene
 
-from .toolinterface import AbstractTool
+from .abstracttool import AbstractTool
 
 
-class ToolManager(QObject):
+class SceneToolManager(QObject):
     """Manage tool operations in the graphics scene"""
 
     def __init__(self, scene: QGraphicsScene):
@@ -38,17 +38,14 @@ class ToolManager(QObject):
 
         return super().eventFilter(obj, e)
 
-    @pyqtSlot(str)
-    def selectTool(self, tool_cls: str, activate: bool) -> None:
+    def setTool(self, tool_cls: str, activate: bool) -> None:
         if self._tool is not None:
             self._tool.disable()
             self._tool = None
 
             if activate:
                 try:
-                    toolCls = getattr(
-                        imodule(f"app.scene.tool.{tool_cls}".lower()), tool_cls
-                    )
+                    toolCls = getattr(imodule(f"app.tool.{tool_cls}".lower()), tool_cls)
                     self._tool = toolCls(scene=self.parent())
                     self._tool.enable()
                 except AttributeError as e:

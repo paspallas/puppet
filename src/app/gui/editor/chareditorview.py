@@ -4,12 +4,12 @@ from PyQt5.QtWidgets import QFrame, QGraphicsView, QSizePolicy, QWidget
 
 from app.model.sprite import Sprite
 
-from .editorscene import EditorScene
+from .chareditorscene import CharEditorScene
 from ..viewcontrol import PanControl, ZoomControl
 
 
-class EditorView(QGraphicsView):
-    selectedItemChanged = pyqtSignal(Sprite)
+class CharEditorView(QGraphicsView):
+    sigSelectedItemChanged = pyqtSignal(Sprite)
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -72,7 +72,7 @@ class EditorView(QGraphicsView):
         selected_sprite = self.itemAt(e.pos())
 
         if isinstance(selected_sprite, Sprite):
-            self.selectedItemChanged.emit(selected_sprite)
+            self.sigSelectedItemChanged.emit(selected_sprite)
             print("sprite_changed")
 
         super().mousePressEvent(e)

@@ -15,8 +15,8 @@ from app.model.sprite import Sprite, SpriteObject
 
 
 class SpriteListBox(QWidget):
-    def __init__(self, parent: QWidget = None):
-        super().__init__(parent)
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
 
         self.setWindowFlags(Qt.FramelessWindowHint)
         self.setAttribute(Qt.WA_TranslucentBackground)

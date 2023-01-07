@@ -1,11 +1,9 @@
 from PyQt5.QtCore import Qt, pyqtSlot
 from PyQt5.QtWidgets import QAction, QMainWindow, QMenu, QDockWidget
 
-from ..tool import ToolManager
 from .animation import AnimationEditorWidget
-from .editor import EditorScene, EditorView
-from .sprite.box import SpriteListBox, SpritePropertyBox
-from .sprite.palette import SpritePaletteWidget
+from .editor import CharEditorWidget
+from .palette import SpritePaletteWidget
 
 
 class AppWindow(QMainWindow):
@@ -18,31 +16,15 @@ class AppWindow(QMainWindow):
         self._makeConnections()
 
     def _setupUi(self):
-        self.setWindowTitle("Puppet")
+        self.setWindowTitle("Puppet Studio")
         self.setMinimumSize(800, 600)
 
-        self._ui_graphScene = EditorScene(self, width=2048, height=2048)
-        self._ui_graphView = EditorView(self._ui_graphScene, self)
-        self._toolManager = ToolManager(self._ui_graphScene)
-
-        self._ui_spritePropertyBox = SpritePropertyBox()
-        self._ui_spriteListBox = SpriteListBox()
-
-        self._ui_graphView.addFixedWidget(
-            self._ui_spritePropertyBox, Qt.AlignRight | Qt.AlignTop
-        )
-        self._ui_graphView.addFixedWidget(
-            self._ui_spriteListBox, Qt.AlignRight | Qt.AlignBottom
-        )
-
-        self.setCentralWidget(self._ui_graphView)
+        self._ui_editor = CharEditorWidget(self)
+        self.setCentralWidget(self._ui_editor)
 
     def _makeConnections(self):
         self._ui_spritePaletteWid.sigSelectedSpriteChanged.connect(
-            self._ui_graphScene.addSprite
-        )
-        self._ui_graphView.selectedItemChanged.connect(
-            self._ui_spritePropertyBox.onSelectedItemChanged
+            self._ui_editor.sltAddSprite
         )
 
     def _createDockWindows(self):

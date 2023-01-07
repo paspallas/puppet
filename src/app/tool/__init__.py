@@ -1,1 +1,1 @@
-from .toolmanager import ToolManager
+from .scenetoolmanager import SceneToolManager

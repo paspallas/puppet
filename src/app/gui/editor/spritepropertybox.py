@@ -15,7 +15,7 @@ from PyQt5.QtWidgets import (
 
 from app.model.sprite import Sprite, SpriteObject
 
-from ...widget import ColorButton, FancySlider
+from ..widget import ColorButton, FancySlider
 
 
 class PropertiesGroupBox(QGroupBox):
@@ -91,6 +91,6 @@ class SpritePropertyBox(QWidget):
         painter.drawRoundedRect(rect, self._ui_borderRadius, self._ui_borderRadius)
 
     @pyqtSlot(Sprite)
-    def onSelectedItemChanged(self, item: Sprite):
+    def sltOnSelectedItemChanged(self, item: Sprite):
         print("on sprite changed")
         self.handledItem.setSpriteItem(item)
