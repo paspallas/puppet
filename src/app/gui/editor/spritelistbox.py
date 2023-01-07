@@ -5,8 +5,6 @@ from PyQt5.QtWidgets import (
     QHBoxLayout,
     QListWidget,
     QPushButton,
-    QSizePolicy,
-    QSpacerItem,
     QVBoxLayout,
     QWidget,
 )
@@ -32,6 +30,9 @@ class SpriteListBox(QWidget):
 
     def _setupUI(self) -> None:
         self.setMaximumSize(QSize(250, 300))
+        self.setStyleSheet(
+            """SpriteListBox > QPushButton {max-width: 32; max-height: 32}"""
+        )
 
         self._list = QListWidget(self)
         self._list.setDragDropMode(QAbstractItemView.InternalMove)
@@ -39,17 +40,16 @@ class SpriteListBox(QWidget):
 
         self._btnUp = QPushButton("+")
         self._btnDown = QPushButton("-")
-        self._btnUp.setMaximumSize(QSize(32, 32))
-        self._btnDown.setMaximumSize(QSize(32, 32))
+        self._btnDown.setFixedSize(16, 16)
+
+        btnBox = QHBoxLayout()
+        btnBox.addWidget(self._btnUp, 0, Qt.AlignLeft)
+        btnBox.addWidget(self._btnDown, 0, Qt.AlignLeft)
+        btnBox.addStretch()
 
         vbox = QVBoxLayout(self)
         vbox.addWidget(self._list)
-        btnBox = QHBoxLayout()
         vbox.addLayout(btnBox)
-        hspacer = QSpacerItem(64, 0, QSizePolicy.Expanding, QSizePolicy.Minimum)
-        btnBox.addWidget(self._btnUp, 0, Qt.AlignLeft)
-        btnBox.addWidget(self._btnDown, 0, Qt.AlignLeft)
-        btnBox.addItem(hspacer)
 
     def _makeConnections(self) -> None:
         self._btnUp.clicked.connect(self._moveSpriteUp)
