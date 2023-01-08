@@ -1,4 +1,4 @@
-from PyQt5.QtCore import QPoint, QSize, Qt
+from PyQt5.QtCore import QPoint, QRect, QSize, Qt
 from PyQt5.QtGui import QColor, QPainter, QPixmap
 
 
@@ -31,3 +31,14 @@ class Image:
         painter.end()
 
         return tinted
+
+    @staticmethod
+    def copyRegion(x: int, y: int, w: int, h: int, path: str) -> QPixmap:
+        source = QPixmap(path)
+        copy = QPixmap(w, h)
+
+        painter = QPainter(copy)
+        painter.drawPixmap(QPoint(0, 0), source, QRect(x, y, w, h))
+        painter.end()
+
+        return copy

@@ -4,11 +4,15 @@ from PyQt5.QtWidgets import QAction, QMainWindow, QMenu, QDockWidget
 from .animation import AnimationEditorWidget
 from .editor import CharEditorWidget
 from .palette import SpritePaletteWidget
+from ..model.spritesheet import SpriteSheetCollection
 
 
 class AppWindow(QMainWindow):
     def __init__(self):
         super().__init__()
+
+        # document models
+        self._spritesheets = SpriteSheetCollection()
 
         self._setupUi()
         self._createDockWindows()
@@ -30,7 +34,9 @@ class AppWindow(QMainWindow):
     def _createDockWindows(self):
         self._ui_spritePaletteDock = QDockWidget("Sprite Palette", self)
         self._ui_spritePaletteDock.setAllowedAreas(Qt.BottomDockWidgetArea)
-        self._ui_spritePaletteWid = SpritePaletteWidget(self._ui_spritePaletteDock)
+        self._ui_spritePaletteWid = SpritePaletteWidget(
+            self._ui_spritePaletteDock, model=self._spritesheets
+        )
         self._ui_spritePaletteDock.setWidget(self._ui_spritePaletteWid)
         self.addDockWidget(Qt.BottomDockWidgetArea, self._ui_spritePaletteDock)
 

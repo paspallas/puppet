@@ -2,7 +2,8 @@ from PyQt5.QtCore import QPoint, QRectF, Qt, pyqtSignal, pyqtSlot
 from PyQt5.QtGui import QBrush, QColor, QMouseEvent, QPainter, QPen, QPixmap
 from PyQt5.QtWidgets import QGraphicsScene, QWidget
 
-from app.model.sprite import Sprite, SpriteGroup
+from ...model.sprite import Sprite, SpriteGroup
+from ...model.spritesheet import SpriteSheet
 
 
 class SpritePaletteScene(QGraphicsScene):
@@ -12,28 +13,36 @@ class SpritePaletteScene(QGraphicsScene):
         self.setSceneRect(10, -10, 300, 300)
         self._ui_backgroundColor = QBrush(QColor("#404040"))
 
-        self._sprite_sheets = dict()
+        self._spriteSheets: dict[str, SpriteGroup] = dict()
 
-    def addSpriteSheet(self, name: str, sprites: [Sprite]):
+    # TODO this logic should be a controller responsability?
+    def addSpriteSheet(self, sheet: SpriteSheet):
         self.hideAll()
 
-        group = SpriteGroup()
-        for sprite in sprites:
-            sprite.setPos(sprite.x, sprite.y)
-            sprite.lock()
-            self.addItem(sprite)
-            group.add(sprite)
-        group.show()
+        group = SpriteGroup(sheet)
 
-        self._sprite_sheets[name] = group
+        for sprite in group:
+            self.addItem(sprite)
+
+        group.show()
+        self._spriteSheets[sheet.name] = group
+
+    def delSpriteSheet(self, name: str):
+        group = self._spriteSheets[name]
+        group.hide()
+
+        for sprite in group:
+            self.removeItem(sprite)
+
+        self._spriteSheets.pop(name)
 
     @pyqtSlot()
     def showLayer(self, name: str):
         self.hideAll()
-        self._sprite_sheets[name].show()
+        self._spriteSheets[name].show()
 
     def hideAll(self):
-        for group in self._sprite_sheets.values():
+        for group in self._spriteSheets.values():
             group.hide()
 
     def drawBackground(self, painter: QPainter, rect: QRectF) -> None:

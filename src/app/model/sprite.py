@@ -1,4 +1,4 @@
-from PyQt5.QtCore import QObject, QPoint, QRect, Qt, pyqtSlot
+from PyQt5.QtCore import QObject, QPoint, Qt, pyqtSlot
 from PyQt5.QtGui import QBrush, QColor, QKeyEvent, QPainter, QPixmap, QTransform
 from PyQt5.QtWidgets import (
     QAction,
@@ -10,7 +10,8 @@ from PyQt5.QtWidgets import (
     QWidget,
 )
 
-from app.util import Image
+from .spritesheet import Frame, SpriteSheet
+from ..util import Image
 
 DEFAULT_ALPHA_MASK = "#FF00FF"
 
@@ -33,13 +34,8 @@ class Sprite(QGraphicsPixmapItem):
         self.setPixmap(self._pixmap)
 
     @staticmethod
-    def fromSpriteSheet(x: int, y: int, w: int, h: int, sprite_sheet: QPixmap):
-        pixmap = QPixmap(w, h)
-        painter = QPainter(pixmap)
-        painter.drawPixmap(QPoint(0, 0), sprite_sheet, QRect(x, y, w, h))
-        painter.end()
-
-        return Sprite(pixmap, x, y)
+    def fromSpriteSheetFrame(frame: Frame, sheet_path: str):
+        return Sprite(Image.copyRegion(*frame.rect(), sheet_path), *frame.topLeft())
 
     def copy(self):
         clone = Sprite(self._pixmap, self.x, self.y)
@@ -153,13 +149,32 @@ class Sprite(QGraphicsPixmapItem):
 
 
 class SpriteGroup:
-    """Collection of sprites from a spritesheet"""
+    """Collection of sprite items created from a spritesheet
+    Represents a view of the sprites to be used in the editor
+    """
 
-    def __init__(self):
-        self._collection = []
+    def __init__(self, sheet: SpriteSheet):
+        self._collection: list[Sprite] = list()
 
-    def add(self, sprite: Sprite):
-        self._collection.append(sprite)
+        self._addSprites(sheet)
+
+    def __iter__(self):
+        self._currentIndex = 0
+        return self
+
+    def __next__(self):
+        if self._currentIndex < len(self._collection):
+            sprite = self._collection[self._currentIndex]
+            self._currentIndex += 1
+            return sprite
+        raise StopIteration
+
+    def _addSprites(self, sheet: SpriteSheet):
+        for frame in sheet:
+            sprite = Sprite.fromSpriteSheetFrame(frame, sheet.path)
+            sprite.setPos(*frame.topLeft())
+            sprite.lock()
+            self._collection.append(sprite)
 
     def hide(self):
         for sprite in self._collection:
