@@ -1,38 +1,11 @@
-from dataclasses import astuple, dataclass
 from pathlib import Path
-from typing import Final, NamedTuple
+from typing import Final
 
 from PyQt5.QtCore import QObject, pyqtSignal, pyqtSlot
 from spriteutil.spritesheet import SpriteSheet as Sheet
 
-
-@dataclass(frozen=True, slots=True)
-class Frame:
-
-    TopLeft = NamedTuple("TopLeft", x=int, y=int)
-    Size = NamedTuple("Size", w=int, h=int)
-    Rect = NamedTuple("Rect", x=int, y=int, w=int, h=int)
-
-    name: str
-    x: int
-    y: int
-    w: int
-    h: int
-
-    def topLeft(self) -> TopLeft:
-        return self.TopLeft(self.x, self.y)
-
-    def size(self) -> Size:
-        return self.Size(self.w, self.h)
-
-    def rect(self) -> Rect:
-        return self.Rect(self.x, self.y, self.w, self.h)
-
-    def __iter__(self):
-        return iter(astuple(self))
-
-    def __str__(self) -> str:
-        return ", ".join([self.name, str(self.rect())])
+from .frame import Frame
+from .sprite import Sprite
 
 
 class SpriteSheet:
@@ -40,27 +13,64 @@ class SpriteSheet:
 
         self.path = path
         self.name = Path(self.path).stem
-        self._frames: dict[str, Frame:Final] = dict()
+        self._frames: dict[int, Frame:Final] = dict()
 
-        self._findFrames()
+        self._extractFrames()
 
     def countFrames(self) -> int:
         """Get the number of frames in the spritesheet
 
         Returns:
-            int: number of frames
+            int: Number of frames
         """
+
         return len(self._frames.values())
 
-    def _findFrames(self):
-        """Find all frames in the spritesheet"""
+    def spriteFromFrame(self, frame: Frame) -> Sprite:
+        """Create a sprite from a frame
+
+        Args:
+            frame (Frame): Frame object
+
+        Returns:
+            Sprite: The sprite item
+        """
+
+        return Sprite.fromSpriteSheetFrame(frame, self.path)
+
+    def spriteFromFrameIndex(self, index: int) -> Sprite:
+        """Create a sprite from a frame index
+
+        Args:
+            index (int): Frame index
+
+        Returns:
+            Sprite: The sprite item
+        """
+
+        frame = self._frames.get(index, None)
+
+        if frame:
+            return self.spriteFromFrame(frame)
+
+    def sprites(self) -> list[Sprite]:
+        """Get all frames in the spritesheet as independent sprites
+
+        Returns:
+            list[Sprite]: Collection of all the sprites
+        """
+
+        return [self.spriteFromFrame(frame) for frame in self._frames.values()]
+
+    def _extractFrames(self):
+        """Extract all frames in the spritesheet"""
 
         sheet = Sheet(self.path)
         frames, _ = sheet.find_sprites()
 
         for i, frame in enumerate(frames):
             name = f"{self.name}_{i}"
-            self._frames[name] = Frame(name, *frame.top_left, frame.width, frame.height)
+            self._frames[i] = Frame(name, *frame.top_left, frame.width, frame.height)
 
     def __iter__(self):
         self._currentIndex = 0

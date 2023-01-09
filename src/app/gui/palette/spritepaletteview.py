@@ -2,8 +2,7 @@ from PyQt5.QtCore import Qt, pyqtSignal, pyqtSlot
 from PyQt5.QtGui import QMouseEvent, QPainter
 from PyQt5.QtWidgets import QFrame, QGraphicsScene, QGraphicsView
 
-from app.model.sprite import Sprite, SpriteGroup
-
+from ...model.sprite import Sprite
 from ..viewcontrol import PanControl, ZoomControl
 
 

@@ -10,8 +10,8 @@ from PyQt5.QtWidgets import (
     QWidget,
 )
 
-from .spritesheet import Frame, SpriteSheet
 from ..util import Image
+from .frame import Frame
 
 DEFAULT_ALPHA_MASK = "#FF00FF"
 
@@ -34,8 +34,8 @@ class Sprite(QGraphicsPixmapItem):
         self.setPixmap(self._pixmap)
 
     @staticmethod
-    def fromSpriteSheetFrame(frame: Frame, sheet_path: str):
-        return Sprite(Image.copyRegion(*frame.rect(), sheet_path), *frame.topLeft())
+    def fromSpriteSheetFrame(frame: Frame, image_path: str):
+        return Sprite(Image.copyRegion(*frame.rect(), image_path), *frame.topLeft())
 
     def copy(self):
         clone = Sprite(self._pixmap, self.x, self.y)
@@ -146,43 +146,6 @@ class Sprite(QGraphicsPixmapItem):
     # def cloneAction(self):
     #     clone = self.copy()
     #     self.scene().addItem(clone)
-
-
-class SpriteGroup:
-    """Collection of sprite items created from a spritesheet
-    Represents a view of the sprites to be used in the editor
-    """
-
-    def __init__(self, sheet: SpriteSheet):
-        self._collection: list[Sprite] = list()
-
-        self._addSprites(sheet)
-
-    def __iter__(self):
-        self._currentIndex = 0
-        return self
-
-    def __next__(self):
-        if self._currentIndex < len(self._collection):
-            sprite = self._collection[self._currentIndex]
-            self._currentIndex += 1
-            return sprite
-        raise StopIteration
-
-    def _addSprites(self, sheet: SpriteSheet):
-        for frame in sheet:
-            sprite = Sprite.fromSpriteSheetFrame(frame, sheet.path)
-            sprite.setPos(*frame.topLeft())
-            sprite.lock()
-            self._collection.append(sprite)
-
-    def hide(self):
-        for sprite in self._collection:
-            sprite.hide()
-
-    def show(self):
-        for sprite in self._collection:
-            sprite.show()
 
 
 class SpriteObject(QObject):

@@ -2,7 +2,8 @@ from PyQt5.QtCore import Qt, pyqtSignal, pyqtSlot
 from PyQt5.QtWidgets import QWidget
 
 from ...controller import SpritePaletteController
-from ...model.sprite import Sprite, SpriteGroup
+from ...model.sprite import Sprite
+from ...model.spritegroup import SpriteGroup
 from ...model.spritesheet import SpriteSheet, SpriteSheetCollection
 from ..dialog import OpenImageDialog
 from .spritepaletteui import SpritePaletteUi

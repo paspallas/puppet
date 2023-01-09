@@ -2,7 +2,8 @@ from PyQt5.QtCore import QPoint, QRectF, Qt, pyqtSignal, pyqtSlot
 from PyQt5.QtGui import QBrush, QColor, QMouseEvent, QPainter, QPen, QPixmap
 from PyQt5.QtWidgets import QGraphicsScene, QWidget
 
-from ...model.sprite import Sprite, SpriteGroup
+from ...model.sprite import Sprite
+from ...model.spritegroup import SpriteGroup
 from ...model.spritesheet import SpriteSheet
 
 
@@ -19,7 +20,9 @@ class SpritePaletteScene(QGraphicsScene):
     def addSpriteSheet(self, sheet: SpriteSheet):
         self.hideAll()
 
-        group = SpriteGroup(sheet)
+        group = SpriteGroup.fromSpriteSheet(sheet)
+        group.resetPos()
+        group.lock()
 
         for sprite in group:
             self.addItem(sprite)
