@@ -7,10 +7,10 @@ from ...model.spritesheet import SpriteSheet
 
 
 class SpritePaletteScene(QGraphicsScene):
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, width: int = 300, height: int = 300, **kwargs):
         super().__init__(*args, **kwargs)
 
-        self.setSceneRect(10, -10, 300, 300)
+        self.setSceneRect(-width / 2, -height / 2, width, height)
         self._ui_backgroundColor = QBrush(QColor("#404040"))
 
         self._spriteSheets: dict[str, SpriteGroup] = dict()

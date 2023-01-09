@@ -9,7 +9,7 @@ from PyQt5.QtWidgets import (
     QWidget,
 )
 
-from app.model.sprite import Sprite, SpriteObject
+from ...model.sprite import Sprite, SpriteObject
 
 
 class SpriteListBox(QWidget):
@@ -21,12 +21,6 @@ class SpriteListBox(QWidget):
 
         self._setupUI()
         self._makeConnections()
-
-        self._list.addItem("head")
-        self._list.addItem("legs")
-        self._list.addItem("hands")
-        self._list.addItem("feet")
-        self._list.addItem("body")
 
     def _setupUI(self) -> None:
         self.setMaximumSize(QSize(250, 300))

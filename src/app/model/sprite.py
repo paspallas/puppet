@@ -138,14 +138,14 @@ class Sprite(QGraphicsPixmapItem):
         else:
             super().keyPressEvent(e)
 
-    def contextMenuEvent(self, e: QGraphicsSceneContextMenuEvent):
-        menu = QMenu()
-        clone = menu.addAction("Clone", self.cloneAction)
-        selected = menu.exec_(e.screenPos())
+    # def contextMenuEvent(self, e: QGraphicsSceneContextMenuEvent):
+    #     menu = QMenu()
+    #     clone = menu.addAction("Clone", self.cloneAction)
+    #     selected = menu.exec_(e.screenPos())
 
-    def cloneAction(self):
-        clone = self.copy()
-        self.scene().addItem(clone)
+    # def cloneAction(self):
+    #     clone = self.copy()
+    #     self.scene().addItem(clone)
 
 
 class SpriteGroup:
