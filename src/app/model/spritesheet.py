@@ -44,6 +44,14 @@ class SpriteSheet:
 
         self._findFrames()
 
+    def countFrames(self) -> int:
+        """Get the number of frames in the spritesheet
+
+        Returns:
+            int: number of frames
+        """
+        return len(self._frames.values())
+
     def _findFrames(self):
         """Find all frames in the spritesheet"""
 
@@ -75,14 +83,19 @@ class SpriteSheet:
 class SpriteSheetCollection(QObject):
 
     sigSpriteSheetAdded = pyqtSignal(SpriteSheet)
+    sigSpriteSheetRemoved = pyqtSignal(str)
 
     def __init__(self):
         super().__init__()
 
         self._sheets: dict[str, SpriteSheet] = dict()
 
-    @pyqtSlot(str)
     def addSpriteSheet(self, path: str):
+        """Add a new spritesheet to the collection
+
+        Args:
+            path (str): spritesheet image path
+        """
         name = Path(path).stem
 
         if name in self._sheets:
@@ -93,9 +106,11 @@ class SpriteSheetCollection(QObject):
 
         self.sigSpriteSheetAdded.emit(sheet)
 
-        # TODO this class should be two separate classess: a pure python class contained in a
-        # qt model class
-
-    @pyqtSlot(str)
     def delSpriteSheet(self, name: str):
+        """Remove a spritesheet from the collection
+
+        Args:
+            name (str): spritesheet identifier
+        """
         self._sheets.pop(name)
+        self.sigSpriteSheetRemoved.emit(name)
