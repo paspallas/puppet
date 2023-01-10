@@ -11,10 +11,10 @@ from PyQt5.QtWidgets import (
     QSpinBox,
     QVBoxLayout,
     QWidget,
+    QGraphicsItem,
 )
 
-from app.model.sprite import Sprite, SpriteObject
-
+from ...model.sprite import Sprite, SpriteObject
 from ..widget import ColorButton, FancySlider
 
 
@@ -90,7 +90,7 @@ class SpritePropertyBox(QWidget):
         )
         painter.drawRoundedRect(rect, self._ui_borderRadius, self._ui_borderRadius)
 
-    @pyqtSlot(Sprite)
-    def sltOnSelectedItemChanged(self, item: Sprite):
+    @pyqtSlot(QGraphicsItem)
+    def sltOnSelectedItemChanged(self, item: QGraphicsItem):
         print("on sprite changed")
         self.handledItem.setSpriteItem(item)

@@ -1,15 +1,9 @@
 from PyQt5.QtCore import QPoint, QRectF, QSize, QSizeF, Qt, pyqtSlot
 from PyQt5.QtGui import QColor, QPainter, QPaintEvent
-from PyQt5.QtWidgets import (
-    QAbstractItemView,
-    QHBoxLayout,
-    QListWidget,
-    QPushButton,
-    QVBoxLayout,
-    QWidget,
-)
+from PyQt5.QtWidgets import QWidget
 
 from ...model.sprite import Sprite, SpriteObject
+from .spritelistbox_ui import SpriteListBoxUi
 
 
 class SpriteListBox(QWidget):
@@ -19,35 +13,15 @@ class SpriteListBox(QWidget):
         self.setWindowFlags(Qt.FramelessWindowHint)
         self.setAttribute(Qt.WA_TranslucentBackground)
 
-        self._setupUI()
+        self._ui = SpriteListBoxUi()
+        self._ui.setupUi(self)
+
         self._makeConnections()
 
-    def _setupUI(self) -> None:
-        self.setMaximumSize(QSize(250, 300))
-        self.setStyleSheet(
-            """SpriteListBox > QPushButton {max-width: 32; max-height: 32}"""
-        )
-
-        self._list = QListWidget(self)
-        self._list.setDragDropMode(QAbstractItemView.InternalMove)
-        self._list.model().rowsMoved.connect(self._reorder)
-
-        self._btnUp = QPushButton("+")
-        self._btnDown = QPushButton("-")
-        self._btnDown.setFixedSize(16, 16)
-
-        btnBox = QHBoxLayout()
-        btnBox.addWidget(self._btnUp, 0, Qt.AlignLeft)
-        btnBox.addWidget(self._btnDown, 0, Qt.AlignLeft)
-        btnBox.addStretch()
-
-        vbox = QVBoxLayout(self)
-        vbox.addWidget(self._list)
-        vbox.addLayout(btnBox)
-
     def _makeConnections(self) -> None:
-        self._btnUp.clicked.connect(self._moveSpriteUp)
-        self._btnDown.clicked.connect(self._moveSpriteDown)
+        self._ui.list.model().rowsMoved.connect(self._reorder)
+        self._ui.upBtn.clicked.connect(self._moveSpriteUp)
+        self._ui.downBtn.clicked.connect(self._moveSpriteDown)
 
     @pyqtSlot()
     def _moveSpriteUp(self) -> None:
@@ -69,10 +43,6 @@ class SpriteListBox(QWidget):
 
         self._list.insertItem(row_2, item1)
         self._list.setCurrentItem(item1)
-
-        print(f"swap {item1.text()} with {item2.text()}")
-
-        # TODO call method in frame container to swap z-indexes
 
     def _reorder(self) -> None:
         pass

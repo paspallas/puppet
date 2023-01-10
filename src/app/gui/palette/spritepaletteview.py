@@ -1,6 +1,6 @@
 from PyQt5.QtCore import Qt, pyqtSignal, pyqtSlot
 from PyQt5.QtGui import QMouseEvent, QPainter
-from PyQt5.QtWidgets import QFrame, QGraphicsScene, QGraphicsView
+from PyQt5.QtWidgets import QFrame, QGraphicsItem, QGraphicsScene, QGraphicsView
 
 from ...model.sprite import Sprite
 from ..viewcontrol import PanControl, ZoomControl
@@ -8,7 +8,7 @@ from ..viewcontrol import PanControl, ZoomControl
 
 class SpritePaletteView(QGraphicsView):
 
-    sigSelectedSpriteChanged = pyqtSignal(Sprite)
+    sigSelectedSpriteChanged = pyqtSignal(QGraphicsItem)
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

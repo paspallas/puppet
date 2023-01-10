@@ -1,15 +1,15 @@
 from PyQt5.QtCore import QPoint, Qt, pyqtSignal
-from PyQt5.QtGui import QPainter, QMouseEvent
-from PyQt5.QtWidgets import QFrame, QGraphicsView, QSizePolicy, QWidget
+from PyQt5.QtGui import QMouseEvent, QPainter
+from PyQt5.QtWidgets import QFrame, QGraphicsItem, QGraphicsView, QSizePolicy, QWidget
 
 from app.model.sprite import Sprite
 
-from .chareditorscene import CharEditorScene
 from ..viewcontrol import PanControl, ZoomControl
+from .chareditorscene import CharEditorScene
 
 
 class CharEditorView(QGraphicsView):
-    sigSelectedItemChanged = pyqtSignal(Sprite)
+    sigSelectedItemChanged = pyqtSignal(QGraphicsItem)
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

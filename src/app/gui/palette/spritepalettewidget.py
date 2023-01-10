@@ -1,16 +1,16 @@
 from PyQt5.QtCore import Qt, pyqtSignal, pyqtSlot
-from PyQt5.QtWidgets import QWidget
+from PyQt5.QtWidgets import QWidget, QGraphicsItem
 
 from ...controller import SpritePaletteController, SpriteGroupController
 from ...model.sprite import Sprite
 from ...model.spritegroup import SpriteGroupCollectionModel
 from ...model.spritesheet import SpriteSheet, SpriteSheetCollectionModel
-from .spritepaletteui import SpritePaletteUi
+from .spritepalette_ui import SpritePaletteUi
 
 
 class SpritePaletteWidget(QWidget):
 
-    sigSelectedSpriteChanged = pyqtSignal(Sprite)
+    sigSelectedSpriteChanged = pyqtSignal(QGraphicsItem)
 
     def __init__(self, *args, model: SpriteSheetCollectionModel, **kwargs):
         super().__init__(*args, **kwargs)
