@@ -42,7 +42,13 @@ class SpritePaletteWidget(QWidget):
         )
 
         self._ui.spritesheetList.currentRowChanged.connect(self.__onCurrentRowChanged)
+        self._ui.spritePalScene.selectionChanged.connect(
+            lambda: self._controller.selectedSprite(
+                self._ui.spritePalScene.selectedItems()
+            )
+        )
 
+        # subscribe to model signals
         self._model.sigSpriteSheetAdded.connect(self.onAddSheet)
         self._model.sigSpriteSheetRemoved.connect(self.onDelSheet)
 

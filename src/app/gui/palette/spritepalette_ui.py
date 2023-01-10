@@ -9,7 +9,7 @@ from PyQt5.QtWidgets import (
 )
 
 from ..widget import CustomGraphicScene, CustomGraphicSceneOptions
-from .spritepaletteview import SpritePaletteView
+from ..widget import CustomGraphicView, CustomGraphicViewOptions
 
 
 class SpritePaletteUi:
@@ -19,9 +19,14 @@ class SpritePaletteUi:
         )
 
         self.spritePalScene = CustomGraphicScene(
-            options=CustomGraphicSceneOptions(300, 300, 16, False)
+            parent=parent, options=CustomGraphicSceneOptions(300, 300, 16, False)
         )
-        self.spritePalView = SpritePaletteView(self.spritePalScene)
+
+        self.spritePalView = CustomGraphicView(
+            self.spritePalScene,
+            parent,
+            options=CustomGraphicViewOptions(False, False),
+        )
         self.spritesheetList = QListWidget(parent)
 
         self.addBtn = QPushButton("+", parent)
