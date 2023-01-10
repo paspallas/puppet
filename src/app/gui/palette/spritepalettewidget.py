@@ -47,7 +47,8 @@ class SpritePaletteWidget(QWidget):
         self._model.sigSpriteSheetRemoved.connect(self.onDelSheet)
 
         # internal sprite group visualization
-        self._groupModel.sigGroupAdded.connect(self._ui.spritePalScene.addSprites)
+        self._groupModel.sigGroupAdded.connect(self._ui.spritePalScene.addItems)
+        self._groupModel.sigGroupDeleted.connect(self._ui.spritePalScene.delItems)
 
     @pyqtSlot(SpriteSheet)
     def onAddSheet(self, sheet: SpriteSheet) -> None:

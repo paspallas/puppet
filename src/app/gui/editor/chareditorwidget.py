@@ -23,7 +23,7 @@ class CharEditorWidget(QWidget):
         self._toolmanager = SceneToolManager(self._ui_editorScene)
 
     def _setupUi(self) -> None:
-        self._ui_editorScene = CharEditorScene(self, width=2048, height=2048)
+        self._ui_editorScene = CharEditorScene(self)
         self._ui_editorView = CharEditorView(self._ui_editorScene, self)
         self._ui_spritePropertyBox = SpritePropertyBox()
         self._ui_spriteListBox = SpriteListBox()

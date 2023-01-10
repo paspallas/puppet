@@ -8,7 +8,7 @@ from PyQt5.QtWidgets import (
     QWidget,
 )
 
-from .spritepalettescene import SpritePaletteScene
+from ..widget import CustomGraphicScene, CustomGraphicSceneOptions
 from .spritepaletteview import SpritePaletteView
 
 
@@ -18,7 +18,9 @@ class SpritePaletteUi:
             """SpritePaletteWidget > QPushButton {max-width: 16; max-height: 16}"""
         )
 
-        self.spritePalScene = SpritePaletteScene()
+        self.spritePalScene = CustomGraphicScene(
+            options=CustomGraphicSceneOptions(300, 300, 16, False)
+        )
         self.spritePalView = SpritePaletteView(self.spritePalScene)
         self.spritesheetList = QListWidget(parent)
 

@@ -21,5 +21,5 @@ class SpritePaletteController(QObject):
                 self._model.addSpriteSheet(path)
 
     @pyqtSlot(str)
-    def delSpriteSheet(self, name: str) -> None:
-        self._model.delSpriteSheet(name)
+    def delSpriteSheet(self, id: str) -> None:
+        self._model.delSpriteSheet(id)

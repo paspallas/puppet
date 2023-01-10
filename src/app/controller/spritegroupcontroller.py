@@ -35,7 +35,6 @@ class SpriteGroupController(QObject):
         Args:
             id (str): group id
         """
-        self._model.hideGroup(id)
         self._model.delGroup(id)
 
     @pyqtSlot(str)

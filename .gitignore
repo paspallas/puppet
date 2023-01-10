@@ -1,4 +1,5 @@
 build/
+doc/
 dist/
 __pycache__/
 *.txt
