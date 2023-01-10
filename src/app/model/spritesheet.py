@@ -90,7 +90,7 @@ class SpriteSheet:
         return f"SpriteSheet: path={self._path} frames=\n{frames}"
 
 
-class SpriteSheetCollection(QObject):
+class SpriteSheetCollectionModel(QObject):
 
     sigSpriteSheetAdded = pyqtSignal(SpriteSheet)
     sigSpriteSheetRemoved = pyqtSignal(str)

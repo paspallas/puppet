@@ -1,1 +1,2 @@
 from .spritepalcontroller import SpritePaletteController
+from .spritegroupcontroller import SpriteGroupController

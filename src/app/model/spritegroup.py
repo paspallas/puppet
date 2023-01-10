@@ -1,3 +1,5 @@
+from PyQt5.QtCore import QObject, pyqtSignal
+
 from .sprite import Sprite
 from .spritesheet import SpriteSheet
 
@@ -40,6 +42,9 @@ class SpriteGroup:
         for sprite in self._sprites:
             sprite.unlock()
 
+    def sprites(self) -> list[Sprite]:
+        return self._sprites
+
     def __iter__(self):
         self._currentIndex = 0
         return self
@@ -50,3 +55,36 @@ class SpriteGroup:
             self._currentIndex += 1
             return sprite
         raise StopIteration
+
+
+class SpriteGroupCollectionModel(QObject):
+
+    sigGroupAdded = pyqtSignal(list)
+    sigGroupDeleted = pyqtSignal(list)
+
+    def __init__(self):
+        super().__init__()
+
+        self._collection: dict[str, SpriteGroup] = dict()
+
+    def addGroup(self, group: SpriteGroup, id: str) -> None:
+        self._collection[id] = group
+        self.sigGroupAdded.emit(group.sprites())
+
+    def delGroup(self, id: str) -> None:
+        group = self._collection.pop(id)
+
+        if group:
+            self.sigGroupDeleted.emit(group.sprites())
+
+    def showGroup(self, id: str) -> None:
+        self.hideAllGroups()
+
+        self._collection[id].show()
+
+    def hideGroup(self, id: str) -> None:
+        self._collection[id].hide()
+
+    def hideAllGroups(self) -> None:
+        for group in self._collection.values():
+            group.hide()

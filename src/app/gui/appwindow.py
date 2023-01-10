@@ -4,7 +4,7 @@ from PyQt5.QtWidgets import QAction, QMainWindow, QMenu, QDockWidget
 from .animation import AnimationEditorWidget
 from .editor import CharEditorWidget
 from .palette import SpritePaletteWidget
-from ..model.spritesheet import SpriteSheetCollection
+from ..model.spritesheet import SpriteSheetCollectionModel
 
 
 class AppWindow(QMainWindow):
@@ -12,7 +12,7 @@ class AppWindow(QMainWindow):
         super().__init__()
 
         # document models
-        self._spritesheets = SpriteSheetCollection()
+        self._spritesheets = SpriteSheetCollectionModel()
 
         self._setupUi()
         self._createDockWindows()
