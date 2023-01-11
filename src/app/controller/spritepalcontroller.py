@@ -1,5 +1,5 @@
-from PyQt5.QtCore import QObject, pyqtSlot
-from PyQt5.QtWidgets import QGraphicsItem
+from PyQt5.QtCore import QCoreApplication, QObject, Qt, pyqtSlot
+from PyQt5.QtWidgets import QGraphicsItem, QProgressDialog
 
 from ..gui.dialog import OpenImageDialog
 from ..model.sprite import Sprite
@@ -14,13 +14,32 @@ class SpritePaletteController(QObject):
 
     @pyqtSlot()
     def addSpriteSheet(self) -> None:
-        dialog = OpenImageDialog(
-            None, "Add Spritesheets", "", "Sprite Sheet Images (*.png)"
-        )
+        dialog = OpenImageDialog(None, "Open Images", "", "Sprite Sheet Images (*.png)")
         if dialog.exec() == OpenImageDialog.Accepted:
             paths = dialog.getFilesSelected()
-            for path in paths:
+
+            progress = QProgressDialog()
+            progress.setMinimumDuration(0)
+            progress.setWindowModality(Qt.WindowModal)
+            progress.setWindowTitle("Import spritesheet")
+            progress.setFixedSize(300, 150)
+            progress.setCancelButtonText("Cancel")
+            progress.setRange(0, len(paths))
+            progress.show()
+
+            for i, path in enumerate(paths):
+                progress.setValue(i)
+                progress.setLabelText(
+                    f"Importing spritesheet {i + 1} of {len(paths)}..."
+                )
+
                 self._model.addSpriteSheet(path)
+                QCoreApplication.instance().processEvents()
+
+                if progress.wasCanceled():
+                    return
+
+            progress.setValue(len(paths))
 
     @pyqtSlot(str)
     def delSpriteSheet(self, id: str) -> None:
@@ -29,4 +48,3 @@ class SpritePaletteController(QObject):
     @pyqtSlot(QGraphicsItem)
     def selectedSprite(self, sprite: Sprite) -> None:
         clone = sprite.copy()
-        print(clone)
