@@ -31,8 +31,3 @@ class Image:
         painter.end()
 
         return tinted
-
-    @staticmethod
-    def copyRegion(x: int, y: int, w: int, h: int, path: str) -> QPixmap:
-        source = QPixmap(path)
-        return source.copy(x, y, w, h)

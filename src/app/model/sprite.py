@@ -36,7 +36,7 @@ class Sprite(QGraphicsPixmapItem):
 
     @staticmethod
     def fromSpriteSheetFrame(frame: Frame, image_path: str):
-        return Sprite(Image.copyRegion(*frame.rect(), image_path), *frame.topLeft())
+        return Sprite(QPixmap(image_path).copy(*frame.rect()), *frame.topLeft())
 
     def copy(self):
         clone = Sprite(self._pixmap, self.x, self.y)
