@@ -13,8 +13,6 @@ from PyQt5.QtWidgets import (
 from ..util import Image
 from .frame import Frame
 
-DEFAULT_ALPHA_MASK = "#FF00FF"
-
 
 class Sprite(QGraphicsPixmapItem):
     def __init__(self, pixmap: QPixmap, x: int = 0, y: int = 0, parent: QWidget = None):
@@ -31,7 +29,6 @@ class Sprite(QGraphicsPixmapItem):
         self._multiselect = False
 
         self._setItemFlags()
-        self.setAlphaMask()
         self.setPixmap(self._pixmap)
 
     def copy(self):
@@ -59,11 +56,6 @@ class Sprite(QGraphicsPixmapItem):
 
         self.setFlags(flags)
         self.setAcceptHoverEvents(True)
-
-    def setAlphaMask(self):
-        self._pixmap.setMask(
-            self._pixmap.createMaskFromColor(QColor(DEFAULT_ALPHA_MASK))
-        )
 
     def setOpacity(self, opacity: float) -> QPixmap:
         self._opacity = opacity

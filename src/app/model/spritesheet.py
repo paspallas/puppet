@@ -2,13 +2,11 @@ from pathlib import Path
 from typing import Final
 
 from PyQt5.QtCore import QObject, pyqtSignal, pyqtSlot
-from PyQt5.QtGui import QPixmap
+from PyQt5.QtGui import QColor, QPixmap
 from spriteutil.spritesheet import SpriteSheet as Sheet
 
 from .frame import Frame
 from .sprite import Sprite
-
-# TODO the spritesheet should have a qpixmap from wich all sprites are created?
 
 
 class SpriteSheet:
@@ -16,9 +14,15 @@ class SpriteSheet:
 
         self.path = path
         self.name = Path(self.path).stem
+
+        self._pixmap = QPixmap(path)
         self._frames: dict[int, Frame:Final] = dict()
 
-        self._extractFrames()
+        sheet = Sheet(path)
+        self._extractFrames(sheet)
+        self._pixmap.setMask(
+            self._pixmap.createMaskFromColor(QColor(*sheet.background_color))
+        )
 
     def countFrames(self) -> int:
         """Get the number of frames in the spritesheet
@@ -39,7 +43,7 @@ class SpriteSheet:
             Sprite: The sprite item
         """
 
-        return Sprite(QPixmap(self.path).copy(*frame.rect()), *frame.topLeft())
+        return Sprite(self._pixmap.copy(*frame.rect()), *frame.topLeft())
 
     def spriteFromFrameIndex(self, index: int) -> Sprite:
         """Create a sprite from a frame index
@@ -65,10 +69,9 @@ class SpriteSheet:
 
         return [self.spriteFromFrame(frame) for frame in self._frames.values()]
 
-    def _extractFrames(self):
+    def _extractFrames(self, sheet: Sheet) -> None:
         """Extract all frames in the spritesheet"""
 
-        sheet = Sheet(self.path)
         frames, _ = sheet.find_sprites()
 
         for i, frame in enumerate(frames):
