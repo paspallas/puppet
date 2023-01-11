@@ -35,10 +35,4 @@ class Image:
     @staticmethod
     def copyRegion(x: int, y: int, w: int, h: int, path: str) -> QPixmap:
         source = QPixmap(path)
-        copy = QPixmap(w, h)
-
-        painter = QPainter(copy)
-        painter.drawPixmap(QPoint(0, 0), source, QRect(x, y, w, h))
-        painter.end()
-
-        return copy
+        return source.copy(x, y, w, h)

@@ -5,6 +5,7 @@ from .animation import AnimationEditorWidget
 from .editor import CharEditorWidget
 from .palette import SpritePaletteWidget
 from ..model.spritesheet import SpriteSheetCollectionModel
+from ..model.chardocument import CharDocument
 
 
 class AppWindow(QMainWindow):
@@ -12,6 +13,7 @@ class AppWindow(QMainWindow):
         super().__init__()
 
         # document models
+        self._document = CharDocument()
         self._spritesheets = SpriteSheetCollectionModel()
 
         self._setupUi()
@@ -27,7 +29,7 @@ class AppWindow(QMainWindow):
         self.setCentralWidget(self._ui_editor)
 
     def _makeConnections(self):
-        self._ui_spritePaletteWid.sigSelectedSpriteChanged.connect(
+        self._ui_spritePaletteWid.sigSelectedSprite.connect(
             self._ui_editor.sltAddSprite
         )
 

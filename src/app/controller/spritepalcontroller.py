@@ -26,9 +26,7 @@ class SpritePaletteController(QObject):
     def delSpriteSheet(self, id: str) -> None:
         self._model.delSpriteSheet(id)
 
-    @pyqtSlot(list)
-    def selectedSprite(self, sprites: list[Sprite]) -> None:
-        # We are only interested in the first item selected
-        if len(sprites) > 0:
-            clone = sprites[0].copy()
-            print(clone)
+    @pyqtSlot(QGraphicsItem)
+    def selectedSprite(self, sprite: Sprite) -> None:
+        clone = sprite.copy()
+        print(clone)

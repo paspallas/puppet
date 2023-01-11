@@ -2,7 +2,12 @@ from typing import NamedTuple
 
 from PyQt5.QtCore import Qt, pyqtSignal, pyqtSlot
 from PyQt5.QtGui import QPainter
-from PyQt5.QtWidgets import QFrame, QGraphicsItem, QGraphicsView
+from PyQt5.QtWidgets import (
+    QFrame,
+    QGraphicsItem,
+    QGraphicsSceneMouseEvent,
+    QGraphicsView,
+)
 
 from ..viewcontrol import PanControl, ZoomControl
 
@@ -13,7 +18,7 @@ CustomGraphicViewOptions = NamedTuple(
 
 class CustomGraphicView(QGraphicsView):
 
-    sigSelectedSpriteChanged = pyqtSignal(QGraphicsItem)
+    sigSelectedItem = pyqtSignal(QGraphicsItem)
 
     def __init__(self, *args, options: CustomGraphicViewOptions, **kwargs):
         super().__init__(*args, **kwargs)
@@ -40,3 +45,8 @@ class CustomGraphicView(QGraphicsView):
 
         ZoomControl(self)
         PanControl(self)
+
+    def mousePressEvent(self, e: QGraphicsSceneMouseEvent):
+        item = self.itemAt(e.pos().x(), e.pos().y())
+        if item:
+            self.sigSelectedItem.emit(item)

@@ -28,6 +28,7 @@ class Sprite(QGraphicsPixmapItem):
         self._tint = None
         self._vertically_flipped = False
         self._horizontally_flipped = False
+        self._multiselect = False
 
         self._setItemFlags()
         self.setAlphaMask()
@@ -138,19 +139,20 @@ class Sprite(QGraphicsPixmapItem):
         else:
             super().keyPressEvent(e)
 
-    # def contextMenuEvent(self, e: QGraphicsSceneContextMenuEvent):
-    #     menu = QMenu()
-    #     clone = menu.addAction("Clone", self.cloneAction)
-    #     selected = menu.exec_(e.screenPos())
+    def mousePressEvent(self, e: QGraphicsSceneMouseEvent):
+        if e.modifiers() & Qt.ControlModifier and not self._multiselect:
+            e.ignore()
+        else:
+            super().mousePressEvent(e)
 
-    # def cloneAction(self):
-    #     clone = self.copy()
-    #     self.scene().addItem(clone)
+
+class SpriteItem:
+    pass
 
 
 class SpriteObject(QObject):
-    def __init__(self, parent: QObject = None):
-        super().__init__(parent)
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
 
         self._spriteItem: Sprite = None
 

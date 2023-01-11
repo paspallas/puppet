@@ -10,7 +10,7 @@ from .spritepalette_ui import SpritePaletteUi
 
 class SpritePaletteWidget(QWidget):
 
-    sigSelectedSpriteChanged = pyqtSignal(QGraphicsItem)
+    sigSelectedSprite = pyqtSignal(QGraphicsItem)
 
     def __init__(self, *args, model: SpriteSheetCollectionModel, **kwargs):
         super().__init__(*args, **kwargs)
@@ -28,10 +28,11 @@ class SpritePaletteWidget(QWidget):
         self._exposeInternalSignals()
         self._makeConnections()
 
+    def setModel(self, model) -> None:
+        self._model = model
+
     def _exposeInternalSignals(self):
-        self._ui.spritePalView.sigSelectedSpriteChanged.connect(
-            self.sigSelectedSpriteChanged
-        )
+        self._ui.spritePalView.sigSelectedItem.connect(self.sigSelectedSprite)
 
     def _makeConnections(self):
         self._ui.addBtn.clicked.connect(self._controller.addSpriteSheet)
@@ -42,11 +43,7 @@ class SpritePaletteWidget(QWidget):
         )
 
         self._ui.spritesheetList.currentRowChanged.connect(self.__onCurrentRowChanged)
-        self._ui.spritePalScene.selectionChanged.connect(
-            lambda: self._controller.selectedSprite(
-                self._ui.spritePalScene.selectedItems()
-            )
-        )
+        self._ui.spritePalView.sigSelectedItem.connect(self._controller.selectedSprite)
 
         # subscribe to model signals
         self._model.sigSpriteSheetAdded.connect(self.onAddSheet)

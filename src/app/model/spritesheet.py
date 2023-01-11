@@ -7,6 +7,8 @@ from spriteutil.spritesheet import SpriteSheet as Sheet
 from .frame import Frame
 from .sprite import Sprite
 
+# TODO the spritesheet should have a qpixmap from wich all sprites are created?
+
 
 class SpriteSheet:
     def __init__(self, path: str):

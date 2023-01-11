@@ -1,12 +1,21 @@
 from typing import NamedTuple
 
-from PyQt5.QtCore import QPoint, QRectF, QLineF, Qt, pyqtSlot
-from PyQt5.QtGui import QBrush, QColor, QMouseEvent, QPainter, QPen, QPixmap
-from PyQt5.QtWidgets import QGraphicsItem, QGraphicsScene, QWidget
+from PyQt5.QtCore import QPoint, QRectF, QLineF, Qt, pyqtSlot, pyqtSignal
+from PyQt5.QtGui import QBrush, QColor, QPainter, QPen, QPixmap
+from PyQt5.QtWidgets import (
+    QGraphicsItem,
+    QGraphicsScene,
+    QWidget,
+    QGraphicsSceneMouseEvent,
+)
 
 
 CustomGraphicSceneOptions = NamedTuple(
-    "CustomGraphicSceneOptions", width=int, height=int, grid_size=int, show_center=bool
+    "CustomGraphicSceneOptions",
+    width=int,
+    height=int,
+    grid_size=int,
+    show_center=bool,
 )
 
 
