@@ -2,6 +2,7 @@ from pathlib import Path
 from typing import Final
 
 from PyQt5.QtCore import QObject, pyqtSignal, pyqtSlot
+from PyQt5.QtGui import QPixmap
 from spriteutil.spritesheet import SpriteSheet as Sheet
 
 from .frame import Frame
@@ -38,7 +39,7 @@ class SpriteSheet:
             Sprite: The sprite item
         """
 
-        return Sprite.fromSpriteSheetFrame(frame, self.path)
+        return Sprite(QPixmap(self.path).copy(*frame.rect()), *frame.topLeft())
 
     def spriteFromFrameIndex(self, index: int) -> Sprite:
         """Create a sprite from a frame index

@@ -34,10 +34,6 @@ class Sprite(QGraphicsPixmapItem):
         self.setAlphaMask()
         self.setPixmap(self._pixmap)
 
-    @staticmethod
-    def fromSpriteSheetFrame(frame: Frame, image_path: str):
-        return Sprite(QPixmap(image_path).copy(*frame.rect()), *frame.topLeft())
-
     def copy(self):
         clone = Sprite(self._pixmap, self.x, self.y)
         clone.setOpacity(self._opacity)
