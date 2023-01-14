@@ -1,5 +1,6 @@
-from PyQt5.QtCore import Qt, pyqtSlot
+from PyQt5.QtCore import QPointF, Qt, pyqtSignal, pyqtSlot
 from PyQt5.QtGui import QKeyEvent
+from PyQt5.QtWidgets import QGraphicsSceneMouseEvent
 
 from ..widget import CustomGraphicScene, CustomGraphicSceneOptions
 

@@ -5,6 +5,7 @@ from ...controller import SpritePaletteController, SpriteGroupController
 from ...model.sprite import Sprite
 from ...model.spritegroup import SpriteGroupCollectionModel
 from ...model.spritesheet import SpriteSheet, SpriteSheetCollectionModel
+from ...model.chardocument import CharDocument
 from .spritepalette_ui import SpritePaletteUi
 
 
@@ -12,7 +13,7 @@ class SpritePaletteWidget(QWidget):
 
     sigSelectedSprite = pyqtSignal(QGraphicsItem)
 
-    def __init__(self, *args, model: SpriteSheetCollectionModel, **kwargs):
+    def __init__(self, *args, model: CharDocument, **kwargs):
         super().__init__(*args, **kwargs)
 
         self._ui = SpritePaletteUi()
@@ -22,8 +23,9 @@ class SpritePaletteWidget(QWidget):
         self._groupModel = SpriteGroupCollectionModel()
         self._groupController = SpriteGroupController(self._groupModel)
 
-        self._model = model
-        self._controller = SpritePaletteController(self._model)
+        # should route internal signals slots in the document to it's components?
+        self._model = model.spriteSheets()
+        self._controller = SpritePaletteController(model)
 
         self._exposeInternalSignals()
         self._makeConnections()

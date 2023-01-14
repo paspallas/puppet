@@ -18,6 +18,8 @@ class Sprite(QGraphicsPixmapItem):
     def __init__(self, pixmap: QPixmap, x: int = 0, y: int = 0, parent: QWidget = None):
         super().__init__(parent=parent)
 
+        # TODO this field should be an uiid external to the pixmapitem
+        self.id = None
         self._pixmap: QPixmap = pixmap
 
         self.x = x
@@ -56,6 +58,15 @@ class Sprite(QGraphicsPixmapItem):
 
         self.setFlags(flags)
         self.setAcceptHoverEvents(True)
+
+    def opacity(self):
+        return self._opacity
+
+    def vflip(self):
+        return self._vertically_flipped
+
+    def hflip(self):
+        return self._horizontally_flipped
 
     def setOpacity(self, opacity: float) -> QPixmap:
         self._opacity = opacity
@@ -134,10 +145,6 @@ class Sprite(QGraphicsPixmapItem):
             super().mousePressEvent(e)
 
 
-class SpriteItem:
-    pass
-
-
 class SpriteObject(QObject):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -145,10 +152,16 @@ class SpriteObject(QObject):
         self._spriteItem: Sprite = None
 
     def setSpriteItem(self, item: Sprite):
-        print("new sprite item")
         self._spriteItem = item
 
     @pyqtSlot(int)
     def setOpacity(self, opacity: int) -> None:
-        print(f"opacity val: {opacity}")
         self._spriteItem.setOpacity(opacity)
+
+    @pyqtSlot(int)
+    def setVflip(self) -> None:
+        self._spriteItem.flipVertical()
+
+    @pyqtSlot(int)
+    def setHflip(self) -> None:
+        self._spriteItem.flipHorizontal()

@@ -44,6 +44,7 @@ class CharEditorView(QGraphicsView):
 
     def resizeEvent(self, event):
         self._updateFixedWidgets()
+        self.centerOn(0, 0)
         super().resizeEvent(event)
 
     def _updateFixedWidgets(self):
@@ -73,6 +74,5 @@ class CharEditorView(QGraphicsView):
 
         if isinstance(selected_sprite, Sprite):
             self.sigSelectedItemChanged.emit(selected_sprite)
-            print("sprite_changed")
 
         super().mousePressEvent(e)

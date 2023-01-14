@@ -14,12 +14,12 @@ class AppWindow(QMainWindow):
 
         # document models
         self._document = CharDocument()
-        self._spritesheets = SpriteSheetCollectionModel()
+        # self._spritesheets = SpriteSheetCollectionModel()
 
         self._setupUi()
         self._createDockWindows()
         self._setupMenu()
-        self._makeConnections()
+        # self._makeConnections()
 
     def _setupUi(self):
         self.setWindowTitle("Puppet Studio")
@@ -28,16 +28,19 @@ class AppWindow(QMainWindow):
         self._ui_editor = CharEditorWidget(self)
         self.setCentralWidget(self._ui_editor)
 
-    def _makeConnections(self):
-        self._ui_spritePaletteWid.sigSelectedSprite.connect(
-            self._ui_editor.sltAddSprite
-        )
+        # TODO clean this up
+        self._ui_editor.setDocument(self._document)
+
+    # def _makeConnections(self):
+    #     self._ui_spritePaletteWid.sigSelectedSprite.connect(
+    #         self._ui_editor.sltAddSprite
+    #     )
 
     def _createDockWindows(self):
         self._ui_spritePaletteDock = QDockWidget("Sprite Palette", self)
         self._ui_spritePaletteDock.setAllowedAreas(Qt.BottomDockWidgetArea)
         self._ui_spritePaletteWid = SpritePaletteWidget(
-            self._ui_spritePaletteDock, model=self._spritesheets
+            self._ui_spritePaletteDock, model=self._document
         )
         self._ui_spritePaletteDock.setWidget(self._ui_spritePaletteWid)
         self.addDockWidget(Qt.BottomDockWidgetArea, self._ui_spritePaletteDock)

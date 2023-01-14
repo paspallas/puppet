@@ -58,7 +58,17 @@ class PropertiesGroupBox(QGroupBox):
         vbox.addLayout(h3)
 
     def __makeConnections(self):
+        # TODO clean this mess
         self._ui_opacitySlide.valueChanged.connect(self.parent().handledItem.setOpacity)
+        self._ui_flipHorizontalChk.stateChanged.connect(self.parent().handledItem.setHflip)
+        self._ui_flipVerticalChk.stateChanged.connect(self.parent().handledItem.setVflip)
+        
+    def setOpacity(self, value: int) -> None:
+        self._ui_opacitySlide.setValue(value)
+
+    def setFlip(self, hflip: bool, vflip: bool) -> None:
+        self._ui_flipHorizontalChk.setChecked(hflip)
+        self._ui_flipVerticalChk.setChecked(vflip)
 
 
 class SpritePropertyBox(QWidget):
@@ -76,9 +86,9 @@ class SpritePropertyBox(QWidget):
 
         self.handledItem = SpriteObject()
 
-        gr1 = PropertiesGroupBox(self)
+        self._properties = PropertiesGroupBox(self)
         layout = QVBoxLayout(self)
-        layout.addWidget(gr1)
+        layout.addWidget(self._properties)
 
     def paintEvent(self, event):
         painter = QPainter(self)
@@ -92,5 +102,9 @@ class SpritePropertyBox(QWidget):
 
     @pyqtSlot(QGraphicsItem)
     def sltOnSelectedItemChanged(self, item: QGraphicsItem):
-        print("on sprite changed")
         self.handledItem.setSpriteItem(item)
+
+        # read current state of the item (viewmodel)
+        # use signal, slots for this
+        self._properties.setOpacity(item.opacity())
+        self._properties.setFlip(item.hflip(), item.vflip())

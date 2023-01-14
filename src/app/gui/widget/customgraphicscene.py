@@ -20,6 +20,10 @@ CustomGraphicSceneOptions = NamedTuple(
 
 
 class CustomGraphicScene(QGraphicsScene):
+
+    sigItemPositionChanged = pyqtSignal(QGraphicsItem)
+    sigItemSelectedChanged = pyqtSignal(QGraphicsItem)
+
     def __init__(self, *args, options: CustomGraphicSceneOptions, **kwargs):
         super().__init__(*args, **kwargs)
 
@@ -28,6 +32,9 @@ class CustomGraphicScene(QGraphicsScene):
         self.setSceneRect(
             -options.width / 2, -options.height / 2, options.width, options.height
         )
+
+        self._selectedItem = None
+        self._oldPosition = None
 
     @pyqtSlot(list)
     def addItems(self, items: list[QGraphicsItem]) -> None:
@@ -38,6 +45,25 @@ class CustomGraphicScene(QGraphicsScene):
     def delItems(self, items: list[QGraphicsItem]) -> None:
         for item in items:
             self.removeItem(item)
+
+    def mousePressEvent(self, e: QGraphicsSceneMouseEvent):
+        if e.button() == Qt.LeftButton:
+            items = self.items(e.buttonDownScenePos(Qt.LeftButton))
+            self._selectedItem = items[0] if items else None
+            if self._selectedItem:
+                self._oldPosition = self._selectedItem.pos()
+
+        self.clearSelection()
+        super().mousePressEvent(e)
+
+    def mouseReleaseEvent(self, e: QGraphicsSceneMouseEvent):
+        if self._selectedItem and e.button() == Qt.LeftButton:
+            if self._oldPosition != self._selectedItem.pos():
+                self.sigItemPositionChanged.emit(self._selectedItem)
+
+            self._selectedItem = None
+
+        super().mouseReleaseEvent(e)
 
     def drawBackground(self, painter: QPainter, rect: QRectF) -> None:
         painter.setRenderHint(QPainter.Antialiasing)

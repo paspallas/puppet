@@ -4,10 +4,11 @@ from PyQt5.QtWidgets import QGraphicsItem, QProgressDialog
 from ..gui.dialog import OpenImageDialog
 from ..model.sprite import Sprite
 from ..model.spritesheet import SpriteSheetCollectionModel
+from ..model.chardocument import CharDocument
 
 
 class SpritePaletteController(QObject):
-    def __init__(self, model: SpriteSheetCollectionModel):
+    def __init__(self, model: CharDocument):
         super().__init__()
 
         self._model = model
@@ -33,7 +34,7 @@ class SpritePaletteController(QObject):
                     f"Importing spritesheet {i + 1} of {len(paths)}..."
                 )
 
-                self._model.addSpriteSheet(path)
+                self._model.spriteSheets().addSpriteSheet(path)
                 QCoreApplication.instance().processEvents()
 
                 if progress.wasCanceled():
@@ -43,8 +44,8 @@ class SpritePaletteController(QObject):
 
     @pyqtSlot(str)
     def delSpriteSheet(self, id: str) -> None:
-        self._model.delSpriteSheet(id)
+        self._model.spriteSheets().delSpriteSheet(id)
 
     @pyqtSlot(QGraphicsItem)
     def selectedSprite(self, sprite: Sprite) -> None:
-        clone = sprite.copy()
+        self._model.addSprite(sprite.copy())
