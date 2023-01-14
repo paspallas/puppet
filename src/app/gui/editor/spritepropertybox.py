@@ -31,11 +31,12 @@ class PropertiesGroupBox(QGroupBox):
         self._ui_opacitySlide.setRange(0, 100)
         self._ui_opacitySlide.setValue(100)
         self._ui_opacitySlide.setOrientation(Qt.Horizontal)
-
         self._ui_opacityLbl = QLabel("Opacity: ")
+        self._ui_opacityLbl.setBuddy(self._ui_opacitySlide)
 
         self._ui_colorBtn = ColorButton()
         self._ui_colorLbl = QLabel("Tint: ")
+        self._ui_colorLbl.setBuddy(self._ui_colorBtn)
 
         self._ui_flipVerticalChk = QCheckBox("Flip Vertical")
         self._ui_flipHorizontalChk = QCheckBox("Flip Horizontal")
@@ -60,9 +61,13 @@ class PropertiesGroupBox(QGroupBox):
     def __makeConnections(self):
         # TODO clean this mess
         self._ui_opacitySlide.valueChanged.connect(self.parent().handledItem.setOpacity)
-        self._ui_flipHorizontalChk.stateChanged.connect(self.parent().handledItem.setHflip)
-        self._ui_flipVerticalChk.stateChanged.connect(self.parent().handledItem.setVflip)
-        
+        self._ui_flipHorizontalChk.stateChanged.connect(
+            self.parent().handledItem.setHflip
+        )
+        self._ui_flipVerticalChk.stateChanged.connect(
+            self.parent().handledItem.setVflip
+        )
+
     def setOpacity(self, value: int) -> None:
         self._ui_opacitySlide.setValue(value)
 

@@ -8,10 +8,9 @@ class Image:
         transparent = QPixmap(pixmap.size())
         transparent.fill(Qt.transparent)
 
-        painter = QPainter(transparent)
-        painter.setOpacity(opacity * 0.01)
-        painter.drawPixmap(QPoint(), pixmap)
-        painter.end()
+        with QPainter(transparent) as painter:
+            painter.setOpacity(opacity * 0.01)
+            painter.drawPixmap(QPoint(), pixmap)
 
         return transparent
 
@@ -20,14 +19,12 @@ class Image:
         alpha_mask = Image.setAlpha(opacity, pixmap)
         tinted = QPixmap(alpha_mask)
 
-        painter = QPainter(alpha_mask)
-        painter.setCompositionMode(QPainter.CompositionMode_SourceIn)
-        painter.fillRect(pixmap.rect(), tint)
-        painter.end()
+        with QPainter(alpha_mask) as painter:
+            painter.setCompositionMode(QPainter.CompositionMode_SourceIn)
+            painter.fillRect(pixmap.rect(), tint)
 
-        painter.begin(tinted)
-        painter.setCompositionMode(QPainter.CompositionMode_Overlay)
-        painter.drawPixmap(QPoint(0, 0), alpha_mask, alpha_mask.rect())
-        painter.end()
+        with QPainter(tinted) as painter:
+            painter.setCompositionMode(QPainter.CompositionMode_Overlay)
+            painter.drawPixmap(QPoint(0, 0), alpha_mask, alpha_mask.rect())
 
         return tinted

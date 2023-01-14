@@ -1,5 +1,6 @@
 build/
 doc/
 dist/
+samples/
 __pycache__/
 *.txt
