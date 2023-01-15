@@ -1,1 +1,1 @@
-from .animeditwidget import AnimationEditorWidget
+from .animationdock import AnimationEditorDock

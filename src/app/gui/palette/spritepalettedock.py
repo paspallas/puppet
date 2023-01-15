@@ -1,5 +1,5 @@
 from PyQt5.QtCore import Qt, pyqtSignal, pyqtSlot
-from PyQt5.QtWidgets import QWidget, QGraphicsItem
+from PyQt5.QtWidgets import QDockWidget, QWidget, QGraphicsItem
 
 from ...controller import SpritePaletteController, SpriteGroupController
 from ...model.sprite import Sprite
@@ -9,15 +9,21 @@ from ...model.chardocument import CharDocument
 from .spritepalette_ui import SpritePaletteUi
 
 
-class SpritePaletteWidget(QWidget):
+class SpritePaletteDock(QDockWidget):
 
     sigSelectedSprite = pyqtSignal(QGraphicsItem)
 
     def __init__(self, *args, model: CharDocument, **kwargs):
         super().__init__(*args, **kwargs)
 
+        self.setWindowTitle("Sprite Palette")
+        self.setAllowedAreas(Qt.BottomDockWidgetArea)
+
+        self._container = QWidget(self)
+        self.setWidget(self._container)
+
         self._ui = SpritePaletteUi()
-        self._ui.setupUi(self)
+        self._ui.setupUi(self._container)
 
         # internal model for visualizing spritesheets in the scene
         self._groupModel = SpriteGroupCollectionModel()
