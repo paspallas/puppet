@@ -1,4 +1,5 @@
 from PyQt5.QtCore import Qt
+from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import (
     QHBoxLayout,
     QListWidget,
@@ -8,18 +9,16 @@ from PyQt5.QtWidgets import (
     QWidget,
 )
 
+from ...resources import resources
 from ..widget import CustomGraphicScene, CustomGraphicSceneOptions
 from ..widget import CustomGraphicView, CustomGraphicViewOptions
 
 
 class SpritePaletteUi:
     def setupUi(self, parent: QWidget):
-        parent.setStyleSheet(
-            """SpritePaletteWidget > QPushButton {max-width: 16; max-height: 16}"""
-        )
 
         self.spritePalScene = CustomGraphicScene(
-            parent=parent, options=CustomGraphicSceneOptions(300, 300, 16, False)
+            parent=parent, options=CustomGraphicSceneOptions(200, 200, 16, False)
         )
 
         self.spritePalView = CustomGraphicView(
@@ -29,12 +28,10 @@ class SpritePaletteUi:
         )
         self.spritesheetList = QListWidget(parent)
 
-        self.addBtn = QPushButton("+", parent)
-        self.addBtn.setFixedSize(16, 16)
+        self.addBtn = QPushButton(QIcon(":/icon/16/add.png"), "", parent)
         self.addBtn.setToolTip("Add Spritesheets")
-        self.delBtn = QPushButton("-", parent)
-        self.delBtn.setFixedSize(16, 16)
-        self.delBtn.setToolTip("Remove Spritesheet")
+        self.delBtn = QPushButton(QIcon(":/icon/16/delete.png"), "", parent)
+        self.delBtn.setToolTip("Delete Spritesheet")
 
         splitter = QSplitter(Qt.Horizontal, parent)
         splitter.addWidget(self.spritesheetList)

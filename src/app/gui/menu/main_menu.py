@@ -33,7 +33,7 @@ class MainMenu(QObject):
         view_menu.addSeparator()
         view_fullscreen = QAction("Full Screen", parent)
         view_fullscreen.setCheckable(True)
-        view_fullscreen.setShortcut("F11")
+        view_fullscreen.setShortcut("Ctrl+Tab")
         view_fullscreen.triggered.connect(self.setfullScreen)
         view_menu.addAction(view_fullscreen)
 
