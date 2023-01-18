@@ -63,4 +63,4 @@ class CustomGraphicView(QGraphicsView):
             return
 
         self.centerOn(0, 0)
-        e.accept()
+        super().resizeEvent(e)

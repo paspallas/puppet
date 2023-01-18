@@ -20,7 +20,7 @@ from ...model.chardocument import CharDocument
 
 
 class AnimationEditorDock(QDockWidget):
-    def __init__(self, *args, model: CharDocument, **kwargs):
+    def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
         self.setWindowTitle("Timeline")
@@ -28,5 +28,3 @@ class AnimationEditorDock(QDockWidget):
 
         self._container = QWidget(self)
         self.setWidget(self._container)
-
-        self._model = model
