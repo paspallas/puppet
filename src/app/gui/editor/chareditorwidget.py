@@ -27,14 +27,6 @@ class CharEditorWidget(QWidget):
         #     self._ui.spritePropertyBox.sltOnSelectedItemChanged
         # )
 
-    @pyqtSlot(QGraphicsItem)
-    def sltAddSprite(self, sprite: QGraphicsItem):
-        self._ui.editorScene.addItem(sprite)
-
-    @pyqtSlot(str, bool)
-    def sltSetTool(self, tool_cls: str, activate: bool) -> None:
-        self._toolmanaget.setTool(tool_cls, activate)
-
     def setDocument(self, document: CharDocument) -> None:
         self._currentDoc = document
 
@@ -43,3 +35,12 @@ class CharEditorWidget(QWidget):
 
     def setModel(self, model) -> None:
         self._ui.spriteListBox.setModel(model)
+
+    @pyqtSlot(QGraphicsItem)
+    def sltAddSprite(self, sprite: QGraphicsItem):
+        sprite.unlock()
+        self._ui.editorScene.addItem(sprite)
+
+    @pyqtSlot(str, bool)
+    def sltSetTool(self, tool_cls: str, activate: bool) -> None:
+        self._toolmanaget.setTool(tool_cls, activate)

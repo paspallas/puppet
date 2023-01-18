@@ -55,6 +55,8 @@ class CustomGraphicView(QGraphicsView):
         if item:
             self.sigSelectedItem.emit(item)
 
+        super().mousePressEvent(e)
+
     def resizeEvent(self, e: QResizeEvent):
         if not self._centerOnResize:
             super().resizeEvent(e)
