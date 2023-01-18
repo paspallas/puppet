@@ -7,6 +7,8 @@ from .animation_frame import AnimationFrame
 
 
 class AnimationFrameModel(QAbstractItemModel):
+    """Interface between the view and the current editable animation frame"""
+
     def __init__(self):
         super().__init__()
 
@@ -22,7 +24,7 @@ class AnimationFrameModel(QAbstractItemModel):
         if role in [Qt.ItemDataRole.DisplayRole, Qt.ItemDataRole.EditRole]:
             return QVariant(self._dataSource.get(index.row(), index.column()))
 
-        if role == Qt.ItemDataRole.CheckStateRole and index.column() in [7, 8]:
+        if role == Qt.ItemDataRole.CheckStateRole and index.column() in [1, 2]:
             return QVariant(self._dataSource.get(index.row(), index.column()))
 
         return QVariant()
@@ -53,7 +55,7 @@ class AnimationFrameModel(QAbstractItemModel):
             | super().flags(index)
         )
 
-        if index.column() in [7, 8]:
+        if index.column() in [1, 2]:
             return flags | Qt.ItemIsUserCheckable
 
         return flags
@@ -69,7 +71,8 @@ class AnimationFrameModel(QAbstractItemModel):
         return len(self._dataSource)
 
     def columnCount(self, parent: QModelIndex) -> int:
-        return self._dataSource.count()
+        # only show name, visibility and lock state in the treeview
+        return 3
 
     def parent(self, index: QModelIndex) -> QModelIndex:
         return QModelIndex()

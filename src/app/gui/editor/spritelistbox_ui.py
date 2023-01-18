@@ -1,12 +1,14 @@
 from PyQt5.QtCore import QSize, Qt
-from PyQt5.QtGui import QIcon
+from PyQt5.QtGui import QColor, QIcon
 from PyQt5.QtWidgets import (
     QAbstractItemView,
     QCheckBox,
     QGroupBox,
     QHBoxLayout,
+    QHeaderView,
     QLabel,
     QPushButton,
+    QSpinBox,
     QTreeView,
     QVBoxLayout,
     QWidget,
@@ -18,6 +20,18 @@ from ..widget import ColorButton, FancySlider
 
 class SpriteListBoxUi:
     def setupUi(self, parent: QWidget):
+
+        self.brushColor = QColor("#353535")
+        self.penColor = QColor("#424242")
+
+        self.xSpin = QSpinBox()
+        self.xLbl = QLabel("X: ")
+        self.xLbl.setBuddy(self.xSpin)
+
+        self.ySpin = QSpinBox()
+        self.yLbl = QLabel("Y: ")
+        self.yLbl.setBuddy(self.ySpin)
+
         self.opacitySlide = FancySlider()
         self.opacitySlide.setRange(0, 100)
         self.opacitySlide.setValue(100)
@@ -33,28 +47,37 @@ class SpriteListBoxUi:
         self.flipVerticalChk = QCheckBox("Flip Vertical")
         self.flipHorizontalChk = QCheckBox("Flip Horizontal")
 
+        h0 = QHBoxLayout()
+        h0.addWidget(self.xLbl, stretch=1)
+        h0.addWidget(self.xSpin, stretch=3)
+
         h1 = QHBoxLayout()
-        h1.addWidget(self.opacityLbl, stretch=1)
-        h1.addWidget(self.opacitySlide, stretch=3)
+        h1.addWidget(self.yLbl, stretch=1)
+        h1.addWidget(self.ySpin, stretch=3)
 
         h2 = QHBoxLayout()
-        h2.addWidget(self.colorLbl, stretch=1)
-        h2.addWidget(self.colorBtn, stretch=3)
+        h2.addWidget(self.opacityLbl, stretch=1)
+        h2.addWidget(self.opacitySlide, stretch=3)
 
         h3 = QHBoxLayout()
-        h3.addStretch()
-        h3.addWidget(self.flipHorizontalChk, 0)
-        h3.addWidget(self.flipVerticalChk, 0)
-        h3.addStretch()
+        h3.addWidget(self.colorLbl, stretch=1)
+        h3.addWidget(self.colorBtn, stretch=3)
 
-        vbox1 = QVBoxLayout()
-        vbox1.setSpacing(10)
-        vbox1.addLayout(h1)
-        vbox1.addLayout(h2)
-        vbox1.addLayout(h3)
+        h4 = QHBoxLayout()
+        h4.addStretch()
+        h4.addWidget(self.flipHorizontalChk, 0)
+        h4.addWidget(self.flipVerticalChk, 0)
+        h4.addStretch()
 
-        self.propertyBox = QGroupBox("Sprite Properties", parent)
-        self.propertyBox.setLayout(vbox1)
+        propertyBoxLay = QVBoxLayout()
+        propertyBoxLay.addLayout(h0)
+        propertyBoxLay.addLayout(h1)
+        propertyBoxLay.addLayout(h2)
+        propertyBoxLay.addLayout(h3)
+        propertyBoxLay.addLayout(h4)
+
+        self.propertyBox = QGroupBox("Properties", parent)
+        self.propertyBox.setLayout(propertyBoxLay)
 
         self.list = QTreeView(parent)
         self.list.setRootIsDecorated(False)
@@ -67,6 +90,7 @@ class SpriteListBoxUi:
         self.list.setSelectionMode(QAbstractItemView.SingleSelection)
         self.list.setSelectionBehavior(QAbstractItemView.SelectRows)
         self.list.setHeaderHidden(True)
+        self.list.header().setStretchLastSection(False)
 
         self.upBtn = QPushButton(QIcon(":/icon/16/up.png"), "")
         self.downBtn = QPushButton(QIcon(":/icon/16/down.png"), "")
@@ -78,7 +102,19 @@ class SpriteListBoxUi:
         btnBox.addStretch()
         btnBox.addWidget(self.delBtn, 0, Qt.AlignRight)
 
-        vbox2 = QVBoxLayout(parent)
-        vbox2.addWidget(self.propertyBox)
-        vbox2.addWidget(self.list)
-        vbox2.addLayout(btnBox)
+        spriteListLay = QVBoxLayout()
+        spriteListLay.addWidget(self.list)
+        spriteListLay.addLayout(btnBox)
+
+        self.spriteListBox = QGroupBox("Sprites", parent)
+        self.spriteListBox.setLayout(spriteListLay)
+
+        layout = QVBoxLayout(parent)
+        layout.addWidget(self.propertyBox)
+        layout.addWidget(self.spriteListBox)
+
+    def updateHeaders(self) -> None:
+        """Update header size policy after the model has been set"""
+        self.list.header().setSectionResizeMode(0, QHeaderView.Stretch)
+        self.list.header().setSectionResizeMode(1, QHeaderView.ResizeToContents)
+        self.list.header().setSectionResizeMode(2, QHeaderView.ResizeToContents)

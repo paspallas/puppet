@@ -9,7 +9,7 @@ from PyQt5.QtCore import (
     QVariant,
     pyqtSlot,
 )
-from PyQt5.QtGui import QColor, QPainter, QPaintEvent
+from PyQt5.QtGui import QPainter, QPaintEvent
 from PyQt5.QtWidgets import QAbstractItemView, QDataWidgetMapper, QWidget
 
 from ...model.sprite import Sprite, SpriteObject
@@ -32,30 +32,36 @@ class SpriteListBox(QWidget):
 
     def setModel(self, model: QAbstractItemModel) -> None:
         self._ui.list.setModel(model)
+        self._ui.updateHeaders()
         self._mapper.setModel(model)
 
-        # connect to the mapper after the model has been set
+        # connect to the datamapper after the model has been set
         self._ui.list.selectionModel().currentRowChanged.connect(
             self._mapper.setCurrentModelIndex
         )
         self._ui.list.setItemDelegateForColumn(
-            7, IconCheckDelegate(IconType.VisibleIcon, True, self._ui.list)
+            1, IconCheckDelegate(IconType.VisibleIcon, True, self._ui.list)
         )
         self._ui.list.setItemDelegateForColumn(
-            8, IconCheckDelegate(IconType.LockedIcon, True, self._ui.list)
+            2, IconCheckDelegate(IconType.LockedIcon, True, self._ui.list)
         )
 
         self._mapper.setSubmitPolicy(QDataWidgetMapper.ManualSubmit)
-        self._mapper.addMapping(self._ui.opacitySlide, 3)
-        self._mapper.addMapping(self._ui.flipHorizontalChk, 4)
-        self._mapper.addMapping(self._ui.flipVerticalChk, 5)
+        self._mapper.addMapping(self._ui.xSpin, 3)
+        self._mapper.addMapping(self._ui.ySpin, 4)
+        self._mapper.addMapping(self._ui.opacitySlide, 5)
+        self._mapper.addMapping(self._ui.flipHorizontalChk, 6)
+        self._mapper.addMapping(self._ui.flipVerticalChk, 7)
 
     def _makeConnections(self) -> None:
         self._ui.upBtn.clicked.connect(self._moveItemUp)
         self._ui.downBtn.clicked.connect(self._moveItemDown)
         self._ui.delBtn.clicked.connect(self._deleteItem)
 
-        # realtime changes to the model from the mapper two ways
+        # Changes in the datamapper must be reflected inmediately in the model
+        # we use manual submit
+        self._ui.xSpin.valueChanged.connect(self._mapper.submit, Qt.QueuedConnection)
+        self._ui.ySpin.valueChanged.connect(self._mapper.submit, Qt.QueuedConnection)
         self._ui.opacitySlide.valueChanged.connect(
             self._mapper.submit, Qt.QueuedConnection
         )
@@ -98,8 +104,8 @@ class SpriteListBox(QWidget):
     def paintEvent(self, e: QPaintEvent):
         painter = QPainter(self)
         painter.setRenderHint(QPainter.Antialiasing)
-        painter.setPen(QColor("#424242"))
-        painter.setBrush(QColor("#353535"))
+        painter.setPen(self._ui.penColor)
+        painter.setBrush(self._ui.brushColor)
         rect = QRectF(
             QPoint(), QSizeF(self.size() - 0.5 * painter.pen().width() * QSize(1, 1))
         )

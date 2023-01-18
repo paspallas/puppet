@@ -19,6 +19,22 @@ class FrameSprite:
         self._name = value
 
     @property
+    def hide(self) -> bool:
+        return self._hide
+
+    @hide.setter
+    def hide(self, value: bool):
+        self._hide = value
+
+    @property
+    def lock(self) -> bool:
+        return self._lock
+
+    @lock.setter
+    def lock(self, value: bool):
+        self._lock = value
+
+    @property
     def x(self) -> int:
         return self._x
 
@@ -65,22 +81,6 @@ class FrameSprite:
     @zIndex.setter
     def zIndex(self, value: int):
         self._zIndex = value
-
-    @property
-    def hide(self) -> bool:
-        return self._hide
-
-    @hide.setter
-    def hide(self, value: bool):
-        self._hide = value
-
-    @property
-    def lock(self) -> bool:
-        return self._lock
-
-    @lock.setter
-    def lock(self, value: bool):
-        self._lock = value
 
     def copy(self):
         item = FrameSprite(
