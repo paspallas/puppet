@@ -6,33 +6,50 @@ from .animation import AnimationEditorDock
 from .editor import CharEditorWidget
 from .palette import SpritePaletteDock
 
+from ..model.animation_frame import AnimationFrame
+from ..model.animation_frame_model import AnimationFrameModel
+from ..model.animation_frame_sprite import FrameSprite
+
 
 class AppWindow(QMainWindow):
     def __init__(self):
         super().__init__()
 
+        self.setWindowTitle("Puppet Studio")
+        self.setMinimumSize(800, 600)
+
         # document models
         self._document = CharDocument()
         # self._spritesheets = SpriteSheetCollectionModel()
 
-        self._setupUi()
-        self._setupMenu()
-        # self._makeConnections()
+        self._animFrame = AnimationFrame()
+        # when adding items to the data source the model must be notified to
+        # reflect changes
+        self._animFrame.add(FrameSprite("Head", 10, 10, False, True, 30))
+        self._animFrame.add(FrameSprite("Chest", 10, 10, False, True, 30))
+        self._animFrame.add(FrameSprite("Foot", 10, 10, False, True, 30))
+        self._animFrame.add(FrameSprite("hand", 10, 10, False, True, 30))
 
-    def _setupUi(self):
-        self.setWindowTitle("Puppet Studio")
-        self.setMinimumSize(800, 600)
+        self._animFrameModel = AnimationFrameModel()
+        self._animFrameModel.setDataSource(self._animFrame)
+
+        # self._makeConnections()
 
         self._ui_editor = CharEditorWidget(self)
         self.setCentralWidget(self._ui_editor)
+
+        #! test passing the model to the main editor
+        self._ui_editor.setModel(self._animFrameModel)
 
         # TODO clean this up
         self._ui_editor.setDocument(self._document)
 
         self._ui_spritePaletteDock = SpritePaletteDock(self, model=self._document)
-        self.addDockWidget(Qt.BottomDockWidgetArea, self._ui_spritePaletteDock)
         self._ui_animEditorDock = AnimationEditorDock(self, model=self._document)
+        self.addDockWidget(Qt.BottomDockWidgetArea, self._ui_spritePaletteDock)
         self.addDockWidget(Qt.BottomDockWidgetArea, self._ui_animEditorDock)
+
+        self._setupMenu()
 
     # def _makeConnections(self):
     #     self._ui_spritePaletteWid.sigSelectedSprite.connect(

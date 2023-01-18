@@ -14,8 +14,6 @@ class CharEditorView(QGraphicsView):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        self._fixedWidgets = dict()
-
         PanControl(self)
         ZoomControl(self)
 
@@ -33,41 +31,6 @@ class CharEditorView(QGraphicsView):
 
         self.setTransformationAnchor(QGraphicsView.AnchorUnderMouse)
         self.setMouseTracking(True)
-
-    def addFixedWidget(self, widget: QWidget, aligment):
-        widget.setParent(self.viewport())
-        self._fixedWidgets[widget] = aligment
-
-    def showEvent(self, event):
-        self._updateFixedWidgets()
-        super().showEvent(event)
-
-    def resizeEvent(self, event):
-        self._updateFixedWidgets()
-        self.centerOn(0, 0)
-        super().resizeEvent(event)
-
-    def _updateFixedWidgets(self):
-        r = self.viewport().rect()
-
-        for w, a in self._fixedWidgets.items():
-            p = QPoint()
-
-            if a & Qt.AlignCenter:
-                p.setX(int((r.width() - w.width()) / 2))
-            elif a & Qt.AlignRight:
-                p.setX(int(r.width() - w.width() - 2))
-            elif a & Qt.AlignLeft:
-                p.setX(p.x() + 2)
-
-            if a & Qt.AlignVCenter:
-                p.setY(int((r.height() - w.height()) / 2))
-            elif a & Qt.AlignBottom:
-                p.setY(r.height() - w.height() - 2)
-            elif a & Qt.AlignTop:
-                p.setY(p.y() + 2)
-
-            w.move(p)
 
     def mousePressEvent(self, e: QMouseEvent):
         selected_sprite = self.itemAt(e.pos())

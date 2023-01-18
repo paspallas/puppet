@@ -1,7 +1,7 @@
 from typing import NamedTuple
 
 from PyQt5.QtCore import Qt, pyqtSignal, pyqtSlot
-from PyQt5.QtGui import QPainter
+from PyQt5.QtGui import QPainter, QResizeEvent
 from PyQt5.QtWidgets import (
     QFrame,
     QGraphicsItem,
@@ -38,6 +38,7 @@ class CustomGraphicView(QGraphicsView):
         )
 
         self.setViewportUpdateMode(QGraphicsView.FullViewportUpdate)
+        self.setCacheMode(QGraphicsView.CacheBackground)
         self.setRenderHints(QPainter.Antialiasing | QPainter.SmoothPixmapTransform)
 
         self.setTransformationAnchor(QGraphicsView.AnchorUnderMouse)
@@ -50,3 +51,7 @@ class CustomGraphicView(QGraphicsView):
         item = self.itemAt(e.pos().x(), e.pos().y())
         if item:
             self.sigSelectedItem.emit(item)
+
+    # def resizeEvent(self, e: QResizeEvent):
+    #     self.centerOn(0, 0)
+    #     e.accept()

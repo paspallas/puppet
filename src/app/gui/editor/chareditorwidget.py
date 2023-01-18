@@ -22,9 +22,10 @@ class CharEditorWidget(QWidget):
         self._currentDoc: CharDocument = None
 
     def _makeConnections(self) -> None:
-        self._ui.editorView.sigSelectedItemChanged.connect(
-            self._ui.spritePropertyBox.sltOnSelectedItemChanged
-        )
+        pass
+        # self._ui.editorView.sigSelectedItemChanged.connect(
+        #     self._ui.spritePropertyBox.sltOnSelectedItemChanged
+        # )
 
     @pyqtSlot(QGraphicsItem)
     def sltAddSprite(self, sprite: QGraphicsItem):
@@ -39,3 +40,6 @@ class CharEditorWidget(QWidget):
 
         # subscribe to document events
         self._currentDoc.sigSpriteAddedToCollection.connect(self.sltAddSprite)
+
+    def setModel(self, model) -> None:
+        self._ui.spriteListBox.setModel(model)

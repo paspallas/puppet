@@ -20,4 +20,4 @@ distclean: clean
 
 .PHONY:
 res:
-	@$(RC) -no-compress resources/resources.qrc -o src/app/resources.py 
+	@$(RC) -no-compress src/app/resources/resources.qrc -o src/app/resources/resources.py 
