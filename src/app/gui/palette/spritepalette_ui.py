@@ -25,7 +25,7 @@ class SpritePaletteUi:
         self.spritePalView = CustomGraphicView(
             self.spritePalScene,
             parent,
-            options=CustomGraphicViewOptions(False, False),
+            options=CustomGraphicViewOptions(False, False, False),
         )
         self.spritesheetList = QListWidget(parent)
 

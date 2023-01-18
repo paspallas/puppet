@@ -6,13 +6,14 @@ from PyQt5.QtWidgets import (
     QFrame,
     QGraphicsItem,
     QGraphicsSceneMouseEvent,
+    QSizePolicy,
     QGraphicsView,
 )
 
 from ..viewcontrol import PanControl, ZoomControl
 
 CustomGraphicViewOptions = NamedTuple(
-    "CustomGraphicViewOptions", drag=bool, scroll_bar=bool
+    "CustomGraphicViewOptions", drag=bool, scroll_bar=bool, center_on_resize=bool
 )
 
 
@@ -22,6 +23,8 @@ class CustomGraphicView(QGraphicsView):
 
     def __init__(self, *args, options: CustomGraphicViewOptions, **kwargs):
         super().__init__(*args, **kwargs)
+
+        self._centerOnResize = options.center_on_resize
 
         self.setFrameStyle(QFrame.NoFrame)
         self.setContentsMargins(0, 0, 0, 0)
@@ -38,8 +41,8 @@ class CustomGraphicView(QGraphicsView):
         )
 
         self.setViewportUpdateMode(QGraphicsView.FullViewportUpdate)
-        self.setCacheMode(QGraphicsView.CacheBackground)
         self.setRenderHints(QPainter.Antialiasing | QPainter.SmoothPixmapTransform)
+        self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
 
         self.setTransformationAnchor(QGraphicsView.AnchorUnderMouse)
         self.setMouseTracking(True)
@@ -48,10 +51,14 @@ class CustomGraphicView(QGraphicsView):
         PanControl(self)
 
     def mousePressEvent(self, e: QGraphicsSceneMouseEvent):
-        item = self.itemAt(e.pos().x(), e.pos().y())
+        item = self.itemAt(e.pos())
         if item:
             self.sigSelectedItem.emit(item)
 
-    # def resizeEvent(self, e: QResizeEvent):
-    #     self.centerOn(0, 0)
-    #     e.accept()
+    def resizeEvent(self, e: QResizeEvent):
+        if not self._centerOnResize:
+            super().resizeEvent(e)
+            return
+
+        self.centerOn(0, 0)
+        e.accept()
