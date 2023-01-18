@@ -44,3 +44,4 @@ class AppWindow(QMainWindow):
 
         # TODO clean this up
         self._ui.charEditor.setDocument(self._document)
+        self._ui.spritePaletteDock.setModel(self._document)

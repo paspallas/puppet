@@ -22,6 +22,9 @@ def start() -> None:
     qtmodern.styles.dark(app)
 
     main_window = AppWindow()
-    main_window.show()
+
+    desktop = QApplication.desktop().screenGeometry(0)
+    main_window.move(desktop.left(), desktop.top())
+    main_window.showMaximized()
 
     sys.exit(app.exec_())

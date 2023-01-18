@@ -15,6 +15,7 @@ class MainMenu(QObject):
 
         file_menu.addAction("Save", lambda: print("saved"))
         file_menu.addAction("Open", lambda: print("open"))
+        file_menu.addSeparator()
 
         view_palette = parent._ui.spritePaletteDock.toggleViewAction()
         view_palette.setShortcut("F3")
