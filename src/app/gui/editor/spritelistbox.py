@@ -109,4 +109,4 @@ class SpriteListBox(QWidget):
         rect = QRectF(
             QPoint(), QSizeF(self.size() - 0.5 * painter.pen().width() * QSize(1, 1))
         )
-        painter.drawRoundedRect(rect, 4, 4)
+        painter.drawRoundedRect(rect, 2, 2)

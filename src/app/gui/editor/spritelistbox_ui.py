@@ -21,7 +21,7 @@ from ..widget import ColorButton, FancySlider
 class SpriteListBoxUi:
     def setupUi(self, parent: QWidget):
 
-        self.brushColor = QColor("#353535")
+        self.brushColor = QColor("#424242")
         self.penColor = QColor("#424242")
 
         self.xSpin = QSpinBox()

@@ -17,6 +17,11 @@ class MainMenu(QObject):
         file_menu.addAction("Open", lambda: print("open"))
         file_menu.addSeparator()
 
+        file_quit = QAction("Quit", parent)
+        file_quit.setShortcut("Ctrl+Q")
+        file_quit.triggered.connect(self.quitApplication)
+        file_menu.addAction(file_quit)
+
         view_palette = parent._ui.spritePaletteDock.toggleViewAction()
         view_palette.setShortcut("F3")
         view_menu.addAction(view_palette)
@@ -38,3 +43,7 @@ class MainMenu(QObject):
             self._parent.setWindowState(Qt.WindowFullScreen)
         else:
             self._parent.setWindowState(Qt.WindowMaximized)
+
+    @pyqtSlot()
+    def quitApplication(self):
+        self._parent.close()
