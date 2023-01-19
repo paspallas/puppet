@@ -25,10 +25,12 @@ class SpriteListBoxUi:
         self.penColor = QColor("#424242")
 
         self.xSpin = QSpinBox()
+        self.xSpin.setMinimum(-9999)
         self.xLbl = QLabel("X: ")
         self.xLbl.setBuddy(self.xSpin)
 
         self.ySpin = QSpinBox()
+        self.ySpin.setMinimum(-9999)
         self.yLbl = QLabel("Y: ")
         self.yLbl.setBuddy(self.ySpin)
 
@@ -44,30 +46,30 @@ class SpriteListBoxUi:
         self.colorLbl = QLabel("Tint: ")
         self.colorLbl.setBuddy(self.colorBtn)
 
-        self.flipVerticalChk = QCheckBox("Flip Vertical")
-        self.flipHorizontalChk = QCheckBox("Flip Horizontal")
+        self.flipVerticalChk = QCheckBox("Vertical")
+        self.flipHorizontalChk = QCheckBox("Horizontal")
+        self.flipLabel = QLabel("Flip: ")
 
         h0 = QHBoxLayout()
-        h0.addWidget(self.xLbl, stretch=1)
-        h0.addWidget(self.xSpin, stretch=3)
+        h0.addWidget(self.opacityLbl, stretch=1)
+        h0.addWidget(self.opacitySlide, stretch=3)
 
         h1 = QHBoxLayout()
-        h1.addWidget(self.yLbl, stretch=1)
-        h1.addWidget(self.ySpin, stretch=3)
+        h1.addWidget(self.colorLbl, stretch=1)
+        h1.addWidget(self.colorBtn, stretch=3)
 
         h2 = QHBoxLayout()
-        h2.addWidget(self.opacityLbl, stretch=1)
-        h2.addWidget(self.opacitySlide, stretch=3)
+        h2.addWidget(self.xLbl, stretch=1)
+        h2.addWidget(self.xSpin, stretch=3)
 
         h3 = QHBoxLayout()
-        h3.addWidget(self.colorLbl, stretch=1)
-        h3.addWidget(self.colorBtn, stretch=3)
+        h3.addWidget(self.yLbl, stretch=1)
+        h3.addWidget(self.ySpin, stretch=3)
 
         h4 = QHBoxLayout()
-        h4.addStretch()
+        h4.addWidget(self.flipLabel)
         h4.addWidget(self.flipHorizontalChk, 0)
         h4.addWidget(self.flipVerticalChk, 0)
-        h4.addStretch()
 
         propertyBoxLay = QVBoxLayout()
         propertyBoxLay.addLayout(h0)

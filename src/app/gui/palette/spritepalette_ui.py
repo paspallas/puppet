@@ -42,8 +42,7 @@ class SpritePaletteUi:
         btnBox = QVBoxLayout()
         btnBox.setDirection(QVBoxLayout.TopToBottom)
         btnBox.addWidget(self.addBtn, 0, Qt.AlignTop)
-        btnBox.addWidget(self.delBtn, 0, Qt.AlignTop)
-        btnBox.addStretch()
+        btnBox.addWidget(self.delBtn, 0, Qt.AlignBottom)
 
         content = QHBoxLayout(parent)
         content.addLayout(btnBox)
