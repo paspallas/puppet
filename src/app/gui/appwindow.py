@@ -1,9 +1,8 @@
-from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QMainWindow
 
-from ..model.animation_frame import AnimationFrame
-from ..model.animation_frame_model import AnimationFrameModel
-from ..model.animation_frame_sprite import FrameSprite
+from ..model.animation.frame import AnimationFrame
+from ..model.animation.frame_model import AnimationFrameModel
+from ..model.animation.frame_sprite import FrameSprite
 from ..model.chardocument import CharDocument
 from .appwindow_ui import EditModeUi
 from .menu.main_menu import MainMenu

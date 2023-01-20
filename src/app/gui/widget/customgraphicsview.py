@@ -1,20 +1,21 @@
 from typing import NamedTuple
 
 from PyQt5.QtCore import Qt, pyqtSignal, pyqtSlot
-from PyQt5.QtGui import QPainter, QResizeEvent
+from PyQt5.QtGui import QMouseEvent, QPainter, QResizeEvent
 from PyQt5.QtWidgets import (
     QFrame,
     QGraphicsItem,
-    QGraphicsSceneMouseEvent,
     QSizePolicy,
     QGraphicsView,
 )
 
 from ..viewcontrol import PanControl, ZoomControl
 
-CustomGraphicViewOptions = NamedTuple(
-    "CustomGraphicViewOptions", drag=bool, scroll_bar=bool, center_on_resize=bool
-)
+
+class CustomGraphicViewOptions(NamedTuple):
+    drag: bool
+    scroll_bar: bool
+    center_on_resize: bool
 
 
 class CustomGraphicView(QGraphicsView):
@@ -50,7 +51,7 @@ class CustomGraphicView(QGraphicsView):
         ZoomControl(self)
         PanControl(self)
 
-    def mousePressEvent(self, e: QGraphicsSceneMouseEvent):
+    def mousePressEvent(self, e: QMouseEvent):
         item = self.itemAt(e.pos())
         if item:
             self.sigSelectedItem.emit(item)

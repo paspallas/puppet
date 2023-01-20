@@ -4,10 +4,19 @@ from typing import NamedTuple
 
 @dataclass(frozen=True, slots=True)
 class Frame:
+    class TopLeft(NamedTuple):
+        x: int
+        y: int
 
-    TopLeft = NamedTuple("TopLeft", x=int, y=int)
-    Size = NamedTuple("Size", w=int, h=int)
-    Rect = NamedTuple("Rect", x=int, y=int, w=int, h=int)
+    class Size(NamedTuple):
+        w: int
+        h: int
+
+    class Rect(NamedTuple):
+        x: int
+        y: int
+        w: int
+        h: int
 
     name: str
     x: int

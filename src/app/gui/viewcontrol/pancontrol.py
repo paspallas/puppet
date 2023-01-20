@@ -7,20 +7,18 @@ from PyQt5.QtWidgets import (
     QStyleOptionGraphicsItem,
 )
 
+
 class PanControl(QObject):
-    """Add panning control with the middle mouse button to any widget that
-    inherits from QAbstractScrollArea
+    """Add panning control with the middle mouse button to any QGraphicsView
 
     Args:
-        widget (QAbstractScrollArea): The widget we want to control
+        view (QGraphicsView): The view
     """
 
-    def __init__(self, widget: QAbstractScrollArea = None):
-        super().__init__(widget)
+    def __init__(self, view: QGraphicsView):
+        super().__init__(view)
 
-        widget.viewport().installEventFilter(self)
-
-        self._start_pan_point: QPoint = None
+        view.viewport().installEventFilter(self)
 
     def eventFilter(self, obj: QObject, e: QEvent) -> bool:
 

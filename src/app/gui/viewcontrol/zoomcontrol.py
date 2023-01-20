@@ -1,27 +1,23 @@
-from PyQt5.QtCore import QEvent, QObject, QPoint, Qt
+from PyQt5.QtCore import QEvent, QObject, Qt
 from PyQt5.QtGui import QMouseEvent
-from PyQt5.QtWidgets import (
-    QAbstractScrollArea,
-    QApplication,
-    QGraphicsView,
-    QStyleOptionGraphicsItem,
-)
+from PyQt5.QtWidgets import QGraphicsView, QStyleOptionGraphicsItem
+
 
 class ZoomControl(QObject):
-    """Add Zoom control with the mouse wheel to any QGraphicsView object
+    """Add Zoom control with the mouse wheel to any QGraphicsView
 
     Args:
-        widget (QGraphicsView): The QGraphicsView we want to control
+        view (QGraphicsView): The view
     """
 
     ZOOM_FACTOR = 1.2
     ZOOM_MAX = 40
     ZOOM_MIN = 0.75
 
-    def __init__(self, widget: QGraphicsView = None):
-        super().__init__(widget)
+    def __init__(self, view: QGraphicsView):
+        super().__init__(view)
 
-        widget.viewport().installEventFilter(self)
+        view.viewport().installEventFilter(self)
 
     def eventFilter(self, obj: QObject, e: QEvent) -> bool:
         view: QGraphicsView = obj.parent()

@@ -1,9 +1,9 @@
 import pickle
-from typing import Any
-
+import typing
 from PyQt5.QtCore import QAbstractItemModel, QMimeData, QModelIndex, Qt, QVariant
 
-from .animation_frame import AnimationFrame
+from .frame import AnimationFrame
+from .frame_sprite import FrameSpriteColumn as fsc
 
 
 class AnimationFrameModel(QAbstractItemModel):
@@ -15,21 +15,26 @@ class AnimationFrameModel(QAbstractItemModel):
         self._dataSource: AnimationFrame = None
 
     def setDataSource(self, source: AnimationFrame) -> None:
+        self.beginResetModel()
         self._dataSource = source
+        self.endResetModel()
 
-    def data(self, index: QModelIndex, role: int):
+    def data(self, index: QModelIndex, role: int = ...) -> typing.Any:
         if not index.isValid():
             return QVariant()
 
         if role in [Qt.ItemDataRole.DisplayRole, Qt.ItemDataRole.EditRole]:
             return QVariant(self._dataSource.get(index.row(), index.column()))
 
-        if role == Qt.ItemDataRole.CheckStateRole and index.column() in [1, 2]:
+        if role == Qt.ItemDataRole.CheckStateRole and index.column() in [
+            fsc.Hide,
+            fsc.Lock,
+        ]:
             return QVariant(self._dataSource.get(index.row(), index.column()))
 
         return QVariant()
 
-    def setData(self, index: QModelIndex, value: Any, role: int) -> bool:
+    def setData(self, index: QModelIndex, value: typing.Any, role: int = ...) -> bool:
         if role == Qt.EditRole:
             self._dataSource.set(index.row(), index.column(), value)
             self.dataChanged.emit(index, QModelIndex(), [])
@@ -42,7 +47,7 @@ class AnimationFrameModel(QAbstractItemModel):
 
         return False
 
-    def flags(self, index: QModelIndex):
+    def flags(self, index: QModelIndex) -> Qt.ItemFlags:
         if not index.isValid():
             return Qt.NoItemFlags
 
@@ -55,26 +60,25 @@ class AnimationFrameModel(QAbstractItemModel):
             | super().flags(index)
         )
 
-        if index.column() in [1, 2]:
+        if index.column() in [fsc.Hide, fsc.Lock]:
             return flags | Qt.ItemIsUserCheckable
 
         return flags
 
-    def index(self, row: int, column: int, parent: QModelIndex) -> QModelIndex:
+    def index(self, row: int, column: int, parent: QModelIndex = ...) -> QModelIndex:
         if row < 0 or row >= len(self._dataSource):
             return QModelIndex()
         return self.createIndex(row, column)
 
-    def rowCount(self, parent: QModelIndex) -> int:
+    def rowCount(self, parent: QModelIndex = ...) -> int:
         if parent.isValid():
             return 0
         return len(self._dataSource)
 
-    def columnCount(self, parent: QModelIndex) -> int:
-        # only show name, visibility and lock state in the treeview
+    def columnCount(self, parent: QModelIndex = ...) -> int:
         return 3
 
-    def parent(self, index: QModelIndex) -> QModelIndex:
+    def parent(self, child: QModelIndex) -> QModelIndex:
         return QModelIndex()
 
     def moveRowUp(self, index: QModelIndex) -> bool:
@@ -95,17 +99,17 @@ class AnimationFrameModel(QAbstractItemModel):
         self.layoutChanged.emit()
         return True
 
-    def removeRow(self, row: int, parent: QModelIndex):
+    def removeRow(self, row: int, parent: QModelIndex = ...) -> bool:
         self.beginRemoveRows(QModelIndex(), row, row)
-        self._dataSource.deleteItem(row)
+        self._dataSource.delete(row)
         self.endRemoveRows()
 
-    def mimeTypes(self) -> [str]:
+    def mimeTypes(self) -> typing.List[str]:
         return ["application/puppet-framedata"]
 
-    def mimeData(self, indexes: [QModelIndex]) -> QMimeData:
+    def mimeData(self, indexes: typing.Iterable[QModelIndex]) -> "QMimeData":
         encode = []
-        encode.append(indexes[0].row())
+        encode.append(list(indexes)[0].row())
 
         for index in indexes:
             if index.isValid():
@@ -124,7 +128,7 @@ class AnimationFrameModel(QAbstractItemModel):
 
     def dropMimeData(
         self,
-        data: QMimeData,
+        data: "QMimeData",
         action: Qt.DropAction,
         row: int,
         column: int,

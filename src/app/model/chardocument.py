@@ -1,7 +1,6 @@
 from PyQt5.QtCore import QObject, pyqtSignal, pyqtSlot
 from PyQt5.QtWidgets import QGraphicsItem
 
-from .animation import AnimationCollectionModel
 from .sprite import Sprite
 from .spritesheet import SpriteSheetCollectionModel
 
@@ -40,7 +39,6 @@ class CharDocument(QObject):
         super().__init__()
 
         # allow access to the child classess
-        self._animations = AnimationCollectionModel()
         self._spriteSheets = SpriteSheetCollectionModel()
         self._sprites = SpriteCollectionModel()
 

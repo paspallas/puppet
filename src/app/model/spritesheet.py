@@ -1,5 +1,5 @@
+import typing
 from pathlib import Path
-from typing import Final
 
 from PyQt5.QtCore import QObject, pyqtSignal, pyqtSlot
 from PyQt5.QtGui import QColor, QPixmap
@@ -9,14 +9,18 @@ from .frame import Frame
 from .sprite import Sprite
 
 
+class FrameNotFoundException(Exception):
+    pass
+
+
 class SpriteSheet:
-    def __init__(self, path: str):
+    def __init__(self, path: str) -> None:
 
         self.path = path
         self.name = Path(self.path).stem
 
         self._pixmap = QPixmap(path)
-        self._frames: dict[int, Frame:Final] = dict()
+        self._frames: typing.Dict[int, Frame] = dict()
 
         sheet = Sheet(path)
         self._extractFrames(sheet)
@@ -57,10 +61,14 @@ class SpriteSheet:
 
         frame = self._frames.get(index, None)
 
-        if frame:
-            return self.spriteFromFrame(frame)
+        if not frame:
+            raise FrameNotFoundException(
+                f"frame index {index} not found in the spritesheet"
+            )
 
-    def sprites(self) -> list[Sprite]:
+        return self.spriteFromFrame(frame)
+
+    def sprites(self) -> typing.List[Sprite]:
         """Get all frames in the spritesheet as independent sprites
 
         Returns:
@@ -72,11 +80,11 @@ class SpriteSheet:
     def _extractFrames(self, sheet: Sheet) -> None:
         """Extract all frames in the spritesheet"""
 
-        frames, _ = sheet.find_sprites()
+        boundingBoxes, _ = sheet.find_sprites()
 
-        for i, frame in enumerate(frames):
+        for i, box in enumerate(boundingBoxes):
             name = f"{self.name}_{i}"
-            self._frames[i] = Frame(name, *frame.top_left, frame.width, frame.height)
+            self._frames[i] = Frame(name, *box.top_left, box.width, box.height)
 
     def __iter__(self):
         self._currentIndex = 0
@@ -91,9 +99,9 @@ class SpriteSheet:
         raise StopIteration
 
     def __repr__(self) -> str:
-        frames = "\n".join([str(frame) for frame in self.frames.values()])
+        frames = "\n".join([str(frame) for frame in self._frames.values()])
 
-        return f"SpriteSheet: path={self._path} frames=\n{frames}"
+        return f"SpriteSheet: path={self.path} frames=\n{frames}"
 
 
 class SpriteSheetCollectionModel(QObject):
@@ -101,10 +109,10 @@ class SpriteSheetCollectionModel(QObject):
     sigSpriteSheetAdded = pyqtSignal(SpriteSheet)
     sigSpriteSheetRemoved = pyqtSignal(str)
 
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__()
 
-        self._sheets: dict[str, SpriteSheet] = dict()
+        self._sheets: typing.Dict[str, SpriteSheet] = dict()
 
     def addSpriteSheet(self, path: str):
         """Add a new spritesheet to the collection

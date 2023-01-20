@@ -1,3 +1,5 @@
+import typing
+
 from PyQt5.QtCore import QObject, pyqtSignal
 
 from .sprite import Sprite
@@ -9,7 +11,7 @@ class SpriteGroup:
     Represents a view of the sprites to be used in an editor
     """
 
-    def __init__(self, sprites: list[Sprite]):
+    def __init__(self, sprites: typing.List[Sprite]) -> None:
         self._sprites = sprites
 
     @staticmethod
@@ -62,10 +64,10 @@ class SpriteGroupCollectionModel(QObject):
     sigGroupAdded = pyqtSignal(list)
     sigGroupDeleted = pyqtSignal(list)
 
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__()
 
-        self._collection: dict[str, SpriteGroup] = dict()
+        self._collection: typing.Dict[str, SpriteGroup] = dict()
 
     def addGroup(self, group: SpriteGroup, id: str) -> None:
         self._collection[id] = group

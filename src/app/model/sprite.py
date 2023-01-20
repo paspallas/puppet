@@ -15,15 +15,17 @@ from .frame import Frame
 
 
 class Sprite(QGraphicsPixmapItem):
-    def __init__(self, pixmap: QPixmap, x: int = 0, y: int = 0, parent: QWidget = None):
+    def __init__(
+        self, pixmap: QPixmap, x: float = 0, y: float = 0, parent=None
+    ) -> None:
         super().__init__(parent=parent)
 
         # TODO this field should be an uiid external to the pixmapitem
         self.id = None
         self._pixmap: QPixmap = pixmap
 
-        self.x = x
-        self.y = y
+        self.x: float = x
+        self.y: float = y
         self._opacity = 100
         self._tint = None
         self._vertically_flipped = False

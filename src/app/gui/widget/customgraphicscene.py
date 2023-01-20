@@ -10,13 +10,11 @@ from PyQt5.QtWidgets import (
 )
 
 
-CustomGraphicSceneOptions = NamedTuple(
-    "CustomGraphicSceneOptions",
-    width=int,
-    height=int,
-    grid_size=int,
-    show_center=bool,
-)
+class CustomGraphicSceneOptions(NamedTuple):
+    width: int
+    height: int
+    grid_size: int
+    show_center: bool
 
 
 class CustomGraphicScene(QGraphicsScene):

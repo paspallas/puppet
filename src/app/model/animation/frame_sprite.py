@@ -1,5 +1,40 @@
-class FrameSprite:
-    def __init__(self, name: str, x: int, y: int, vflip: bool, hflip: bool, alpha: int):
+from enum import Enum
+
+from PyQt5.QtCore import QObject, pyqtSignal
+from PyQt5.QtGui import QPixmap
+from PyQt5.QtWidgets import QGraphicsPixmapItem
+
+
+class FrameSpriteColumn(Enum):
+    """Column indexes for the internal properties as viewed from the model"""
+
+    Name = 0
+    Hide = 1
+    Lock = 2
+    X = 3
+    Y = 4
+    Alpha = 5
+    Hflip = 6
+    Vflip = 7
+    Zindex = 8
+
+
+class FrameSprite(QObject):
+    """A sprite part of a frame"""
+
+    sigInternalDataChanged = pyqtSignal()
+
+    def __init__(
+        self,
+        name: str,
+        x: int = 0,
+        y: int = 0,
+        vflip: bool = False,
+        hflip: bool = False,
+        alpha: int = 0,
+    ):
+        super().__init__()
+
         self._name: str = name
         self._x: int = x
         self._y: int = y
