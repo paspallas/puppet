@@ -6,12 +6,14 @@ from ..model.chardocument import CharDocument
 from ..model.sprite import Sprite
 from ..model.spritesheet import SpriteSheetCollectionModel
 
+from ..model.animation.frame_sprite import FrameSprite
+
 
 class SpritePaletteController(QObject):
-    def __init__(self, model: CharDocument):
+    def __init__(self, document: CharDocument):
         super().__init__()
 
-        self._model: CharDocument = model
+        self._document: CharDocument = document
 
     @pyqtSlot()
     def addSpriteSheet(self) -> None:
@@ -34,7 +36,7 @@ class SpritePaletteController(QObject):
                     f"Importing spritesheet {i + 1} of {len(paths)}..."
                 )
 
-                self._model.spriteSheets().addSpriteSheet(path)
+                self._document.spriteSheets().addSpriteSheet(path)
                 QCoreApplication.instance().processEvents()
 
                 if progress.wasCanceled():
@@ -44,8 +46,9 @@ class SpritePaletteController(QObject):
 
     @pyqtSlot(str)
     def delSpriteSheet(self, id: str) -> None:
-        self._model.spriteSheets().delSpriteSheet(id)
+        self._document.spriteSheets().delSpriteSheet(id)
 
     @pyqtSlot(QGraphicsItem)
     def selectedSprite(self, sprite: Sprite) -> None:
-        self._model.addSprite(sprite.copy())
+        # TODO remember to change when the document changes
+        self._document._currentEditableFrame.fromPixmap(sprite._pixmap)

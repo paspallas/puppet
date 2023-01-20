@@ -2,7 +2,7 @@ from enum import IntEnum
 
 from PyQt5.QtCore import QObject, pyqtSignal
 from PyQt5.QtGui import QPixmap
-from PyQt5.QtWidgets import QGraphicsPixmapItem
+from PyQt5.QtWidgets import QGraphicsPixmapItem, QGraphicsItem
 
 from .frame_sprite_item import FrameSpriteItem, ItemEvent
 
@@ -38,6 +38,10 @@ class FrameSprite(QObject):
     ):
         super().__init__()
 
+        self._pixmap: QPixmap = pix
+        self.item = FrameSpriteItem(self._pixmap)
+        self.item.subscribe(ItemEvent.zChanged, self.onItemZchanged)
+
         self._name: str = name
         self._x: int = x
         self._y: int = y
@@ -45,12 +49,11 @@ class FrameSprite(QObject):
         self._hflip: bool = hflip
         self._transparency: int = alpha
         self._zIndex: int = 0
-        self._hide: bool = False
-        self._lock: bool = False
 
-        self._pixmap: QPixmap = pix
-        self._item = FrameSpriteItem(self._pixmap)
-        self._item.subscribe(ItemEvent.zChanged, self.onItemZchanged)
+        self._hide: bool = False
+        self.item.setVisible(not self._hide)
+
+        self._lock: bool = False
 
     @property
     def name(self) -> str:
@@ -67,6 +70,7 @@ class FrameSprite(QObject):
     @hide.setter
     def hide(self, value: bool):
         self._hide = value
+        self.item.setVisible(not value)
 
     @property
     def lock(self) -> bool:
@@ -75,6 +79,8 @@ class FrameSprite(QObject):
     @lock.setter
     def lock(self, value: bool):
         self._lock = value
+        self.item.setFlag(QGraphicsItem.ItemIsMovable, not value)
+        self.item.setFlag(QGraphicsItem.ItemIsSelectable, not value)
 
     @property
     def x(self) -> int:
@@ -123,10 +129,12 @@ class FrameSprite(QObject):
     @zIndex.setter
     def zIndex(self, value: int):
         self._zIndex = value
+        self.item.setZValue(value)
 
     def copy(self):
         item = FrameSprite(
             self.name,
+            self._pixmap,
             self.x,
             self.y,
             self.vflip,
@@ -134,10 +142,13 @@ class FrameSprite(QObject):
             self.alpha,
         )
         item.zIndex = self.zIndex
-        item.hide = self.hide
-        item.lock = self.lock
+        item.hide = False
+        item.lock = False
         item.name += "_copy"
         return item
 
     def onItemZchanged(self, value: int) -> None:
-        self.zIndex = value
+        # The frame instance has knowledge of all the frame--sprites
+        # so it has to deal with reordering the items based on it's zvalue
+
+        pass

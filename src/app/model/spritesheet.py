@@ -68,6 +68,19 @@ class SpriteSheet:
 
         return self.spriteFromFrame(frame)
 
+    def pixmapFromFrameIndex(self, index: int) -> QPixmap:
+        """Return the pixmap from a frame index
+
+        Args:
+            index (int): Frame index
+
+        Returns:
+            QPixmap: The pixmap region for the index
+        """
+
+        box = self._frames.get(index, None)
+        return self._pixmap.copy(*box.rect())
+
     def sprites(self) -> typing.List[Sprite]:
         """Get all frames in the spritesheet as independent sprites
 

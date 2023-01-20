@@ -1,8 +1,5 @@
 from PyQt5.QtWidgets import QMainWindow
 
-from ..model.animation.frame import AnimationFrame
-from ..model.animation.frame_model import AnimationFrameModel
-from ..model.animation.frame_sprite import FrameSprite
 from ..model.chardocument import CharDocument
 from .appwindow_ui import EditModeUi
 from .menu.main_menu import MainMenu
@@ -19,22 +16,7 @@ class AppWindow(QMainWindow):
         self._ui.setupUi(self)
         self._menu = MainMenu(self)
 
-        # document models
         self._document = CharDocument()
-        # self._spritesheets = SpriteSheetCollectionModel()
 
-        self._animFrame = AnimationFrame()
-        # when adding items to the data source the model must be notified to
-        # reflect changes
-        self._animFrame.add(FrameSprite("Head", None, 10, 10, False, True, 30))
-        self._animFrame.add(FrameSprite("Chest", None, 10, 10, False, True, 30))
-
-        self._animFrameModel = AnimationFrameModel()
-        self._animFrameModel.setDataSource(self._animFrame)
-
-        #! test passing the model to the main editor
-        self._ui.charEditor.setModel(self._animFrameModel)
-
-        # TODO clean this up
         self._ui.charEditor.setDocument(self._document)
         self._ui.spritePaletteDock.setModel(self._document)

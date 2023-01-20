@@ -20,8 +20,8 @@ class Sprite(QGraphicsPixmapItem):
     ) -> None:
         super().__init__(parent=parent)
 
-        # TODO this field should be an uiid external to the pixmapitem
-        self.id = None
+        # TODO this field should be an uiid external to the pixmapite
+
         self._pixmap: QPixmap = pixmap
 
         self.x: float = x

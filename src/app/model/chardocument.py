@@ -1,13 +1,11 @@
 from PyQt5.QtCore import QObject, pyqtSignal, pyqtSlot
 from PyQt5.QtWidgets import QGraphicsItem
 
+from .animation.frame_model import AnimationFrameModel
+from .animation.frame import AnimationFrame
+
 from .sprite import Sprite
 from .spritesheet import SpriteSheetCollectionModel
-
-
-class SpriteHandler(QObject):
-    def __init__(self):
-        super().__init__()
 
 
 class SpriteCollectionModel(QObject):
@@ -42,6 +40,11 @@ class CharDocument(QObject):
         self._spriteSheets = SpriteSheetCollectionModel()
         self._sprites = SpriteCollectionModel()
 
+        #! test the model from the chardocument
+        self._currentEditableFrame = AnimationFrame()
+        self._currentFrameModel = AnimationFrameModel()
+        self._currentFrameModel.setDataSource(self._currentEditableFrame)
+
         self._forward()
 
     def spriteSheets(self) -> SpriteSheetCollectionModel:
@@ -53,7 +56,5 @@ class CharDocument(QObject):
     def _forward(self):
         self._sprites.spriteAddedToCollection.connect(self.sigSpriteAddedToCollection)
 
-    #! Expose internal public methods of the different components
-    # TODO use some metaprogramming to avoid having to manually bind the methods
     def addSprite(self, sprite: Sprite) -> None:
         self._sprites.add(sprite)

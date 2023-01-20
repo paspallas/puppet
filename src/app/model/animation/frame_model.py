@@ -1,6 +1,13 @@
 import pickle
 import typing
-from PyQt5.QtCore import QAbstractItemModel, QMimeData, QModelIndex, Qt, QVariant
+from PyQt5.QtCore import (
+    QAbstractItemModel,
+    QMimeData,
+    QModelIndex,
+    Qt,
+    QVariant,
+    pyqtSlot,
+)
 
 from .frame import AnimationFrame
 from .frame_sprite import FrameSpriteColumn as fsc
@@ -16,7 +23,14 @@ class AnimationFrameModel(QAbstractItemModel):
 
     def setDataSource(self, source: AnimationFrame) -> None:
         self.beginResetModel()
+
+        # if self._dataSource is not None:
+        #     self._dataSource.sigFrameDataChanged.disconnect(self.dataChanged)
+
         self._dataSource = source
+        self._dataSource.sigAddedItem.connect(self.newRow)
+        # self._dataSource.sigFrameDataChanged.connect(self.dataChanged)
+
         self.endResetModel()
 
     def data(self, index: QModelIndex, role: int = ...) -> typing.Any:
@@ -80,6 +94,13 @@ class AnimationFrameModel(QAbstractItemModel):
 
     def parent(self, child: QModelIndex) -> QModelIndex:
         return QModelIndex()
+
+    def newRow(self) -> None:
+        """New items added from the spritepalette
+        We want them at the top row
+        """
+        self.beginInsertRows(QModelIndex(), 0, 0)
+        self.endInsertRows()
 
     def moveRowUp(self, index: QModelIndex) -> bool:
         if index.row() == 0:

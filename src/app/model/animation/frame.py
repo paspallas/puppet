@@ -1,15 +1,20 @@
-from typing import Any
+from typing import Any, overload
 
 from PyQt5.QtCore import QObject, pyqtSignal, pyqtSlot
+from PyQt5.QtGui import QPixmap
 
 from ...util.reflection import PropertyList
 from .frame_sprite import FrameSprite
+from .frame_sprite_item import FrameSpriteItem
 
 
 class AnimationFrame(QObject):
     """A Collection of framesprites that compose an animation frame"""
 
     sigFrameDataChanged = pyqtSignal()
+    sigAddToScene = pyqtSignal(FrameSpriteItem)
+    sigDeleteFromScene = pyqtSignal(FrameSpriteItem)
+    sigAddedItem = pyqtSignal()
 
     def __init__(self):
         super().__init__()
@@ -19,12 +24,26 @@ class AnimationFrame(QObject):
 
     def add(self, framesprite: FrameSprite) -> None:
         framesprite.sigInternalDataChanged.connect(self.dataChanged)
-
         framesprite.zIndex = len(self)
+
         self.sprites.insert(0, framesprite)
 
+        self.sigAddToScene.emit(framesprite.item)
+
+    def fromPixmap(self, pixmap: QPixmap) -> None:
+        framesprite = FrameSprite("test", pixmap)
+        framesprite.sigInternalDataChanged.connect(self.dataChanged)
+        framesprite.zIndex = len(self)
+
+        self.sprites.insert(0, framesprite)
+
+        self.sigAddedItem.emit()
+        self.sigAddToScene.emit(framesprite.item)
+
     def delete(self, item_index: int) -> None:
-        self.sprites.pop(item_index)
+        item = self.sprites.pop(item_index)
+        self.sigDeleteFromScene.emit(item.item)
+
         self.recalcZindexes()
 
     def copy(self, dst: int, src: int) -> None:

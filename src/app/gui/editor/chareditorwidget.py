@@ -10,34 +10,32 @@ class CharEditorWidget(QWidget):
 
     sigSelectedItemChanged = pyqtSignal(QGraphicsItem)
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
 
         self._ui = CharEditorUi()
         self._ui.setupUi(self)
 
-        self._makeConnections()
         self._toolmanager = SceneToolManager(self._ui.editorScene)
-
-        self._currentDoc: CharDocument = None
-
-    def _makeConnections(self) -> None:
-        pass
-        # self._ui.editorView.sigSelectedItemChanged.connect(
-        #     self._ui.spritePropertyBox.sltOnSelectedItemChanged
-        # )
+        self._document: CharDocument = None
 
     def setDocument(self, document: CharDocument) -> None:
-        self._currentDoc = document
+        if self._document is not None:
+            self._document._currentEditableFrame.sigAddToScene.disconnect()
+            self._document._currentEditableFrame.sigDeleteFromScene.disconnect()
 
-        # subscribe to document events
-        self._currentDoc.sigSpriteAddedToCollection.connect(self.sltAddSprite)
+        self._document = document
+        self._document._currentEditableFrame.sigAddToScene.connect(
+            lambda item: self._ui.editorScene.addItem(item)
+        )
+        self._document._currentEditableFrame.sigDeleteFromScene.connect(
+            lambda item: self._ui.editorScene.removeItem(item)
+        )
 
-    def setModel(self, model) -> None:
-        self._ui.spriteListBox.setModel(model)
+        self._ui.spriteListBox.setModel(self._document._currentFrameModel)
 
     @pyqtSlot(QGraphicsItem)
-    def sltAddSprite(self, sprite: QGraphicsItem):
+    def sltAddSprite(self, sprite: QGraphicsItem) -> None:
         sprite.unlock()
         self._ui.editorScene.addItem(sprite)
 
