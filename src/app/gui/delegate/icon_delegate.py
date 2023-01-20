@@ -1,4 +1,4 @@
-from enum import Enum
+from enum import IntEnum
 
 from PyQt5.QtCore import (
     QAbstractItemModel,
@@ -17,13 +17,13 @@ from PyQt5.QtWidgets import QItemDelegate, QStyle, QStyleOptionViewItem
 from ...resources import resources
 
 
-class IconType(Enum):
-    VisibleIcon = 1
-    LockedIcon = 2
+class IconType(IntEnum):
+    VisibleIcon = 0
+    LockedIcon = 1
 
 
 class IconCheckDelegate(QItemDelegate):
-    def __init__(self, icon: IconType, exclusive: bool, parent: QObject):
+    def __init__(self, icon: IconType, exclusive: bool, parent: QObject) -> None:
         """Delegate for drawing an icon in SpriteListView for displaying
         visibility and locked state
 
@@ -35,8 +35,6 @@ class IconCheckDelegate(QItemDelegate):
 
         super().__init__(parent)
 
-        self._checkedIcon: QIcon = None
-        self._uncheckedIcon: QIcon = None
         self._exclusive: bool = exclusive
 
         if icon == IconType.VisibleIcon:
@@ -80,8 +78,7 @@ class IconCheckDelegate(QItemDelegate):
             or event.type() == QEvent.MouseButtonDblClick
             or event.type() == QEvent.MouseButtonPress
         ):
-            mouseEvent = QMouseEvent(event)
-            if mouseEvent.button() != Qt.LeftButton:
+            if event.button() != Qt.LeftButton:
                 return False
 
             # Consume double click events inside the check rect
@@ -92,8 +89,7 @@ class IconCheckDelegate(QItemDelegate):
                 return True
 
         elif event.type() == QEvent.KeyPress:
-            keyEvent = QKeyEvent(event)
-            if keyEvent.key() != Qt.Key_Space and keyEvent.key() != Qt.Key_Select:
+            if event.key() != Qt.Key_Space and event.key() != Qt.Key_Select:
                 return False
 
         else:
@@ -101,6 +97,7 @@ class IconCheckDelegate(QItemDelegate):
 
         state = Qt.CheckState(int(variant.value()))
         state = Qt.Unchecked if state == Qt.Checked else Qt.Checked
+
         return model.setData(index, state, Qt.CheckStateRole)
 
     def drawCheck(

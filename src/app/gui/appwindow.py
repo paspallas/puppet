@@ -26,14 +26,8 @@ class AppWindow(QMainWindow):
         self._animFrame = AnimationFrame()
         # when adding items to the data source the model must be notified to
         # reflect changes
-        self._animFrame.add(FrameSprite("Head", 10, 10, False, True, 30))
-        self._animFrame.add(FrameSprite("Chest", 10, 10, False, True, 30))
-        self._animFrame.add(FrameSprite("Foot", 10, 10, False, True, 30))
-        self._animFrame.add(FrameSprite("hand", 10, 10, False, True, 30))
-        self._animFrame.add(FrameSprite("Head", 10, 10, False, True, 30))
-        self._animFrame.add(FrameSprite("Chest", 10, 10, False, True, 30))
-        self._animFrame.add(FrameSprite("Foot", 10, 10, False, True, 30))
-        self._animFrame.add(FrameSprite("hand", 10, 10, False, True, 30))
+        self._animFrame.add(FrameSprite("Head", None, 10, 10, False, True, 30))
+        self._animFrame.add(FrameSprite("Chest", None, 10, 10, False, True, 30))
 
         self._animFrameModel = AnimationFrameModel()
         self._animFrameModel.setDataSource(self._animFrame)

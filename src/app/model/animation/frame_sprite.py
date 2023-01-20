@@ -1,11 +1,13 @@
-from enum import Enum
+from enum import IntEnum
 
 from PyQt5.QtCore import QObject, pyqtSignal
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import QGraphicsPixmapItem
 
+from .frame_sprite_item import FrameSpriteItem, ItemEvent
 
-class FrameSpriteColumn(Enum):
+
+class FrameSpriteColumn(IntEnum):
     """Column indexes for the internal properties as viewed from the model"""
 
     Name = 0
@@ -27,6 +29,7 @@ class FrameSprite(QObject):
     def __init__(
         self,
         name: str,
+        pix: QPixmap,
         x: int = 0,
         y: int = 0,
         vflip: bool = False,
@@ -44,6 +47,10 @@ class FrameSprite(QObject):
         self._zIndex: int = 0
         self._hide: bool = False
         self._lock: bool = False
+
+        self._pixmap: QPixmap = pix
+        self._item = FrameSpriteItem(self._pixmap)
+        self._item.subscribe(ItemEvent.zChanged, self.onItemZchanged)
 
     @property
     def name(self) -> str:
@@ -131,3 +138,6 @@ class FrameSprite(QObject):
         item.lock = self.lock
         item.name += "_copy"
         return item
+
+    def onItemZchanged(self, value: int) -> None:
+        self.zIndex = value

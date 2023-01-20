@@ -1,5 +1,5 @@
 import typing
-from enum import Enum
+from enum import IntEnum
 
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QKeyEvent
@@ -8,7 +8,7 @@ from PyQt5.QtWidgets import QGraphicsPixmapItem, QGraphicsSceneMouseEvent
 from ...util.pubsub import Publisher
 
 
-class ItemEvent(Enum):
+class ItemEvent(IntEnum):
     xChanged = 0
     yChanged = 1
     zChanged = 2

@@ -103,6 +103,7 @@ class AnimationFrameModel(QAbstractItemModel):
         self.beginRemoveRows(QModelIndex(), row, row)
         self._dataSource.delete(row)
         self.endRemoveRows()
+        return True
 
     def mimeTypes(self) -> typing.List[str]:
         return ["application/puppet-framedata"]
