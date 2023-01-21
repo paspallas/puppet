@@ -14,7 +14,7 @@ class Publisher:
         else:
             self._subscribers[event].append(callback)
 
-    def publish(self, event: int, args: typing.Any) -> None:
+    def publish(self, event: int, *args: typing.Any) -> None:
         if event in self._subscribers.keys():
             for callback in self._subscribers[event]:
-                callback(args)
+                callback(*args)

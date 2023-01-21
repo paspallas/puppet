@@ -59,7 +59,6 @@ class SpriteListBox(QWidget):
         self._ui.delBtn.clicked.connect(self._deleteItem)
 
         # Changes in the datamapper must be reflected inmediately in the model
-        # we use manual submit
         self._ui.xSpin.valueChanged.connect(self._mapper.submit, Qt.QueuedConnection)
         self._ui.ySpin.valueChanged.connect(self._mapper.submit, Qt.QueuedConnection)
         self._ui.opacitySlide.valueChanged.connect(
@@ -72,6 +71,11 @@ class SpriteListBox(QWidget):
             self._mapper.submit, Qt.QueuedConnection
         )
         self._ui.list.clicked.connect(self.itemPressed)
+
+    @pyqtSlot(int)
+    def updateDataMapper(self, index: int) -> None:
+        """Trigger the mapper to update when the data source of the model changes"""
+        self._mapper.setCurrentIndex(index)
 
     @pyqtSlot(QModelIndex)
     def itemPressed(self, index: QModelIndex):

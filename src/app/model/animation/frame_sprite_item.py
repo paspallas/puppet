@@ -1,7 +1,7 @@
 import typing
 from enum import IntEnum
 
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt, QVariant
 from PyQt5.QtGui import QKeyEvent, QPixmap
 from PyQt5.QtWidgets import QGraphicsPixmapItem, QGraphicsSceneMouseEvent, QGraphicsItem
 
@@ -9,9 +9,8 @@ from ...util.pubsub import Publisher
 
 
 class ItemEvent(IntEnum):
-    xChanged = 0
-    yChanged = 1
-    zChanged = 2
+    posChanged = 0
+    zChanged = 1
 
 
 class FrameSpriteItem(QGraphicsPixmapItem, Publisher):
@@ -52,3 +51,9 @@ class FrameSpriteItem(QGraphicsPixmapItem, Publisher):
             self.publish(ItemEvent.zChanged, z)
 
         super().keyPressEvent(e)
+
+    def itemChange(self, change, value: typing.Any) -> typing.Any:
+        if change == QGraphicsItem.ItemPositionChange and self.scene():
+            self.publish(ItemEvent.posChanged, int(value.x()), int(value.y()))
+
+        return super().itemChange(change, value)

@@ -6,6 +6,7 @@ from PyQt5.QtCore import (
     QModelIndex,
     Qt,
     QVariant,
+    pyqtSignal,
     pyqtSlot,
 )
 
@@ -16,6 +17,8 @@ from .frame_sprite import FrameSpriteColumn as fsc
 class AnimationFrameModel(QAbstractItemModel):
     """Interface between the view and the current editable animation frame"""
 
+    sigModelDataChanged = pyqtSignal(int)
+
     def __init__(self):
         super().__init__()
 
@@ -24,12 +27,12 @@ class AnimationFrameModel(QAbstractItemModel):
     def setDataSource(self, source: AnimationFrame) -> None:
         self.beginResetModel()
 
-        # if self._dataSource is not None:
-        #     self._dataSource.sigFrameDataChanged.disconnect(self.dataChanged)
+        if self._dataSource is not None:
+            self._dataSource.sigFrameDataChanged.disconnect(self.dataSourceChanged)
 
         self._dataSource = source
         self._dataSource.sigAddedItem.connect(self.newRow)
-        # self._dataSource.sigFrameDataChanged.connect(self.dataChanged)
+        self._dataSource.sigFrameDataChanged.connect(self.dataSourceChanged)
 
         self.endResetModel()
 
@@ -90,7 +93,7 @@ class AnimationFrameModel(QAbstractItemModel):
         return len(self._dataSource)
 
     def columnCount(self, parent: QModelIndex = ...) -> int:
-        return 3
+        return 4
 
     def parent(self, child: QModelIndex) -> QModelIndex:
         return QModelIndex()
@@ -109,6 +112,7 @@ class AnimationFrameModel(QAbstractItemModel):
         self.layoutAboutToBeChanged.emit()
         self._dataSource.moveup(index.row())
         self.layoutChanged.emit()
+
         return True
 
     def moveRowDown(self, index: QModelIndex) -> bool:
@@ -118,6 +122,7 @@ class AnimationFrameModel(QAbstractItemModel):
         self.layoutAboutToBeChanged.emit()
         self._dataSource.movedown(index.row())
         self.layoutChanged.emit()
+
         return True
 
     def removeRow(self, row: int, parent: QModelIndex = ...) -> bool:
@@ -180,3 +185,16 @@ class AnimationFrameModel(QAbstractItemModel):
             return True
 
         return False
+
+    @pyqtSlot(int, int)
+    def dataSourceChanged(self, row: int, column: int) -> None:
+        """Update the model and notify interested views"""
+        index = self.index(row, column, QModelIndex())
+
+        self.dataChanged.emit(
+            index,
+            index,
+            [Qt.ItemDataRole.DisplayRole, Qt.ItemDataRole.EditRole],
+        )
+
+        self.sigModelDataChanged.emit(index.row())

@@ -42,6 +42,7 @@ class CustomGraphicView(QGraphicsView):
         )
 
         self.setViewportUpdateMode(QGraphicsView.FullViewportUpdate)
+        self.setCacheMode(QGraphicsView.CacheBackground)
         self.setRenderHints(QPainter.Antialiasing | QPainter.SmoothPixmapTransform)
         self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
 
@@ -61,7 +62,9 @@ class CustomGraphicView(QGraphicsView):
     def resizeEvent(self, e: QResizeEvent):
         if not self._centerOnResize:
             super().resizeEvent(e)
+            self.updateGeometry()
             return
 
         self.centerOn(0, 0)
         super().resizeEvent(e)
+        self.updateGeometry()

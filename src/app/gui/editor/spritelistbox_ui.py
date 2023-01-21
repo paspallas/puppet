@@ -26,11 +26,13 @@ class SpriteListBoxUi:
 
         self.xSpin = QSpinBox()
         self.xSpin.setMinimum(-9999)
+        self.xSpin.setMaximum(9999)
         self.xLbl = QLabel("X: ")
         self.xLbl.setBuddy(self.xSpin)
 
         self.ySpin = QSpinBox()
         self.ySpin.setMinimum(-9999)
+        self.ySpin.setMaximum(9999)
         self.yLbl = QLabel("Y: ")
         self.yLbl.setBuddy(self.ySpin)
 

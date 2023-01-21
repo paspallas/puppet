@@ -4,17 +4,18 @@ from PyQt5.QtCore import QObject, pyqtSignal, pyqtSlot
 from PyQt5.QtGui import QPixmap
 
 from ...util.reflection import PropertyList
-from .frame_sprite import FrameSprite
+from .frame_sprite import FrameSprite, FrameSpriteColumn
 from .frame_sprite_item import FrameSpriteItem
 
 
 class AnimationFrame(QObject):
     """A Collection of framesprites that compose an animation frame"""
 
-    sigFrameDataChanged = pyqtSignal()
+    sigFrameDataChanged = pyqtSignal(int, int)
+    sigAddedItem = pyqtSignal()
+
     sigAddToScene = pyqtSignal(FrameSpriteItem)
     sigDeleteFromScene = pyqtSignal(FrameSpriteItem)
-    sigAddedItem = pyqtSignal()
 
     def __init__(self):
         super().__init__()
@@ -23,19 +24,21 @@ class AnimationFrame(QObject):
         self._property = PropertyList(FrameSprite)
 
     def add(self, framesprite: FrameSprite) -> None:
-        framesprite.sigInternalDataChanged.connect(self.dataChanged)
-        framesprite.zIndex = len(self)
+        """Add a new item to the top of the scene"""
 
         self.sprites.insert(0, framesprite)
 
+        # Set the higher zindex
+        framesprite.zIndex = len(self) - 1
+
+        framesprite.sigInternalDataChanged.connect(self.dataChanged)
         self.sigAddToScene.emit(framesprite.item)
 
     def fromPixmap(self, pixmap: QPixmap) -> None:
         framesprite = FrameSprite("test", pixmap)
-        framesprite.sigInternalDataChanged.connect(self.dataChanged)
-        framesprite.zIndex = len(self)
-
         self.sprites.insert(0, framesprite)
+        framesprite.sigInternalDataChanged.connect(self.dataChanged)
+        framesprite.zIndex = len(self) - 1
 
         self.sigAddedItem.emit()
         self.sigAddToScene.emit(framesprite.item)
@@ -82,12 +85,13 @@ class AnimationFrame(QObject):
         self.recalcZindexes()
 
     def recalcZindexes(self) -> None:
+        """Z indexes are reversed from the item position in the list"""
         for i, item in enumerate(reversed(self.sprites)):
             item.zIndex = i
 
     def __len__(self) -> int:
         return len(self.sprites)
 
-    @pyqtSlot()
-    def dataChanged(self) -> None:
-        self.sigFrameDataChanged.emit()
+    @pyqtSlot(int, FrameSpriteColumn)
+    def dataChanged(self, index: int, column: FrameSpriteColumn) -> None:
+        self.sigFrameDataChanged.emit(len(self) - index - 1, column)

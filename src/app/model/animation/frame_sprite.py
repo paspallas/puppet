@@ -24,7 +24,7 @@ class FrameSpriteColumn(IntEnum):
 class FrameSprite(QObject):
     """A sprite part of a frame"""
 
-    sigInternalDataChanged = pyqtSignal()
+    sigInternalDataChanged = pyqtSignal(int, FrameSpriteColumn)
 
     def __init__(
         self,
@@ -41,6 +41,7 @@ class FrameSprite(QObject):
         self._pixmap: QPixmap = pix
         self.item = FrameSpriteItem(self._pixmap)
         self.item.subscribe(ItemEvent.zChanged, self.onItemZchanged)
+        self.item.subscribe(ItemEvent.posChanged, self.onPosChanged)
 
         self._name: str = name
         self._x: int = x
@@ -89,6 +90,7 @@ class FrameSprite(QObject):
     @x.setter
     def x(self, value: int):
         self._x = value
+        self.item.setX(value)
 
     @property
     def y(self) -> int:
@@ -152,3 +154,7 @@ class FrameSprite(QObject):
         # so it has to deal with reordering the items based on it's zvalue
 
         pass
+
+    def onPosChanged(self, x: int, y: int) -> None:
+        self._x = x
+        self.sigInternalDataChanged.emit(self._zIndex, FrameSpriteColumn.X)

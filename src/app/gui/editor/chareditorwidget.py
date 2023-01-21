@@ -17,7 +17,7 @@ class CharEditorWidget(QWidget):
         self._ui.setupUi(self)
 
         self._toolmanager = SceneToolManager(self._ui.editorScene)
-        self._document: CharDocument = None
+        self._document = None
 
     def setDocument(self, document: CharDocument) -> None:
         if self._document is not None:
@@ -33,11 +33,9 @@ class CharEditorWidget(QWidget):
         )
 
         self._ui.spriteListBox.setModel(self._document._currentFrameModel)
-
-    @pyqtSlot(QGraphicsItem)
-    def sltAddSprite(self, sprite: QGraphicsItem) -> None:
-        sprite.unlock()
-        self._ui.editorScene.addItem(sprite)
+        self._document._currentFrameModel.sigModelDataChanged.connect(
+            self._ui.spriteListBox.updateDataMapper
+        )
 
     @pyqtSlot(str, bool)
     def sltSetTool(self, tool_cls: str, activate: bool) -> None:
