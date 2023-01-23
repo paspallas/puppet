@@ -7,9 +7,6 @@ from .chareditor_ui import CharEditorUi
 
 
 class CharEditorWidget(QWidget):
-
-    sigSelectedItemChanged = pyqtSignal(QGraphicsItem)
-
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
 
@@ -18,6 +15,10 @@ class CharEditorWidget(QWidget):
 
         self._toolmanager = SceneToolManager(self._ui.editorScene)
         self._document = None
+
+        self._ui.editorView.sigSelectedItem.connect(
+            self._ui.spriteListBox.setCurrentItem
+        )
 
     def setDocument(self, document: CharDocument) -> None:
         if self._document is not None:

@@ -50,9 +50,14 @@ class AnimationFrame(QObject):
         self.recalcZindexes()
 
     def copy(self, dst: int, src: int) -> None:
-        item = self.sprites[src]
-        self.sprites.insert(dst, item.copy())
+        framesprite = self.sprites[src]
+        copy = framesprite.copy()
+        copy.sigInternalDataChanged.connect(self.dataChanged)
+        self.sprites.insert(dst, copy)
         self.recalcZindexes()
+
+        self.sigAddedItem.emit()
+        self.sigAddToScene.emit(copy.item)
 
     def get(self, item_index: int, attr_index: int) -> typing.Any:
         return getattr(self.sprites[item_index], self._property[attr_index])

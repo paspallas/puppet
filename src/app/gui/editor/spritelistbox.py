@@ -10,7 +10,7 @@ from PyQt5.QtCore import (
     pyqtSlot,
 )
 from PyQt5.QtGui import QPainter, QPaintEvent
-from PyQt5.QtWidgets import QAbstractItemView, QDataWidgetMapper, QWidget
+from PyQt5.QtWidgets import QAbstractItemView, QDataWidgetMapper, QGraphicsItem, QWidget
 
 from ...model.sprite import Sprite, SpriteObject
 from ..delegate.icon_delegate import IconCheckDelegate, IconType
@@ -75,6 +75,7 @@ class SpriteListBox(QWidget):
     @pyqtSlot(int)
     def updateDataMapper(self, index: int) -> None:
         """Trigger the mapper to update when the data source of the model changes"""
+
         self._mapper.setCurrentIndex(index)
 
     @pyqtSlot(QModelIndex)
@@ -104,6 +105,14 @@ class SpriteListBox(QWidget):
     def _deleteItem(self) -> None:
         index = self._ui.list.currentIndex()
         self._ui.list.model().removeRow(index.row(), QModelIndex())
+
+    @pyqtSlot(QGraphicsItem)
+    def setCurrentItem(self, item: QGraphicsItem) -> None:
+        """Set the current item when the users selects an item in the editor view"""
+
+        self._ui.list.setCurrentIndex(
+            self._ui.list.model().itemFromZValue(int(item.zValue()))
+        )
 
     def paintEvent(self, e: QPaintEvent):
         painter = QPainter(self)

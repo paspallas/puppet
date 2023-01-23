@@ -147,18 +147,18 @@ class FrameSprite(QObject):
 
     def copy(self):
         item = FrameSprite(
-            self.name,
+            self._name,
             self._pixmap,
-            self.x,
-            self.y,
-            self.vflip,
-            self.hflip,
-            self.alpha,
+            self._x,
+            self._y,
+            self._vflip,
+            self._hflip,
+            self._alpha,
         )
-        item.zIndex = self.zIndex
         item.hide = False
         item.lock = False
         item.name += "_copy"
+
         return item
 
     def onItemZchanged(self, value: int) -> None:
