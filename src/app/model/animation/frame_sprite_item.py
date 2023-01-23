@@ -54,6 +54,6 @@ class FrameSpriteItem(QGraphicsPixmapItem, Publisher):
 
     def itemChange(self, change, value: typing.Any) -> typing.Any:
         if change == QGraphicsItem.ItemPositionChange and self.scene():
-            self.publish(ItemEvent.posChanged, int(value.x()), int(value.y()))
+            self.publish(ItemEvent.posChanged, value.x(), value.y())
 
         return super().itemChange(change, value)

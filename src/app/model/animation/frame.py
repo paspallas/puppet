@@ -1,4 +1,4 @@
-from typing import Any, overload
+import typing
 
 from PyQt5.QtCore import QObject, pyqtSignal, pyqtSlot
 from PyQt5.QtGui import QPixmap
@@ -54,10 +54,10 @@ class AnimationFrame(QObject):
         self.sprites.insert(dst, item.copy())
         self.recalcZindexes()
 
-    def get(self, item_index: int, attr_index: int) -> Any:
+    def get(self, item_index: int, attr_index: int) -> typing.Any:
         return getattr(self.sprites[item_index], self._property[attr_index])
 
-    def set(self, item_index: int, attr_index: int, value: Any) -> None:
+    def set(self, item_index: int, attr_index: int, value: typing.Any) -> None:
         setattr(self.sprites[item_index], self._property[attr_index], value)
 
     def count(self) -> int:
@@ -92,6 +92,7 @@ class AnimationFrame(QObject):
     def __len__(self) -> int:
         return len(self.sprites)
 
-    @pyqtSlot(int, FrameSpriteColumn)
-    def dataChanged(self, index: int, column: FrameSpriteColumn) -> None:
-        self.sigFrameDataChanged.emit(len(self) - index - 1, column)
+    @pyqtSlot(list)
+    def dataChanged(self, indexes: typing.List[typing.Tuple[int, int]]) -> None:
+        for index in indexes:
+            self.sigFrameDataChanged.emit(len(self) - index[0] - 1, index[1])

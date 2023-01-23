@@ -93,7 +93,7 @@ class AnimationFrameModel(QAbstractItemModel):
         return len(self._dataSource)
 
     def columnCount(self, parent: QModelIndex = ...) -> int:
-        return 4
+        return 3
 
     def parent(self, child: QModelIndex) -> QModelIndex:
         return QModelIndex()

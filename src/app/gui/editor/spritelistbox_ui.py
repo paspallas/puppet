@@ -3,12 +3,12 @@ from PyQt5.QtGui import QColor, QIcon
 from PyQt5.QtWidgets import (
     QAbstractItemView,
     QCheckBox,
+    QDoubleSpinBox,
     QGroupBox,
     QHBoxLayout,
     QHeaderView,
     QLabel,
     QPushButton,
-    QSpinBox,
     QTreeView,
     QVBoxLayout,
     QWidget,
@@ -24,13 +24,13 @@ class SpriteListBoxUi:
         self.brushColor = QColor("#424242")
         self.penColor = QColor("#424242")
 
-        self.xSpin = QSpinBox()
+        self.xSpin = QDoubleSpinBox()
         self.xSpin.setMinimum(-9999)
         self.xSpin.setMaximum(9999)
         self.xLbl = QLabel("X: ")
         self.xLbl.setBuddy(self.xSpin)
 
-        self.ySpin = QSpinBox()
+        self.ySpin = QDoubleSpinBox()
         self.ySpin.setMinimum(-9999)
         self.ySpin.setMaximum(9999)
         self.yLbl = QLabel("Y: ")
@@ -38,10 +38,10 @@ class SpriteListBoxUi:
 
         self.opacitySlide = FancySlider()
         self.opacitySlide.setRange(0, 100)
-        self.opacitySlide.setValue(100)
+        self.opacitySlide.setValue(0)
         self.opacitySlide.setTickInterval(1)
         self.opacitySlide.setOrientation(Qt.Horizontal)
-        self.opacityLbl = QLabel("Opacity: ")
+        self.opacityLbl = QLabel("Alpha: ")
         self.opacityLbl.setBuddy(self.opacitySlide)
 
         self.colorBtn = ColorButton()

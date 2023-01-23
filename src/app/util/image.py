@@ -1,22 +1,23 @@
 from PyQt5.QtCore import QPoint, QRect, QSize, Qt
-from PyQt5.QtGui import QColor, QPainter, QPixmap
+from PyQt5.QtGui import QColor, QPainter, QPixmap, QTransform
+from PyQt5.QtWidgets import QGraphicsItem
 
 
 class Image:
     @staticmethod
-    def setAlpha(opacity: int, pixmap: QPixmap) -> QPixmap:
+    def setAlpha(alpha: int, pixmap: QPixmap) -> QPixmap:
         transparent = QPixmap(pixmap.size())
         transparent.fill(Qt.transparent)
 
         with QPainter(transparent) as painter:
-            painter.setOpacity(opacity * 0.01)
+            painter.setOpacity((100 - alpha) * 0.01)
             painter.drawPixmap(QPoint(), pixmap)
 
         return transparent
 
     @staticmethod
-    def setTint(opacity: int, tint: QColor, pixmap: QPixmap) -> QPixmap:
-        alpha_mask = Image.setAlpha(opacity, pixmap)
+    def setTint(alpha: int, tint: QColor, pixmap: QPixmap) -> QPixmap:
+        alpha_mask = Image.setAlpha(alpha, pixmap)
         tinted = QPixmap(alpha_mask)
 
         with QPainter(alpha_mask) as painter:
@@ -28,3 +29,41 @@ class Image:
             painter.drawPixmap(QPoint(0, 0), alpha_mask, alpha_mask.rect())
 
         return tinted
+
+    @staticmethod
+    def flipHorizontal(item: QGraphicsItem) -> None:
+        transform = item.transform()
+        m11 = transform.m11()  # Horizontal scaling
+        m12 = transform.m12()  # Vertical shearing
+        m13 = transform.m13()  # Horizontal Projection
+        m21 = transform.m21()  # Horizontal shearing
+        m22 = transform.m22()  # vertical scaling
+        m23 = transform.m23()  # Vertical Projection
+        m31 = transform.m31()  # Horizontal Position (DX)
+        m32 = transform.m32()  # Vertical Position (DY)
+        m33 = transform.m33()  # Additional Projection Factor
+
+        m31 = 0 if m31 > 0 else item.boundingRect().width() * m11
+
+        transform.setMatrix(-m11, m12, m13, m21, m22, m23, m31, m32, m33)
+
+        item.setTransform(transform)
+
+    @staticmethod
+    def flipVertical(item: QGraphicsItem) -> None:
+        transform = item.transform()
+        m11 = transform.m11()  # Horizontal scaling
+        m12 = transform.m12()  # Vertical shearing
+        m13 = transform.m13()  # Horizontal Projection
+        m21 = transform.m21()  # Horizontal shearing
+        m22 = transform.m22()  # vertical scaling
+        m23 = transform.m23()  # Vertical Projection
+        m31 = transform.m31()  # Horizontal Position (DX)
+        m32 = transform.m32()  # Vertical Position (DY)
+        m33 = transform.m33()  # Additional Projection Factor
+
+        m32 = 0 if m32 > 0 else item.boundingRect().height() * m22
+
+        transform.setMatrix(m11, m12, m13, m21, -m22, m23, m31, m32, m33)
+
+        item.setTransform(transform)
