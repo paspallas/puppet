@@ -17,7 +17,7 @@ class SpritePaletteDock(QDockWidget):
         super().__init__(*args, **kwargs)
 
         self.setWindowTitle("Sprite Palette")
-        self.setAllowedAreas(Qt.BottomDockWidgetArea)
+        self.setAllowedAreas(Qt.BottomDockWidgetArea | Qt.TopDockWidgetArea)
 
         self._container = QWidget(self)
         self.setWidget(self._container)
@@ -29,17 +29,12 @@ class SpritePaletteDock(QDockWidget):
         self._groupModel = SpriteGroupCollectionModel()
         self._groupController = SpriteGroupController(self._groupModel)
 
-        # should route internal signals slots in the document to it's components?
-
-        self._exposeInternalSignals()
+        self._ui.spritePalView.sigSelectedItem.connect(self.sigSelectedSprite)
 
     def setModel(self, model: CharDocument) -> None:
         self._model = model.spriteSheets()
         self._controller = SpritePaletteController(model)
         self._makeConnections()
-
-    def _exposeInternalSignals(self):
-        self._ui.spritePalView.sigSelectedItem.connect(self.sigSelectedSprite)
 
     def _makeConnections(self):
         self._ui.addBtn.clicked.connect(self._controller.addSpriteSheet)

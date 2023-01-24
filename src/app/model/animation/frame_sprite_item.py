@@ -3,7 +3,7 @@ from enum import IntEnum
 
 from PyQt5.QtCore import Qt, QVariant
 from PyQt5.QtGui import QKeyEvent, QPixmap
-from PyQt5.QtWidgets import QGraphicsPixmapItem, QGraphicsSceneMouseEvent, QGraphicsItem
+from PyQt5.QtWidgets import QGraphicsItem, QGraphicsPixmapItem, QGraphicsSceneMouseEvent
 
 from ...util.pubsub import Publisher
 
@@ -34,9 +34,6 @@ class FrameSpriteItem(QGraphicsPixmapItem, Publisher):
             | QGraphicsItem.ItemSendsScenePositionChanges
         )
 
-    def mousePressEvent(self, e: QGraphicsSceneMouseEvent) -> None:
-        super().mousePressEvent(e)
-
     def keyPressEvent(self, e: QKeyEvent) -> None:
         if e.key() == Qt.Key.Key_Q:
             z = int(self.zValue()) + 1
@@ -52,7 +49,8 @@ class FrameSpriteItem(QGraphicsPixmapItem, Publisher):
         elif e.key() == Qt.Key_H:
             self.publish(ItemEvent.hFlipChanged)
 
-        super().keyPressEvent(e)
+        else:
+            super().keyPressEvent(e)
 
     def itemChange(self, change, value: typing.Any) -> typing.Any:
         if change == QGraphicsItem.ItemPositionChange and self.scene():

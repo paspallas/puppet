@@ -54,7 +54,7 @@ class FrameSprite(QObject):
         self._y: float = y
         self._vflip: bool = vflip
         self._hflip: bool = hflip
-        self._transparency: int = alpha
+        self._alpha: int = alpha
         self._zIndex: int = 0
 
         self._hide: bool = False
@@ -111,12 +111,12 @@ class FrameSprite(QObject):
 
     @property
     def alpha(self) -> int:
-        return self._transparency
+        return self._alpha
 
     @alpha.setter
     def alpha(self, value: int):
-        if self._transparency != value:
-            self._transparency = value
+        if self._alpha != value:
+            self._alpha = value
             self.item.setPixmap(Image.setAlpha(value, self._pixmap))
 
     @property

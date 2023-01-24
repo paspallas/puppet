@@ -47,6 +47,9 @@ class CharDocument(QObject):
 
         self._forward()
 
+    def frameModel(self) -> AnimationFrameModel:
+        return self._currentFrameModel
+
     def spriteSheets(self) -> SpriteSheetCollectionModel:
         return self._spriteSheets
 
