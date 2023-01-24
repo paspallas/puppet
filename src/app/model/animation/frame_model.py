@@ -28,11 +28,18 @@ class AnimationFrameModel(QAbstractItemModel):
         self.beginResetModel()
 
         if self._dataSource is not None:
-            self._dataSource.sigFrameDataChanged.disconnect(self.dataSourceChanged)
+            self._dataSource.sigFrameDataChanged.disconnect()
+            self._dataSource.sigFrameLayoutChanged.disconnect()
 
         self._dataSource = source
         self._dataSource.sigAddedItem.connect(self.newRow)
         self._dataSource.sigFrameDataChanged.connect(self.dataSourceChanged)
+        self._dataSource.sigFrameLayoutAboutToChange.connect(
+            lambda: self.layoutAboutToBeChanged.emit()
+        )
+        self._dataSource.sigFrameLayoutChanged.connect(
+            lambda: self.layoutChanged.emit()
+        )
 
         self.endResetModel()
 

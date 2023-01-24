@@ -27,6 +27,8 @@ class FrameSprite(QObject):
     """A sprite part of a frame"""
 
     sigInternalDataChanged = pyqtSignal(list)
+    sigIncreaseZ = pyqtSignal(int)
+    sigDecreaseZ = pyqtSignal(int)
 
     def __init__(
         self,
@@ -162,10 +164,10 @@ class FrameSprite(QObject):
         return item
 
     def onItemZchanged(self, value: int) -> None:
-        # The frame instance has knowledge of all the frame--sprites
-        # so it has to deal with reordering the items based on it's zvalue
-
-        pass
+        if value > self._zIndex:
+            self.sigIncreaseZ.emit(self._zIndex)
+        else:
+            self.sigDecreaseZ.emit(self._zIndex)
 
     def onPosChanged(self, x: float, y: float) -> None:
         self._x = x

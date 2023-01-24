@@ -32,6 +32,9 @@ class CharEditorWidget(QWidget):
         self._document._currentEditableFrame.sigDeleteFromScene.connect(
             lambda item: self._ui.editorScene.removeItem(item)
         )
+        self._document._currentEditableFrame.sigSelectedItem.connect(
+            self._ui.spriteListBox.setCurrentItem
+        )
 
         self._ui.spriteListBox.setModel(self._document._currentFrameModel)
         self._document._currentFrameModel.sigModelDataChanged.connect(

@@ -2,6 +2,7 @@ import typing
 
 from PyQt5.QtCore import QObject, pyqtSignal, pyqtSlot
 from PyQt5.QtGui import QPixmap
+from PyQt5.QtWidgets import QGraphicsItem
 
 from ...util.reflection import PropertyList
 from .frame_sprite import FrameSprite, FrameSpriteColumn
@@ -11,11 +12,16 @@ from .frame_sprite_item import FrameSpriteItem
 class AnimationFrame(QObject):
     """A Collection of framesprites that compose an animation frame"""
 
+    # To model
     sigFrameDataChanged = pyqtSignal(int, int)
+    sigFrameLayoutAboutToChange = pyqtSignal()
+    sigFrameLayoutChanged = pyqtSignal()
     sigAddedItem = pyqtSignal()
 
+    # To other widgets
     sigAddToScene = pyqtSignal(FrameSpriteItem)
     sigDeleteFromScene = pyqtSignal(FrameSpriteItem)
+    sigSelectedItem = pyqtSignal(QGraphicsItem)
 
     def __init__(self):
         super().__init__()
@@ -37,7 +43,10 @@ class AnimationFrame(QObject):
     def fromPixmap(self, pixmap: QPixmap) -> None:
         framesprite = FrameSprite("test", pixmap)
         self.sprites.insert(0, framesprite)
+
         framesprite.sigInternalDataChanged.connect(self.dataChanged)
+        framesprite.sigIncreaseZ.connect(self.onIncreaseZ)
+        framesprite.sigDecreaseZ.connect(self.onDecreaseZ)
         framesprite.zIndex = len(self) - 1
 
         self.sigAddedItem.emit()
@@ -68,6 +77,35 @@ class AnimationFrame(QObject):
     def count(self) -> int:
         return self._property.count()
 
+    @pyqtSlot(int)
+    def onIncreaseZ(self, z: int) -> None:
+        if z + 1 > len(self) - 1:
+            return
+
+        self.sigFrameLayoutAboutToChange.emit()
+
+        item_index = len(self) - 1 - z
+        self.moveup(item_index)
+        sprite = self.sprites[item_index - 1]
+
+        self.sigFrameLayoutChanged.emit()
+        self.sigSelectedItem.emit(sprite.item)
+
+    @pyqtSlot(int)
+    def onDecreaseZ(self, z: int) -> None:
+        if z - 1 < 0:
+            return
+
+        self.sigFrameLayoutAboutToChange.emit()
+
+        item_index = len(self) - 1 - z
+        self.movedown(item_index)
+        sprite = self.sprites[item_index + 1]
+
+        self.sigFrameLayoutChanged.emit()
+        self.sigSelectedItem.emit(sprite.item)
+
+    @pyqtSlot(int)
     def moveup(self, item_index: int) -> None:
         """Raise the zindex of an item"""
 
@@ -75,6 +113,7 @@ class AnimationFrame(QObject):
         self.sprites.insert(item_index - 1, item)
         self.recalcZindexes()
 
+    @pyqtSlot(int)
     def movedown(self, item_index: int) -> None:
         """Lower the zindex of an item"""
 

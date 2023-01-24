@@ -37,17 +37,11 @@ class FrameSpriteItem(QGraphicsPixmapItem, Publisher):
 
     def keyPressEvent(self, e: QKeyEvent) -> None:
         if e.key() == Qt.Key.Key_Q:
-            # TODO we have to check how many items there are in the collection!
-
-            z = self.zValue() + 1
-            self.setZValue(z)
-
+            z = int(self.zValue()) + 1
             self.publish(ItemEvent.zChanged, z)
 
         elif e.key() == Qt.Key_W:
-            z = self.zValue() - 1
-            self.setZValue(z)
-
+            z = int(self.zValue() - 1)
             self.publish(ItemEvent.zChanged, z)
 
         super().keyPressEvent(e)
