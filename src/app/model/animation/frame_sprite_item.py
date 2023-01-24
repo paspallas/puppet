@@ -11,6 +11,8 @@ from ...util.pubsub import Publisher
 class ItemEvent(IntEnum):
     posChanged = 0
     zChanged = 1
+    vFlipChanged = 2
+    hFlipChanged = 3
 
 
 class FrameSpriteItem(QGraphicsPixmapItem, Publisher):
@@ -43,6 +45,12 @@ class FrameSpriteItem(QGraphicsPixmapItem, Publisher):
         elif e.key() == Qt.Key_W:
             z = int(self.zValue() - 1)
             self.publish(ItemEvent.zChanged, z)
+
+        elif e.key() == Qt.Key_V:
+            self.publish(ItemEvent.vFlipChanged)
+
+        elif e.key() == Qt.Key_H:
+            self.publish(ItemEvent.hFlipChanged)
 
         super().keyPressEvent(e)
 

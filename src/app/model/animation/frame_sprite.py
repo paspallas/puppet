@@ -46,6 +46,8 @@ class FrameSprite(QObject):
         self.item = FrameSpriteItem(self._pixmap)
         self.item.subscribe(ItemEvent.zChanged, self.onItemZchanged)
         self.item.subscribe(ItemEvent.posChanged, self.onPosChanged)
+        self.item.subscribe(ItemEvent.hFlipChanged, self.onHflipChanged)
+        self.item.subscribe(ItemEvent.vFlipChanged, self.onVflipChanged)
 
         self._name: str = name
         self._x: float = x
@@ -176,3 +178,15 @@ class FrameSprite(QObject):
         self.sigInternalDataChanged.emit(
             [(self._zIndex, FrameSpriteColumn.X), (self._zIndex, FrameSpriteColumn.Y)]
         )
+
+    def onHflipChanged(self) -> None:
+        self._hflip = not self._hflip
+        Image.flipHorizontal(self.item)
+
+        self.sigInternalDataChanged.emit([(self._zIndex, FrameSpriteColumn.Hflip)])
+
+    def onVflipChanged(self) -> None:
+        self._vflip = not self._vflip
+        Image.flipVertical(self.item)
+
+        self.sigInternalDataChanged.emit([(self._zIndex, FrameSpriteColumn.Vflip)])
