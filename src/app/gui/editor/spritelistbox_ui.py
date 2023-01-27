@@ -15,7 +15,7 @@ from PyQt5.QtWidgets import (
 )
 
 from ...resources import resources
-from ..widget import ColorButton, FancySlider
+from ..widget import ColorButton, ColorPickerWidget, FancySlider
 
 
 class SpriteListBoxUi:
@@ -47,18 +47,23 @@ class SpriteListBoxUi:
         self.colorBtn = ColorButton()
         self.colorLbl = QLabel("Tint: ")
         self.colorLbl.setBuddy(self.colorBtn)
+        self.colorPicker = ColorPickerWidget(parent)
+        self.colorPicker.sigSelectedColorChanged.connect(self.colorBtn.setColor)
 
         self.flipVerticalChk = QCheckBox("Vertical")
         self.flipHorizontalChk = QCheckBox("Horizontal")
         self.flipLabel = QLabel("Flip: ")
 
+        pickerLay = QVBoxLayout()
+        pickerLay.addWidget(self.colorPicker, 0, Qt.AlignHCenter)
+
         h0 = QHBoxLayout()
-        h0.addWidget(self.opacityLbl, stretch=1)
-        h0.addWidget(self.opacitySlide, stretch=3)
+        h0.addWidget(self.colorLbl, stretch=1)
+        h0.addWidget(self.colorBtn, stretch=3)
 
         h1 = QHBoxLayout()
-        h1.addWidget(self.colorLbl, stretch=1)
-        h1.addWidget(self.colorBtn, stretch=3)
+        h1.addWidget(self.opacityLbl, stretch=1)
+        h1.addWidget(self.opacitySlide, stretch=3)
 
         h2 = QHBoxLayout()
         h2.addWidget(self.xLbl, stretch=1)
@@ -74,6 +79,7 @@ class SpriteListBoxUi:
         h4.addWidget(self.flipVerticalChk, 0)
 
         propertyBoxLay = QVBoxLayout()
+        propertyBoxLay.addLayout(pickerLay)
         propertyBoxLay.addLayout(h0)
         propertyBoxLay.addLayout(h1)
         propertyBoxLay.addLayout(h2)

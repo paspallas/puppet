@@ -1,5 +1,6 @@
 from PyQt5.QtCore import (
     QAbstractItemModel,
+    QObject,
     QModelIndex,
     Qt,
     QRectF,
@@ -42,8 +43,20 @@ class SpriteListBox(QWidget):
         self._ui.list.setItemDelegateForColumn(
             1, IconCheckDelegate(IconType.VisibleIcon, True, self._ui.list)
         )
-        self._ui.list.setItemDelegateForColumn(
-            2, IconCheckDelegate(IconType.LockedIcon, True, self._ui.list)
+
+        self._delegate = IconCheckDelegate(IconType.LockedIcon, True, self._ui.list)
+        self._ui.list.setItemDelegateForColumn(2, self._delegate)
+
+        self._delegate.sigCheckState.connect(lambda val: self._ui.xSpin.setEnabled(val))
+        self._delegate.sigCheckState.connect(lambda val: self._ui.ySpin.setEnabled(val))
+        self._delegate.sigCheckState.connect(
+            lambda val: self._ui.opacitySlide.setEnabled(val)
+        )
+        self._delegate.sigCheckState.connect(
+            lambda val: self._ui.flipHorizontalChk.setEnabled(val)
+        )
+        self._delegate.sigCheckState.connect(
+            lambda val: self._ui.flipVerticalChk.setEnabled(val)
         )
 
         self._mapper.setSubmitPolicy(QDataWidgetMapper.ManualSubmit)

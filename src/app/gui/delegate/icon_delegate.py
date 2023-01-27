@@ -10,6 +10,7 @@ from PyQt5.QtCore import (
     QSize,
     Qt,
     QVariant,
+    pyqtSignal,
 )
 from PyQt5.QtGui import QIcon, QKeyEvent, QMouseEvent, QPainter
 from PyQt5.QtWidgets import QItemDelegate, QStyle, QStyleOptionViewItem
@@ -23,6 +24,9 @@ class IconType(IntEnum):
 
 
 class IconCheckDelegate(QItemDelegate):
+
+    sigCheckState = pyqtSignal(bool)
+
     def __init__(self, icon: IconType, exclusive: bool, parent: QObject) -> None:
         """Delegate for drawing an icon in SpriteListView for displaying
         visibility and locked state
@@ -98,6 +102,7 @@ class IconCheckDelegate(QItemDelegate):
         state = Qt.CheckState(int(variant.value()))
         state = Qt.Unchecked if state == Qt.Checked else Qt.Checked
 
+        self.sigCheckState.emit(not state)
         return model.setData(index, state, Qt.CheckStateRole)
 
     def drawCheck(

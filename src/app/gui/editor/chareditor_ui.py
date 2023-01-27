@@ -18,9 +18,7 @@ class CharEditorUi:
         # widgets over the scene viewport
         self.spriteListBox = SpriteListBox()
         vbox = QVBoxLayout(self.editorView.viewport())
-        vbox.addStretch(1)
         vbox.addWidget(self.spriteListBox, 0, Qt.AlignRight)
-        vbox.addStretch(1)
 
         hbox = QHBoxLayout(parent)
         hbox.addWidget(self.editorView)

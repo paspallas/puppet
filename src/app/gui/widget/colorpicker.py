@@ -1,9 +1,18 @@
-from PyQt5.QtCore import QEvent, QLineF, QPoint, QPointF, QRectF, Qt, pyqtSignal
+from PyQt5.QtCore import (
+    QEvent,
+    QLineF,
+    QPoint,
+    QPointF,
+    QRectF,
+    QSize,
+    Qt,
+    pyqtSignal,
+    pyqtSlot,
+)
 from PyQt5.QtGui import (
     QBrush,
     QColor,
     QConicalGradient,
-    QCursor,
     QLinearGradient,
     QMouseEvent,
     QPainter,
@@ -15,26 +24,23 @@ from PyQt5.QtGui import (
 )
 from PyQt5.QtWidgets import QHBoxLayout, QLabel, QSizePolicy, QSlider, QWidget
 
-# import app.resources
-
 
 class ColorPickerWidget(QWidget):
 
-    radius = 200
+    sigSelectedColorChanged = pyqtSignal(str)
+
+    radius = 175
     size = radius / 2
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.setFixedSize(250, 250)
         self.setMouseTracking(True)
-        # self.setWindowFlag(Qt.FramelessWindowHint)
-
-        # self.colorPickerCursor = QCursor(QPixmap(":cursor/picker"), 10, 23)
+        self.setMinimumSize(QSize(200, 200))
 
         self.center = QPointF(self.width() / 2, self.height() / 2)
         self.hueRect = QRectF(0, 0, self.radius, self.radius)
         self.hueRect.moveCenter(self.rect().center())
-        self.svRect = QRectF(0, 0, self.radius - 100, self.radius - 100)
+        self.svRect = QRectF(0, 0, self.radius - 75, self.radius - 75)
         self.svRect.moveCenter(self.rect().center())
 
         self.selected_color = QColor(Qt.red)
@@ -103,12 +109,9 @@ class ColorPickerWidget(QWidget):
         self.h = line.angle() / 360 % 1.0
 
     def recalc(self) -> None:
-        print(
-            f"h {round(self.h * 360)} s {round(self.s * 100)}% v {round(self.v * 100)}%"
-        )
-
         self.selected_color.setHsvF(self.h, self.s, self.v)
-        # self.currentColorChanged.emit(self.selected_color)
+        self.sigSelectedColorChanged.emit(self.selected_color.name())
+
         self.repaint()
 
     def isInsidePath(self, point: QPointF) -> bool:
@@ -154,7 +157,6 @@ class ColorPickerWidget(QWidget):
                 self.updateSatValGradient()
 
         if hit:
-            # self.setCursor(self.colorPickerCursor)
             if e.buttons() & Qt.LeftButton:
                 self.recalc()
         else:
@@ -170,7 +172,7 @@ class ColorPickerWidget(QWidget):
         painter = QPainter(self)
         painter.setRenderHint(QPainter.Antialiasing, True)
 
-        pen = QPen(QBrush(self.hueGradient), 24, Qt.SolidLine)
+        pen = QPen(QBrush(self.hueGradient), 12, Qt.SolidLine)
         painter.setPen(pen)
         painter.drawArc(self.hueRect, 0, 360 * 16)
 
