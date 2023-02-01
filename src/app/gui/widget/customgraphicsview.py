@@ -20,11 +20,10 @@ class CustomGraphicViewOptions(NamedTuple):
 
 
 class CustomGraphicView(QGraphicsView):
-
-    sigSelectedItem = pyqtSignal(QGraphicsItem)
-
     def __init__(self, *args, options: CustomGraphicViewOptions, **kwargs) -> None:
         super().__init__(*args, **kwargs)
+
+        self._activeItem = None
 
         self._centerOnResize = options.center_on_resize
 
@@ -52,13 +51,6 @@ class CustomGraphicView(QGraphicsView):
 
         ZoomControl(self)
         PanControl(self)
-
-    def mousePressEvent(self, e: QMouseEvent) -> None:
-        item = self.itemAt(e.pos())
-        if item:
-            self.sigSelectedItem.emit(item)
-
-        super().mousePressEvent(e)
 
     def resizeEvent(self, e: QResizeEvent) -> None:
         if not self._centerOnResize:

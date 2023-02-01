@@ -45,6 +45,7 @@ class FrameSprite(QObject):
         self._pixmap: QPixmap = pix
         self.item = FrameSpriteItem(self._pixmap)
         self.item.subscribe(ItemEvent.zChanged, self.onItemZchanged)
+        self.item.subscribe(ItemEvent.offsetChanged, self.onOffsetChanged)
         self.item.subscribe(ItemEvent.posChanged, self.onPosChanged)
         self.item.subscribe(ItemEvent.hFlipChanged, self.onHflipChanged)
         self.item.subscribe(ItemEvent.vFlipChanged, self.onVflipChanged)
@@ -174,6 +175,14 @@ class FrameSprite(QObject):
     def onPosChanged(self, x: float, y: float) -> None:
         self._x = x
         self._y = y
+
+        self.sigInternalDataChanged.emit(
+            [(self._zIndex, FrameSpriteColumn.X), (self._zIndex, FrameSpriteColumn.Y)]
+        )
+
+    def onOffsetChanged(self, x: float, y: float) -> None:
+        self._x += x
+        self._y += y
 
         self.sigInternalDataChanged.emit(
             [(self._zIndex, FrameSpriteColumn.X), (self._zIndex, FrameSpriteColumn.Y)]

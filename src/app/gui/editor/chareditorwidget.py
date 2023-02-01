@@ -16,7 +16,7 @@ class CharEditorWidget(QWidget):
         self._toolmanager = SceneToolManager(self._ui.editorScene)
         self._document = None
 
-        self._ui.editorView.sigSelectedItem.connect(
+        self._ui.editorScene.sigSelectedItem.connect(
             self._ui.spriteListBox.setCurrentItem
         )
 

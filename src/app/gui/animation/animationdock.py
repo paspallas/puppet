@@ -17,6 +17,7 @@ from PyQt5.QtWidgets import (
 )
 
 from ...model.chardocument import CharDocument
+from .animation_ui import AnimationUi
 
 
 class AnimationEditorDock(QDockWidget):
@@ -28,3 +29,6 @@ class AnimationEditorDock(QDockWidget):
 
         self._container = QWidget(self)
         self.setWidget(self._container)
+
+        self._ui = AnimationUi()
+        self._ui.setupUi(self._container)

@@ -3,16 +3,22 @@ from enum import IntEnum
 
 from PyQt5.QtCore import Qt, QVariant
 from PyQt5.QtGui import QKeyEvent, QPixmap
-from PyQt5.QtWidgets import QGraphicsItem, QGraphicsPixmapItem, QGraphicsSceneMouseEvent
+from PyQt5.QtWidgets import (
+    QGraphicsItem,
+    QGraphicsPixmapItem,
+    QGraphicsSceneMouseEvent,
+    QGraphicsSceneWheelEvent,
+)
 
 from ...util.pubsub import Publisher
 
 
 class ItemEvent(IntEnum):
     posChanged = 0
-    zChanged = 1
-    vFlipChanged = 2
-    hFlipChanged = 3
+    offsetChanged = 1
+    zChanged = 2
+    vFlipChanged = 3
+    hFlipChanged = 4
 
 
 class FrameSpriteItem(QGraphicsPixmapItem, Publisher):
@@ -45,12 +51,27 @@ class FrameSpriteItem(QGraphicsPixmapItem, Publisher):
 
         elif e.key() == Qt.Key_V:
             self.publish(ItemEvent.vFlipChanged)
-
         elif e.key() == Qt.Key_H:
             self.publish(ItemEvent.hFlipChanged)
-
+        elif e.key() == Qt.Key_Left:
+            self.publish(ItemEvent.offsetChanged, -1, 0)
+        elif e.key() == Qt.Key_Right:
+            self.publish(ItemEvent.offsetChanged, 1, 0)
+        elif e.key() == Qt.Key_Up:
+            self.publish(ItemEvent.offsetChanged, 0, -1)
+        elif e.key() == Qt.Key_Down:
+            self.publish(ItemEvent.offsetChanged, 0, 1)
         else:
             super().keyPressEvent(e)
+
+    def wheelEvent(self, e: QGraphicsSceneWheelEvent) -> None:
+        if e.modifiers() & Qt.Modifier.ALT:
+            if e.delta() > 0:
+                z = int(self.zValue() - 1)
+                self.publish(ItemEvent.zChanged, z)
+            elif e.delta() < 0:
+                z = int(self.zValue() + 1)
+                self.publish(ItemEvent.zChanged, z)
 
     def itemChange(self, change, value: typing.Any) -> typing.Any:
         if change == QGraphicsItem.ItemPositionChange and self.scene():

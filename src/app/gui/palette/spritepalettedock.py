@@ -29,7 +29,7 @@ class SpritePaletteDock(QDockWidget):
         self._groupModel = SpriteGroupCollectionModel()
         self._groupController = SpriteGroupController(self._groupModel)
 
-        self._ui.spritePalView.sigSelectedItem.connect(self.sigSelectedSprite)
+        self._ui.spritePalScene.sigSelectedItem.connect(self.sigSelectedSprite)
 
     def setModel(self, model: CharDocument) -> None:
         self._model = model.spriteSheets()
@@ -44,10 +44,9 @@ class SpritePaletteDock(QDockWidget):
             )
         )
 
-        self._ui.spritesheetList.currentRowChanged.connect(self.__onCurrentRowChanged)
-        self._ui.spritePalView.sigSelectedItem.connect(self._controller.selectedSprite)
+        self._ui.spritesheetList.currentRowChanged.connect(self.onCurrentRowChanged)
+        self._ui.spritePalScene.sigSelectedItem.connect(self._controller.selectedSprite)
 
-        # subscribe to model signals
         self._model.sigSpriteSheetAdded.connect(self.onAddSheet)
         self._model.sigSpriteSheetRemoved.connect(self.onDelSheet)
 
@@ -71,7 +70,8 @@ class SpritePaletteDock(QDockWidget):
             self._groupController.delGroup(item.text())
             self._ui.spritesheetList.takeItem(row)
 
-    def __onCurrentRowChanged(self, row: int) -> None:
+    @pyqtSlot(int)
+    def onCurrentRowChanged(self, row: int) -> None:
         item = self._ui.spritesheetList.item(row)
         if item:
             self._groupController.showGroup(item.text())

@@ -1,7 +1,7 @@
 from typing import NamedTuple
 
 from PyQt5.QtCore import QPoint, QRectF, QLineF, Qt, pyqtSlot, pyqtSignal
-from PyQt5.QtGui import QBrush, QColor, QPainter, QPen, QPixmap
+from PyQt5.QtGui import QBrush, QColor, QPainter, QPen, QPixmap, QTransform
 from PyQt5.QtWidgets import (
     QGraphicsItem,
     QGraphicsScene,
@@ -18,8 +18,12 @@ class CustomGraphicSceneOptions(NamedTuple):
 
 
 class CustomGraphicScene(QGraphicsScene):
+    sigSelectedItem = pyqtSignal(QGraphicsItem)
+
     def __init__(self, *args, options: CustomGraphicSceneOptions, **kwargs):
         super().__init__(*args, **kwargs)
+
+        self.activeItem = None
 
         self._showCenterGrid = options.show_center
         self._gridSize = options.grid_size
@@ -36,6 +40,13 @@ class CustomGraphicScene(QGraphicsScene):
     def delItems(self, items: list[QGraphicsItem]) -> None:
         for item in items:
             self.removeItem(item)
+
+    def mousePressEvent(self, e: QGraphicsSceneMouseEvent) -> None:
+        self.activeItem = self.itemAt(e.scenePos(), self.views()[0].transform())
+        if self.activeItem:
+            self.sigSelectedItem.emit(self.activeItem)
+
+        super().mousePressEvent(e)
 
     def drawBackground(self, painter: QPainter, rect: QRectF) -> None:
         painter.setRenderHint(QPainter.Antialiasing)
