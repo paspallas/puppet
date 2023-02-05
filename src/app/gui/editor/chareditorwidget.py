@@ -5,6 +5,11 @@ from ...model.chardocument import CharDocument
 from ...tool import SceneToolManager
 from .chareditor_ui import CharEditorUi
 
+from ...tool.rectangle import Rectangle
+from ...tool.rectangle_editor import RectangleEditor
+
+from PyQt5.QtCore import QPointF, QRectF
+
 
 class CharEditorWidget(QWidget):
     def __init__(self, *args, **kwargs) -> None:
@@ -40,6 +45,11 @@ class CharEditorWidget(QWidget):
         self._document._currentFrameModel.sigModelDataChanged.connect(
             self._ui.spriteListBox.updateDataMapper
         )
+
+        self.rectangle = Rectangle(QPointF(0, 0), QRectF(0, 0, 100, 100))
+        self.rectangleEdit = RectangleEditor(None, self.rectangle)
+        self._ui.editorScene.addItem(self.rectangle)
+        self._ui.editorScene.addItem(self.rectangleEdit)
 
     @pyqtSlot(str, bool)
     def sltSetTool(self, tool_cls: str, activate: bool) -> None:

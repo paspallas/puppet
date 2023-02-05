@@ -1,4 +1,4 @@
-from PyQt5.QtWidgets import QPushButton, QListWidget, QHBoxLayout, QWidget
+from PyQt5.QtWidgets import QHBoxLayout, QListWidget, QPushButton, QWidget
 
 
 class AnimationUi:
