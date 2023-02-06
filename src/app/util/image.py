@@ -1,6 +1,6 @@
-from PyQt5.QtCore import QPoint, QRect, QSize, Qt
-from PyQt5.QtGui import QColor, QPainter, QPixmap, QTransform
-from PyQt5.QtWidgets import QGraphicsItem
+from PyQt5.QtCore import QPoint, QRect, QRectF, QSize, Qt
+from PyQt5.QtGui import QColor, QImage, QPainter, QPixmap, QTransform
+from PyQt5.QtWidgets import QGraphicsItem, QGraphicsScene
 
 
 class Image:
@@ -67,3 +67,19 @@ class Image:
         transform.setMatrix(m11, m12, m13, m21, -m22, m23, m31, m32, m33)
 
         item.setTransform(transform)
+
+    @staticmethod
+    def thumbnailFromScene(scene: QGraphicsScene) -> None:
+        scene.clearSelection()
+        image = QImage(QSize(160, 112), QImage.Format_ARGB32)
+        image.fill(Qt.transparent)
+
+        with QPainter(image) as painter:
+            painter.setRenderHint(QPainter.Antialiasing)
+            scene.render(
+                painter,
+                QRectF(0, 0, 160, 112),
+                scene.itemsBoundingRect(),
+                Qt.KeepAspectRatio,
+            )
+            image.save("frame.png")

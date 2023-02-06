@@ -48,7 +48,7 @@ class SpriteListBoxUi:
         self.colorBtn = ColorButton()
         self.colorLbl = QLabel("Tint")
         self.colorLbl.setBuddy(self.colorBtn)
-        self.colorPicker = ColorPickerWidget(parent)
+        self.colorPicker = ColorPickerWidget()
         self.colorPicker.sigSelectedColorChanged.connect(self.colorBtn.setColor)
 
         self.flipVerticalChk = QCheckBox("Vertical")
@@ -80,7 +80,7 @@ class SpriteListBoxUi:
         h3.addWidget(self.flipVerticalChk, 0)
 
         propertyBoxLay = QVBoxLayout()
-        propertyBoxLay.addLayout(pickerLay)
+        # propertyBoxLay.addLayout(pickerLay)
         propertyBoxLay.addLayout(h0)
         propertyBoxLay.addLayout(h1)
         propertyBoxLay.addLayout(h2)

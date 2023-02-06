@@ -1,20 +1,19 @@
 from typing import NamedTuple
 
-from PyQt5.QtCore import QPoint, QRectF, QLineF, Qt, pyqtSlot, pyqtSignal
-from PyQt5.QtGui import QBrush, QColor, QPainter, QPen, QPixmap, QTransform
+from PyQt5.QtCore import Qt, pyqtSignal, pyqtSlot
 from PyQt5.QtWidgets import (
     QGraphicsItem,
     QGraphicsScene,
-    QWidget,
     QGraphicsSceneMouseEvent,
+    QWidget,
 )
+
+from ...util.image import Image
 
 
 class CustomGraphicSceneOptions(NamedTuple):
     width: int
     height: int
-    grid_size: int
-    show_center: bool
 
 
 class CustomGraphicScene(QGraphicsScene):
@@ -24,12 +23,13 @@ class CustomGraphicScene(QGraphicsScene):
         super().__init__(*args, **kwargs)
 
         self.activeItem = None
-
-        self._showCenterGrid = options.show_center
-        self._gridSize = options.grid_size
         self.setSceneRect(
             -options.width / 2, -options.height / 2, options.width, options.height
         )
+
+    @pyqtSlot()
+    def renderFrame(self) -> None:
+        Image.thumbnailFromScene(self)
 
     @pyqtSlot(list)
     def addItems(self, items: list[QGraphicsItem]) -> None:
@@ -42,39 +42,11 @@ class CustomGraphicScene(QGraphicsScene):
             self.removeItem(item)
 
     def mousePressEvent(self, e: QGraphicsSceneMouseEvent) -> None:
-        self.activeItem = self.itemAt(e.scenePos(), self.views()[0].transform())
-        if self.activeItem:
-            self.sigSelectedItem.emit(self.activeItem)
+        if e.buttons() & Qt.LeftButton:
+            self.activeItem = self.itemAt(e.scenePos(), self.views()[0].transform())
+            if self.activeItem:
+                self.sigSelectedItem.emit(self.activeItem)
+        elif e.buttons() & Qt.RightButton:
+            self.renderFrame()
 
         super().mousePressEvent(e)
-
-    def drawBackground(self, painter: QPainter, rect: QRectF) -> None:
-        painter.setRenderHint(QPainter.Antialiasing)
-        painter.setPen(QPen(Qt.NoPen))
-
-        left = int(rect.left() - rect.left() % self._gridSize)
-        top = int(rect.top() - rect.top() % self._gridSize)
-
-        for y in range(top, int(rect.bottom()), self._gridSize):
-            for x in range(left, int(rect.right()), self._gridSize):
-                is_dark = (x / self._gridSize + y / self._gridSize) % 2
-
-                color = QColor("#505050") if is_dark else QColor("#767676")
-                painter.fillRect(
-                    QRectF(x, y, self._gridSize, self._gridSize), QBrush(color)
-                )
-
-        if self._showCenterGrid:
-            l = rect.left()
-            r = rect.right()
-            t = rect.top()
-            b = rect.bottom()
-
-            # center visual indicator
-            lines = [QLineF(l, 0, r, 0), QLineF(0, t, 0, b)]
-
-            pen = QPen(QColor("#202020"), 0, Qt.DashLine)
-            pen.setCosmetic(True)
-            painter.setPen(pen)
-            painter.drawLines(*lines)
-            painter.drawRect(QRectF(-160, -112, 320, 224))

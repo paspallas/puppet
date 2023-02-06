@@ -13,13 +13,13 @@ from .spritelistbox import SpriteListBox
 class CharEditorUi:
     def setupUi(self, parent: QWidget) -> None:
         self.editorScene = CustomGraphicScene(
-            parent, options=CustomGraphicSceneOptions(2048, 2048, 32, True)
+            parent, options=CustomGraphicSceneOptions(2048, 2048)
         )
 
         self.editorView = CustomGraphicView(
             self.editorScene,
             parent,
-            options=CustomGraphicViewOptions(True, False, True),
+            options=CustomGraphicViewOptions(True, False, True, 32, True),
         )
 
         # widgets over the scene viewport

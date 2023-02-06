@@ -14,7 +14,7 @@ class EditModeUi:
 
         parent.setCentralWidget(self.charEditor)
 
-        parent.setTabPosition(Qt.BottomDockWidgetArea, QTabWidget.North)
+        parent.setTabPosition(Qt.BottomDockWidgetArea, QTabWidget.South)
         parent.setTabShape(QTabWidget.Rounded)
         parent.addDockWidget(Qt.BottomDockWidgetArea, self.spritePaletteDock)
         parent.addDockWidget(Qt.BottomDockWidgetArea, self.animEditorDock)

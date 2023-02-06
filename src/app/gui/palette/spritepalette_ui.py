@@ -17,13 +17,13 @@ from ..widget import CustomGraphicView, CustomGraphicViewOptions
 class SpritePaletteUi:
     def setupUi(self, parent: QWidget):
         self.spritePalScene = CustomGraphicScene(
-            parent=parent, options=CustomGraphicSceneOptions(200, 200, 16, False)
+            parent=parent, options=CustomGraphicSceneOptions(200, 200)
         )
 
         self.spritePalView = CustomGraphicView(
             self.spritePalScene,
             parent,
-            options=CustomGraphicViewOptions(False, False, False),
+            options=CustomGraphicViewOptions(False, False, False, 16, False),
         )
         self.spritesheetList = QListWidget(parent)
 

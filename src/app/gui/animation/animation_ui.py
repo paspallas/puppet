@@ -36,6 +36,7 @@ class AnimationUi:
 
         self.animationList = QListView(parent)
         self.frameList = QListView(parent)
+        self.frameList.setFlow(QListView.LeftToRight)
 
         hbox = QHBoxLayout()
         hbox.addLayout(btnBox)
