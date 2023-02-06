@@ -16,7 +16,6 @@ from ..widget import CustomGraphicView, CustomGraphicViewOptions
 
 class SpritePaletteUi:
     def setupUi(self, parent: QWidget):
-
         self.spritePalScene = CustomGraphicScene(
             parent=parent, options=CustomGraphicSceneOptions(200, 200, 16, False)
         )

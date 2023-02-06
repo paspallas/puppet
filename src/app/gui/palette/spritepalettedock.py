@@ -10,13 +10,13 @@ from .spritepalette_ui import SpritePaletteUi
 
 
 class SpritePaletteDock(QDockWidget):
-
     sigSelectedSprite = pyqtSignal(QGraphicsItem)
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
         self.setWindowTitle("Sprite Palette")
+        self.setWindowFlag(Qt.FramelessWindowHint)
         self.setAllowedAreas(Qt.BottomDockWidgetArea | Qt.TopDockWidgetArea)
 
         self._container = QWidget(self)
