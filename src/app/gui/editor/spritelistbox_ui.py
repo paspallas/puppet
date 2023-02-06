@@ -20,20 +20,21 @@ from ..widget import ColorButton, ColorPickerWidget, FancySlider
 
 class SpriteListBoxUi:
     def setupUi(self, parent: QWidget):
-
         self.brushColor = QColor("#424242")
         self.penColor = QColor("#424242")
 
         self.xSpin = QDoubleSpinBox()
         self.xSpin.setMinimum(-9999)
         self.xSpin.setMaximum(9999)
-        self.xLbl = QLabel("X: ")
+        self.xLbl = QLabel("x")
+        self.xLbl.setAlignment(Qt.AlignRight | Qt.AlignCenter)
         self.xLbl.setBuddy(self.xSpin)
 
         self.ySpin = QDoubleSpinBox()
         self.ySpin.setMinimum(-9999)
         self.ySpin.setMaximum(9999)
-        self.yLbl = QLabel("Y: ")
+        self.yLbl = QLabel("y")
+        self.yLbl.setAlignment(Qt.AlignRight | Qt.AlignCenter)
         self.yLbl.setBuddy(self.ySpin)
 
         self.opacitySlide = FancySlider()
@@ -41,18 +42,18 @@ class SpriteListBoxUi:
         self.opacitySlide.setValue(0)
         self.opacitySlide.setTickInterval(1)
         self.opacitySlide.setOrientation(Qt.Horizontal)
-        self.opacityLbl = QLabel("Alpha: ")
+        self.opacityLbl = QLabel("Alpha")
         self.opacityLbl.setBuddy(self.opacitySlide)
 
         self.colorBtn = ColorButton()
-        self.colorLbl = QLabel("Tint: ")
+        self.colorLbl = QLabel("Tint")
         self.colorLbl.setBuddy(self.colorBtn)
         self.colorPicker = ColorPickerWidget(parent)
         self.colorPicker.sigSelectedColorChanged.connect(self.colorBtn.setColor)
 
         self.flipVerticalChk = QCheckBox("Vertical")
         self.flipHorizontalChk = QCheckBox("Horizontal")
-        self.flipLabel = QLabel("Flip: ")
+        self.flipLabel = QLabel("Flip")
 
         pickerLay = QVBoxLayout()
         pickerLay.addWidget(self.colorPicker, 0, Qt.AlignHCenter)
@@ -66,17 +67,17 @@ class SpriteListBoxUi:
         h1.addWidget(self.opacitySlide, stretch=3)
 
         h2 = QHBoxLayout()
+        self.posLbl = QLabel("Position")
+        h2.addWidget(self.posLbl)
         h2.addWidget(self.xLbl, stretch=1)
-        h2.addWidget(self.xSpin, stretch=3)
+        h2.addWidget(self.xSpin, stretch=2)
+        h2.addWidget(self.yLbl, stretch=1)
+        h2.addWidget(self.ySpin, stretch=2)
 
         h3 = QHBoxLayout()
-        h3.addWidget(self.yLbl, stretch=1)
-        h3.addWidget(self.ySpin, stretch=3)
-
-        h4 = QHBoxLayout()
-        h4.addWidget(self.flipLabel)
-        h4.addWidget(self.flipHorizontalChk, 0)
-        h4.addWidget(self.flipVerticalChk, 0)
+        h3.addWidget(self.flipLabel)
+        h3.addWidget(self.flipHorizontalChk, 0)
+        h3.addWidget(self.flipVerticalChk, 0)
 
         propertyBoxLay = QVBoxLayout()
         propertyBoxLay.addLayout(pickerLay)
@@ -84,7 +85,6 @@ class SpriteListBoxUi:
         propertyBoxLay.addLayout(h1)
         propertyBoxLay.addLayout(h2)
         propertyBoxLay.addLayout(h3)
-        propertyBoxLay.addLayout(h4)
 
         self.propertyBox = QGroupBox("Properties", parent)
         self.propertyBox.setLayout(propertyBoxLay)
