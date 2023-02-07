@@ -59,10 +59,10 @@ class FrameSprite(QObject):
         self._zIndex: int = 0
 
         self._hide: bool = False
+        self._lock: bool = False
+        
         self.item.setVisible(not self._hide)
         self.item.setPos(self._x, self._y)
-
-        self._lock: bool = False
 
     @property
     def name(self) -> str:

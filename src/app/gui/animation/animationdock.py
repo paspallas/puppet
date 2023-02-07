@@ -2,7 +2,7 @@ from PyQt5.QtCore import Qt, pyqtSignal, pyqtSlot, QModelIndex
 from PyQt5.QtWidgets import QDockWidget, QWidget
 
 from ...model.chardocument import CharDocument
-from ...model.animation.animationlist_model import AnimationListModel
+from ...model.animation.animation_list_model import AnimationListModel
 from ...model.animation.framelist_model import FrameListModel
 
 from .animation_ui import AnimationUi

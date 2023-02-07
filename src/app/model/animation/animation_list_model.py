@@ -2,12 +2,14 @@ import typing
 
 from PyQt5.QtCore import QAbstractListModel, QModelIndex, Qt, QVariant
 
+from .animation_list import AnimationList
+
 
 class AnimationListModel(QAbstractListModel):
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
 
-    def setDataSource(self, source: typing.List) -> None:
+    def setDataSource(self, source: AnimationList) -> None:
         self._dataSource = source
 
     def rowCount(self, parent=QModelIndex()) -> int:

@@ -12,6 +12,7 @@ class MainMenu(QObject):
         file_menu: QMenu = self._menuBar.addMenu("&File")
         edit_menu: QMenu = self._menuBar.addMenu("&Edit")
         view_menu: QMenu = self._menuBar.addMenu("&View")
+        about_menu: QMenu = self._menuBar.addMenu("&About")
 
         file_menu.addAction("Save", lambda: print("saved"))
         file_menu.addAction("Open", lambda: print("open"))
