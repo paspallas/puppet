@@ -1,13 +1,14 @@
 import typing
 from enum import IntEnum
 
-from PyQt5.QtCore import Qt, QVariant
-from PyQt5.QtGui import QKeyEvent, QPixmap
+from PyQt5.QtCore import Qt, QPoint, QTimer, QVariant
+from PyQt5.QtGui import QBrush, QColor, QKeyEvent, QPainter, QPen, QPixmap
 from PyQt5.QtWidgets import (
     QGraphicsItem,
     QGraphicsPixmapItem,
     QGraphicsSceneMouseEvent,
     QGraphicsSceneWheelEvent,
+    QWidget,
 )
 
 from ...util.pubsub import Publisher
@@ -39,6 +40,17 @@ class FrameSpriteItem(QGraphicsPixmapItem, Publisher):
             | QGraphicsItem.ItemSendsGeometryChanges
             | QGraphicsItem.ItemSendsScenePositionChanges
         )
+
+        self._dashOffset: float = 0.0
+        self._timer = QTimer()
+        self._timer.timeout.connect(self._updateDashLineAnimation)
+        self._timer.setInterval(100)
+        self._timer.start()
+
+    def _updateDashLineAnimation(self) -> None:
+        if self.isSelected():
+            self._dashOffset -= 1
+            self.update()
 
     def keyPressEvent(self, e: QKeyEvent) -> None:
         if e.key() == Qt.Key.Key_Q:
@@ -78,3 +90,20 @@ class FrameSpriteItem(QGraphicsPixmapItem, Publisher):
             self.publish(ItemEvent.posChanged, value.x(), value.y())
 
         return super().itemChange(change, value)
+
+    def paint(
+        self,
+        painter: QPainter,
+        option,
+        widget: QWidget = None,
+    ) -> None:
+        painter.setRenderHint(QPainter.Antialiasing)
+        painter.setRenderHint(QPainter.SmoothPixmapTransform, False)
+        painter.drawPixmap(QPoint(), self.pixmap(), self.boundingRect())
+
+        if self.isSelected():
+            pen = QPen(QColor(Qt.white), 0, Qt.DashLine, Qt.RoundCap, Qt.RoundJoin)
+            pen.setCosmetic(True)
+            pen.setDashOffset(self._dashOffset)
+            painter.setPen(pen)
+            painter.drawRect(self.boundingRect())
