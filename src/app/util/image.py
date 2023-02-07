@@ -69,7 +69,7 @@ class Image:
         item.setTransform(transform)
 
     @staticmethod
-    def thumbnailFromScene(scene: QGraphicsScene) -> None:
+    def thumbnailFromScene(scene: QGraphicsScene) -> QImage:
         scene.clearSelection()
         image = QImage(QSize(160, 112), QImage.Format_ARGB32)
         image.fill(Qt.transparent)
@@ -82,4 +82,5 @@ class Image:
                 scene.itemsBoundingRect(),
                 Qt.KeepAspectRatio,
             )
-            image.save("frame.png")
+
+        return image

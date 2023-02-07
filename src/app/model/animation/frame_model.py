@@ -138,6 +138,11 @@ class AnimationFrameModel(QAbstractItemModel):
         self.endRemoveRows()
         return True
 
+    def copyItem(self, index: QModelIndex) -> None:
+        self.layoutAboutToBeChanged.emit()
+        self._dataSource.copy(index.row() + 1, index.row())
+        self.layoutChanged.emit()
+
     def mimeTypes(self) -> typing.List[str]:
         return ["application/puppet-framedata"]
 
@@ -168,7 +173,6 @@ class AnimationFrameModel(QAbstractItemModel):
         column: int,
         parent: QModelIndex,
     ) -> bool:
-
         if not self.canDropMimeData(data, action, row, column, parent):
             return False
 

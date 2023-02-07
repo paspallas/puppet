@@ -60,6 +60,7 @@ class FrameSprite(QObject):
 
         self._hide: bool = False
         self.item.setVisible(not self._hide)
+        self.item.setPos(self._x, self._y)
 
         self._lock: bool = False
 

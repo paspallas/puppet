@@ -103,13 +103,19 @@ class SpriteListBoxUi:
         self.list.header().setStretchLastSection(False)
 
         self.upBtn = QPushButton(QIcon(":/icon/16/up.png"), "")
+        self.upBtn.setToolTip("Move sprite up")
         self.downBtn = QPushButton(QIcon(":/icon/16/down.png"), "")
+        self.downBtn.setToolTip("Move sprite down")
         self.delBtn = QPushButton(QIcon(":/icon/16/delete.png"), "")
+        self.delBtn.setToolTip("Delete selected sprite")
+        self.copyBtn = QPushButton(QIcon(":/icon/16/copy.png"), "")
+        self.copyBtn.setToolTip("Copy selected sprite")
 
         btnBox = QHBoxLayout()
         btnBox.addWidget(self.upBtn, 0, Qt.AlignLeft)
         btnBox.addWidget(self.downBtn, 0, Qt.AlignLeft)
         btnBox.addStretch()
+        btnBox.addWidget(self.copyBtn, 0, Qt.AlignRight)
         btnBox.addWidget(self.delBtn, 0, Qt.AlignRight)
 
         spriteListLay = QVBoxLayout()

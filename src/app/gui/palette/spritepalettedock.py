@@ -15,7 +15,7 @@ class SpritePaletteDock(QDockWidget):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        self.setWindowTitle("Sprite Palette")
+        self.setWindowTitle("Palette")
         self.setWindowFlag(Qt.FramelessWindowHint)
         self.setAllowedAreas(Qt.BottomDockWidgetArea | Qt.TopDockWidgetArea)
 

@@ -70,6 +70,7 @@ class SpriteListBox(QWidget):
         self._ui.upBtn.clicked.connect(self._moveItemUp)
         self._ui.downBtn.clicked.connect(self._moveItemDown)
         self._ui.delBtn.clicked.connect(self._deleteItem)
+        self._ui.copyBtn.clicked.connect(self._copyItem)
 
         # Changes in the datamapper must be reflected inmediately in the model
         self._ui.xSpin.valueChanged.connect(self._mapper.submit, Qt.QueuedConnection)
@@ -83,22 +84,12 @@ class SpriteListBox(QWidget):
         self._ui.flipVerticalChk.stateChanged.connect(
             self._mapper.submit, Qt.QueuedConnection
         )
-        self._ui.list.clicked.connect(self.itemPressed)
 
     @pyqtSlot(int)
     def updateDataMapper(self, index: int) -> None:
         """Trigger the mapper to update when the data source of the model changes"""
 
         self._mapper.setCurrentIndex(index)
-
-    @pyqtSlot(QModelIndex)
-    def itemPressed(self, index: QModelIndex):
-        pass
-        # print(
-        #     self._model.index(index.row(), index.column(), QModelIndex).data(
-        #         Qt.ItemDataRole.DisplayRole
-        #     )
-        # )
 
     @pyqtSlot()
     def _moveItemUp(self) -> None:
@@ -118,6 +109,11 @@ class SpriteListBox(QWidget):
     def _deleteItem(self) -> None:
         index = self._ui.list.currentIndex()
         self._ui.list.model().removeRow(index.row(), QModelIndex())
+
+    @pyqtSlot()
+    def _copyItem(self) -> None:
+        index = self._ui.list.currentIndex()
+        self._ui.list.model().copyItem(index)
 
     @pyqtSlot(QGraphicsItem)
     def setCurrentItem(self, item: QGraphicsItem) -> None:
