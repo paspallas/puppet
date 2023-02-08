@@ -99,11 +99,11 @@ class FrameSpriteItem(QGraphicsPixmapItem, Publisher):
     ) -> None:
         painter.setRenderHint(QPainter.Antialiasing)
         painter.setRenderHint(QPainter.SmoothPixmapTransform, False)
-        painter.drawPixmap(QPoint(), self.pixmap(), self.boundingRect())
+        painter.drawPixmap(QPoint(), self.pixmap())
 
         if self.isSelected():
             pen = QPen(QColor(Qt.white), 0, Qt.DashLine, Qt.RoundCap, Qt.RoundJoin)
             pen.setCosmetic(True)
             pen.setDashOffset(self._dashOffset)
             painter.setPen(pen)
-            painter.drawRect(self.boundingRect())
+            painter.drawRect(self.boundingRect().adjusted(0.5, 0.5, 0, 0))
