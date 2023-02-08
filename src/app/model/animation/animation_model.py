@@ -2,18 +2,26 @@ import typing
 
 from PyQt5.QtCore import QAbstractListModel, QModelIndex, Qt, QVariant
 
-from .animation_list import AnimationList
+from .animation import Animation
 
 
-class AnimationListModel(QAbstractListModel):
+class AnimationModel(QAbstractListModel):
+    """Interface between the listview and the current animation"""
+
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
 
-    def setDataSource(self, source: AnimationList) -> None:
+        self._dataSource: Animation = None
+
+    def setDataSource(self, source: Animation) -> None:
+        self.beginResetModel()
         self._dataSource = source
+        self.endResetModel()
 
     def rowCount(self, parent=QModelIndex()) -> int:
-        return len(self._dataSource)
+        if self._dataSource is not None:
+            return len(self._dataSource)
+        return 0
 
     def data(self, index: QModelIndex, role: int = ...) -> typing.Any:
         if not index.isValid():
@@ -24,25 +32,6 @@ class AnimationListModel(QAbstractListModel):
 
         return QVariant()
 
-    def setData(self, index: QModelIndex, value: typing.Any, role: int = ...) -> bool:
-        if role == Qt.EditRole:
-            self._dataSource.set(index.row(), value)
-            self.dataChanged.emit(index, QModelIndex(), [])
-            return True
-
-        return False
-
-    def flags(self, index: QModelIndex) -> Qt.ItemFlags:
-        if not index.isValid():
-            return Qt.NoItemFlags
-
-        flags = Qt.ItemIsEditable | Qt.ItemIsEnabled | super().flags(index)
-
-        return flags
-
-    def itemFromIndex(self, index: QModelIndex) -> QVariant:
-        return QVariant(self._dataSource.get(index.row()))
-
     def addItem(self) -> None:
         self.layoutAboutToBeChanged.emit()
         self._dataSource.add()
@@ -52,3 +41,6 @@ class AnimationListModel(QAbstractListModel):
         self.layoutAboutToBeChanged.emit()
         self._dataSource.delete(index)
         self.layoutChanged.emit()
+
+    # def itemFromIndex(self, index: QModelIndex) -> QVariant:
+    #     return QVariant(self._dataSource[index.row()])
