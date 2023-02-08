@@ -16,7 +16,6 @@ class SpritePaletteDock(QDockWidget):
         super().__init__(*args, **kwargs)
 
         self.setWindowTitle("Palette")
-        self.setWindowFlag(Qt.FramelessWindowHint)
         self.setAllowedAreas(Qt.BottomDockWidgetArea | Qt.TopDockWidgetArea)
 
         self._container = QWidget(self)
@@ -31,9 +30,9 @@ class SpritePaletteDock(QDockWidget):
 
         self._ui.spritePalScene.sigSelectedItem.connect(self.sigSelectedSprite)
 
-    def setModel(self, model: CharDocument) -> None:
-        self._model = model.spriteSheets()
-        self._controller = SpritePaletteController(model)
+    def setDocument(self, document: CharDocument) -> None:
+        self._model = document.spriteSheets()
+        self._controller = SpritePaletteController(document)
         self._makeConnections()
 
     def _makeConnections(self):

@@ -1,15 +1,17 @@
 from PyQt5.QtCore import QObject, pyqtSignal, pyqtSlot
 from PyQt5.QtWidgets import QGraphicsItem
 
-from .animation.frame_model import AnimationFrameModel
+from .animation.animation_list import AnimationList
+from .animation.animation_list_model import AnimationListModel
+from .animation.animation_model import AnimationModel
 from .animation.frame import AnimationFrame
-
+from .animation.frame_model import AnimationFrameModel
 from .sprite import Sprite
 from .spritesheet import SpriteSheetCollectionModel
 
 
+# TODO used by the spritesheets
 class SpriteCollectionModel(QObject):
-
     spriteAddedToCollection = pyqtSignal(QGraphicsItem)
 
     def __init__(self):
@@ -26,7 +28,6 @@ class SpriteCollectionModel(QObject):
 
 
 class CharDocument(QObject):
-
     sigSpritesChanged = pyqtSignal()
     sigSpriteSheetsChanged = pyqtSignal()
     sigSpritesChanged = pyqtSignal()
@@ -35,6 +36,13 @@ class CharDocument(QObject):
 
     def __init__(self):
         super().__init__()
+
+        self._animationsListModel = AnimationListModel()
+        self._currentAnimationModel = AnimationModel()
+
+        # we only allow a single list of animations per document
+        self._animationList = AnimationList()
+        self._animationsListModel.setDataSource(self._animationList)
 
         # allow access to the child classess
         self._spriteSheets = SpriteSheetCollectionModel()
@@ -61,3 +69,12 @@ class CharDocument(QObject):
 
     def addSprite(self, sprite: Sprite) -> None:
         self._sprites.add(sprite)
+
+    def animationListModel(self) -> AnimationListModel:
+        return self._animationsListModel
+
+    def animationModel(self) -> AnimationModel:
+        return self._currentAnimationModel
+
+    def animationList(self) -> AnimationList:
+        return self._animationList
