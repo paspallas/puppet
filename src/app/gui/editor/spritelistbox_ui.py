@@ -20,7 +20,7 @@ from ..widget import ColorButton, ColorPickerWidget, FancySlider
 
 class SpriteListBoxUi:
     def setupUi(self, parent: QWidget):
-        self.brushColor = QColor("#424242")
+        self.brushColor = QColor(66, 66, 66, 220)
         self.penColor = QColor("#424242")
 
         self.xSpin = QDoubleSpinBox()
@@ -88,6 +88,7 @@ class SpriteListBoxUi:
 
         self.propertyBox = QGroupBox("Properties", parent)
         self.propertyBox.setLayout(propertyBoxLay)
+        self.propertyBox.setFlat(True)
 
         self.list = QTreeView(parent)
         self.list.setRootIsDecorated(False)
@@ -122,8 +123,9 @@ class SpriteListBoxUi:
         spriteListLay.addWidget(self.list)
         spriteListLay.addLayout(btnBox)
 
-        self.spriteListBox = QGroupBox("Sprites", parent)
+        self.spriteListBox = QGroupBox("Hierarchy", parent)
         self.spriteListBox.setLayout(spriteListLay)
+        self.spriteListBox.setFlat(True)
 
         layout = QVBoxLayout(parent)
         layout.addWidget(self.propertyBox)

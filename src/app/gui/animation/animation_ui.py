@@ -34,6 +34,7 @@ class AnimationUi:
 
         # animations listview
         self.animationGroup = QGroupBox("Animations", parent)
+        self.animationGroup.setFlat(True)
         self.addAnimationBtn = QPushButton(QIcon(":/icon/16/add.png"), "", parent)
         self.addAnimationBtn.setToolTip("Add new animation")
         self.deleteAnimationBtn = QPushButton(QIcon(":/icon/16/delete.png"), "", parent)
@@ -51,7 +52,8 @@ class AnimationUi:
 
         # frames listview
         self.frameGroup = QGroupBox("Frames", parent)
-        self.addFrameBtn = QPushButton(QIcon(":/icon/16/add.png"), "", parent)
+        self.frameGroup.setFlat(True)
+        self.addFrameBtn = QPushButton(QIcon(":/icon/32/rec.png"), "", parent)
         self.addFrameBtn.setToolTip("Set new frame")
         self.deleteFrameBtn = QPushButton(QIcon(":/icon/16/delete.png"), "", parent)
         self.deleteFrameBtn.setToolTip("Delete selected frame")

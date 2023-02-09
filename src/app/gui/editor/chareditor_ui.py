@@ -6,6 +6,7 @@ from ..widget import (
     CustomGraphicSceneOptions,
     CustomGraphicView,
     CustomGraphicViewOptions,
+    Ruler,
 )
 from .spritelistbox import SpriteListBox
 
@@ -20,6 +21,12 @@ class CharEditorUi:
             self.editorScene,
             parent,
             options=CustomGraphicViewOptions(True, False, True, 32, True),
+        )
+
+        self.ruler = Ruler(self.editorView)
+        self.ruler.setFixedWidth(int(self.editorScene.width()))
+        self.ruler.sizeChanged.connect(
+            lambda x: self.editorView.setViewportMargins(0, x.height(), 0, 0)
         )
 
         # widgets over the scene viewport
