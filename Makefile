@@ -8,7 +8,7 @@ test:
 
 .PHONY:
 app:
-	@pyinstaller app.spec
+	@pyinstaller --clean app.spec
 
 .PHONY:
 clean:

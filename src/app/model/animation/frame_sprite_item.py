@@ -41,17 +41,6 @@ class FrameSpriteItem(QGraphicsPixmapItem, Publisher):
             | QGraphicsItem.ItemSendsScenePositionChanges
         )
 
-        self._dashOffset: float = 0.0
-        self._timer = QTimer()
-        self._timer.timeout.connect(self._updateDashLineAnimation)
-        self._timer.setInterval(100)
-        self._timer.start()
-
-    def _updateDashLineAnimation(self) -> None:
-        if self.isSelected():
-            self._dashOffset -= 1
-            self.update()
-
     def keyPressEvent(self, e: QKeyEvent) -> None:
         if e.key() == Qt.Key.Key_Q:
             z = int(self.zValue()) + 1
@@ -85,7 +74,9 @@ class FrameSpriteItem(QGraphicsPixmapItem, Publisher):
                 z = int(self.zValue() + 1)
                 self.publish(ItemEvent.zChanged, z)
 
-    def itemChange(self, change, value: typing.Any) -> typing.Any:
+    def itemChange(
+        self, change: QGraphicsItem.GraphicsItemChange, value: typing.Any
+    ) -> typing.Any:
         if change == QGraphicsItem.ItemPositionChange and self.scene():
             self.publish(ItemEvent.posChanged, value.x(), value.y())
 
@@ -104,6 +95,5 @@ class FrameSpriteItem(QGraphicsPixmapItem, Publisher):
         if self.isSelected():
             pen = QPen(QColor(Qt.white), 0, Qt.DashLine, Qt.RoundCap, Qt.RoundJoin)
             pen.setCosmetic(True)
-            pen.setDashOffset(self._dashOffset)
             painter.setPen(pen)
             painter.drawRect(self.boundingRect().adjusted(0.5, 0.5, 0, 0))

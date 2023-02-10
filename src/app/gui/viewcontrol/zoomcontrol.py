@@ -8,12 +8,11 @@ class ZoomControl(QObject):
 
     Args:
         view (QGraphicsView): The view
+        min_ (float): Minimum zoom level (defaults to 1)
+        max_ (float): Maximum zoom level (defaults to 25)
     """
 
-    ZOOM_MAX = 25
-    ZOOM_MIN = 1
-
-    def __init__(self, view: QGraphicsView):
+    def __init__(self, view: QGraphicsView, min_: float = 1, max_: float = 25):
         super().__init__(view)
 
         self._animation = QTimeLine(160, self)
@@ -25,6 +24,8 @@ class ZoomControl(QObject):
         self._started = False
 
         self._view = view
+        self._zoom_min = min_
+        self._zoom_max = max_
 
         view.viewport().installEventFilter(self)
 
@@ -60,13 +61,13 @@ class ZoomControl(QObject):
 
         nextLod = lod * factor
 
-        if self.ZOOM_MIN < nextLod < self.ZOOM_MAX:
+        if self._zoom_min < nextLod < self._zoom_max:
             self._view.scale(factor, factor)
-        elif nextLod > self.ZOOM_MAX:
-            self._view.scale(self.ZOOM_MAX / lod, self.ZOOM_MAX / lod)
+        elif nextLod > self._zoom_max:
+            self._view.scale(self._zoom_max / lod, self._zoom_max / lod)
             self._numScalings = 0
-        elif nextLod < self.ZOOM_MIN:
-            self._view.scale(self.ZOOM_MIN / lod, self.ZOOM_MIN / lod)
+        elif nextLod < self._zoom_min:
+            self._view.scale(self._zoom_min / lod, self._zoom_min / lod)
             self._numScalings = 0
 
     @pyqtSlot()

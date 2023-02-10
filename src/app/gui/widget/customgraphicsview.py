@@ -46,20 +46,21 @@ class CustomGraphicView(QGraphicsView):
             Qt.ScrollBarAlwaysOn if options.scroll_bar else Qt.ScrollBarAlwaysOff
         )
         self.setVerticalScrollBarPolicy(
-            Qt.ScrollBarAlwaysOff if options.scroll_bar else Qt.ScrollBarAlwaysOff
+            Qt.ScrollBarAlwaysOn if options.scroll_bar else Qt.ScrollBarAlwaysOff
         )
 
         self.setDragMode(
             QGraphicsView.RubberBandDrag if options.drag else QGraphicsView.NoDrag
         )
 
-        self.setViewportUpdateMode(QGraphicsView.FullViewportUpdate)
+        self.setViewportUpdateMode(QGraphicsView.SmartViewportUpdate)
         self.setCacheMode(QGraphicsView.CacheBackground)
-        self.setRenderHints(QPainter.Antialiasing | QPainter.SmoothPixmapTransform)
+        self.setRenderHints(QPainter.Antialiasing)
         self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
 
         self.setTransformationAnchor(QGraphicsView.AnchorUnderMouse)
         self.setMouseTracking(True)
+        self.setOpenglViewport()
 
         ZoomControl(self)
         PanControl(self)
@@ -105,12 +106,8 @@ class CustomGraphicView(QGraphicsView):
 
     def setOpenglViewport(self) -> None:
         fmt = QSurfaceFormat()
-        fmt.setSamples(2)
+        fmt.setSamples(1)
         gl = QOpenGLWidget()
         gl.setFormat(fmt)
         self.setViewport(gl)
-        self.setRenderHints(
-            QPainter.Antialiasing
-            | QPainter.TextAntialiasing
-            | QPainter.SmoothPixmapTransform
-        )
+        self.setRenderHints(QPainter.Antialiasing | QPainter.TextAntialiasing)

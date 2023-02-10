@@ -6,7 +6,7 @@ from ..widget import (
     CustomGraphicSceneOptions,
     CustomGraphicView,
     CustomGraphicViewOptions,
-    Ruler,
+    ZoomSlider,
 )
 from .spritelistbox import SpriteListBox
 
@@ -14,25 +14,29 @@ from .spritelistbox import SpriteListBox
 class CharEditorUi:
     def setupUi(self, parent: QWidget) -> None:
         self.editorScene = CustomGraphicScene(
-            parent, options=CustomGraphicSceneOptions(2048, 2048)
+            parent, options=CustomGraphicSceneOptions(1024, 1024)
         )
 
         self.editorView = CustomGraphicView(
             self.editorScene,
             parent,
-            options=CustomGraphicViewOptions(True, False, True, 32, True),
-        )
-
-        self.ruler = Ruler(self.editorView)
-        self.ruler.setFixedWidth(int(self.editorScene.width()))
-        self.ruler.sizeChanged.connect(
-            lambda x: self.editorView.setViewportMargins(0, x.height(), 0, 0)
+            options=CustomGraphicViewOptions(True, True, True, 32, True),
         )
 
         # widgets over the scene viewport
-        self.spriteListBox = SpriteListBox()
-        vbox = QVBoxLayout(self.editorView.viewport())
-        vbox.addWidget(self.spriteListBox, 0, Qt.AlignRight)
+        sliderVbox = QVBoxLayout()
+        self.zoomSlider = ZoomSlider(min_=1, max_=25)
+        sliderVbox.addStretch()
+        sliderVbox.addWidget(self.zoomSlider)
 
-        hbox = QHBoxLayout(parent)
-        hbox.addWidget(self.editorView)
+        hbox = QHBoxLayout()
+        hbox.addLayout(sliderVbox, 0)
+        hbox.addStretch()
+        self.spriteListBox = SpriteListBox()
+        hbox.addWidget(self.spriteListBox, 0, Qt.AlignRight)
+
+        vbox = QVBoxLayout(self.editorView.viewport())
+        vbox.addLayout(hbox)
+
+        main = QHBoxLayout(parent)
+        main.addWidget(self.editorView)

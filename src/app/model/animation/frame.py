@@ -4,7 +4,6 @@ from PyQt5.QtCore import QObject, pyqtSignal, pyqtSlot
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import QGraphicsItem
 
-from ...util.reflection import PropertyList
 from .frame_sprite import FrameSprite, FrameSpriteColumn
 from .frame_sprite_item import FrameSpriteItem
 
@@ -27,7 +26,18 @@ class AnimationFrame(QObject):
         super().__init__()
 
         self.sprites: list[FrameSprite] = []
-        self._property = PropertyList(FrameSprite)
+
+        self._property = [
+            "name",
+            "hide",
+            "lock",
+            "x",
+            "y",
+            "alpha",
+            "hflip",
+            "vflip",
+            "zIndex",
+        ]
 
     def add(self, framesprite: FrameSprite) -> None:
         """Add a new item to the top of the scene"""
@@ -75,7 +85,7 @@ class AnimationFrame(QObject):
         setattr(self.sprites[item_index], self._property[attr_index], value)
 
     def count(self) -> int:
-        return self._property.count()
+        return len(self._property)
 
     @pyqtSlot(int)
     def onIncreaseZ(self, z: int) -> None:
