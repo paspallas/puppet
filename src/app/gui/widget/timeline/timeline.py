@@ -1,3 +1,4 @@
+import math
 import typing
 
 from PyQt5.QtCore import Qt, QRectF, QPointF
@@ -22,9 +23,9 @@ class KeyFrame(QGraphicsObject):
     def __init__(self, x: float, y: float, w: float, h: float) -> None:
         super().__init__()
 
-        self._rect = QRectF(0, 0, w, h)
-        self.setX(x)
-        self.setY(y)
+        self._rect = QRectF(x, y, w, h)
+        # self.setX(x)
+        # self.setY(y)
 
         flags = (
             QGraphicsItem.ItemIsSelectable
@@ -36,6 +37,10 @@ class KeyFrame(QGraphicsObject):
         self.setFlags(flags)
         self.setAcceptHoverEvents(True)
 
+        self._resizeOrigin = 0.0
+        self._resize = False
+        self._clickRect = None
+
     def boundingRect(self) -> QRectF:
         return self._rect
 
@@ -43,10 +48,8 @@ class KeyFrame(QGraphicsObject):
         delta = 2.0
 
         return (
-            self.scenePos().x() - delta <= x <= self.scenePos().x() + delta
-            or self.scenePos().x() + self._rect.width() - delta
-            <= x
-            <= self.scenePos().x() + self._rect.width() + delta
+            self._rect.left() <= x <= self._rect.left() + delta
+            or self._rect.right() - delta <= x <= self._rect.right()
         )
 
     def itemChange(
@@ -57,8 +60,23 @@ class KeyFrame(QGraphicsObject):
 
         return super().itemChange(change, value)
 
+    def updateItemSize(self, x: float) -> None:
+        self.prepareGeometryChange()
+
+        offset = 5.0
+        delta = x - self._resizeOrigin
+        print(delta)
+
+        right = self._rect.right()
+        left = self._rect.left()
+
+        if right - offset < x < right + offset:
+            self._rect = self._clickRect.adjusted(0, 0, delta, 0)
+        elif left - offset < x < left + offset:
+            self._rect = self._clickRect.adjusted(delta, 0, 0, 0)
+
     def hoverMoveEvent(self, e: QGraphicsSceneHoverEvent) -> None:
-        if self.insideControlPoints(e.scenePos().x()):
+        if self.insideControlPoints(e.pos().x()):
             self.setCursor(Qt.SizeHorCursor)
         else:
             self.setCursor(Qt.ArrowCursor)
@@ -66,14 +84,25 @@ class KeyFrame(QGraphicsObject):
         super().hoverMoveEvent(e)
 
     def mouseMoveEvent(self, e: QGraphicsSceneMouseEvent) -> None:
-        # print(f"event pos: {e.scenePos().x()}")
-        if (
-            e.scenePos().x() == self.pos().x()
-            or e.scenePos().x() == self.pos().x() + self._rect.width()
-        ):
-            pass
+        if self._resize:
+            self.updateItemSize(e.pos().x())
 
-        super().mouseMoveEvent(e)
+        else:
+            super().mouseMoveEvent(e)
+
+    def mousePressEvent(self, e: QGraphicsSceneMouseEvent) -> None:
+        if e.buttons() == Qt.LeftButton:
+            if self.insideControlPoints(e.pos().x()):
+                self._resize = True
+                self._resizeOrigin = e.pos().x()
+                self._clickRect = self._rect
+
+        super().mousePressEvent(e)
+
+    def mouseReleaseEvent(self, e: QGraphicsSceneMouseEvent) -> None:
+        self._resize = False
+
+        super().mouseReleaseEvent(e)
 
     def paint(
         self, painter: QPainter, option: QStyleOptionGraphicsItem, widget: QWidget
@@ -101,6 +130,11 @@ class TimeLineView(QGraphicsView):
         super().__init__(scene, parent)
 
         self.setMouseTracking(True)
+        self.setContentsMargins(0, 0, 0, 0)
+
+        self.setRenderHint(QPainter.Antialiasing)
+        self.setViewportUpdateMode(QGraphicsView.SmartViewportUpdate)
+        self.setCacheMode(QGraphicsView.CacheBackground)
         self.setTransformationAnchor(QGraphicsView.AnchorUnderMouse)
         self.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)

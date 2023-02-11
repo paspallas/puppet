@@ -1,8 +1,8 @@
 import typing
 from enum import IntEnum
 
-from PyQt5.QtCore import Qt, QPoint, QTimer, QVariant
-from PyQt5.QtGui import QBrush, QColor, QKeyEvent, QPainter, QPen, QPixmap
+from PyQt5.QtCore import QPoint, Qt, QTimer, QVariant, pyqtSlot
+from PyQt5.QtGui import QColor, QKeyEvent, QPainter, QPen, QPixmap
 from PyQt5.QtWidgets import (
     QGraphicsItem,
     QGraphicsPixmapItem,
@@ -41,12 +41,18 @@ class FrameSpriteItem(QGraphicsPixmapItem, Publisher):
             | QGraphicsItem.ItemSendsScenePositionChanges
         )
 
+        self._dashOffset = 0
+        self._timer = QTimer()
+        self._timer.setInterval(166)
+        self._timer.timeout.connect(self.animateDashOffset)
+        self._timer.start()
+
     def keyPressEvent(self, e: QKeyEvent) -> None:
         if e.key() == Qt.Key.Key_Q:
             z = int(self.zValue()) + 1
             self.publish(ItemEvent.zChanged, z)
 
-        elif e.key() == Qt.Key_W:
+        elif e.key() == Qt.Key_E:
             z = int(self.zValue() - 1)
             self.publish(ItemEvent.zChanged, z)
 
@@ -54,13 +60,13 @@ class FrameSpriteItem(QGraphicsPixmapItem, Publisher):
             self.publish(ItemEvent.vFlipChanged)
         elif e.key() == Qt.Key_H:
             self.publish(ItemEvent.hFlipChanged)
-        elif e.key() == Qt.Key_Left:
+        elif e.key() in [Qt.Key_Left, Qt.Key_A]:
             self.publish(ItemEvent.offsetChanged, -1, 0)
-        elif e.key() == Qt.Key_Right:
+        elif e.key() in [Qt.Key_Right, Qt.Key_D]:
             self.publish(ItemEvent.offsetChanged, 1, 0)
-        elif e.key() == Qt.Key_Up:
+        elif e.key() in [Qt.Key_Up, Qt.Key_W]:
             self.publish(ItemEvent.offsetChanged, 0, -1)
-        elif e.key() == Qt.Key_Down:
+        elif e.key() in [Qt.Key_Down, Qt.Key_S]:
             self.publish(ItemEvent.offsetChanged, 0, 1)
         else:
             super().keyPressEvent(e)
@@ -73,6 +79,18 @@ class FrameSpriteItem(QGraphicsPixmapItem, Publisher):
             elif e.delta() < 0:
                 z = int(self.zValue() + 1)
                 self.publish(ItemEvent.zChanged, z)
+
+    def mousePressEvent(self, e: QGraphicsSceneMouseEvent) -> None:
+        self.setCursor(Qt.SizeAllCursor)
+        super().mousePressEvent(e)
+
+    def mouseReleaseEvent(self, e: QGraphicsSceneMouseEvent) -> None:
+        self.setCursor(Qt.ArrowCursor)
+        super().mouseReleaseEvent(e)
+
+    def animateDashOffset(self) -> None:
+        self._dashOffset -= 1
+        self.update()
 
     def itemChange(
         self, change: QGraphicsItem.GraphicsItemChange, value: typing.Any
@@ -93,7 +111,7 @@ class FrameSpriteItem(QGraphicsPixmapItem, Publisher):
         painter.drawPixmap(QPoint(), self.pixmap())
 
         if self.isSelected():
-            pen = QPen(QColor(Qt.white), 0, Qt.DashLine, Qt.RoundCap, Qt.RoundJoin)
-            pen.setCosmetic(True)
+            pen = QPen(Qt.magenta, 0, Qt.DashLine, Qt.SquareCap)
+            pen.setDashOffset(self._dashOffset)
             painter.setPen(pen)
-            painter.drawRect(self.boundingRect().adjusted(0.5, 0.5, 0, 0))
+            painter.drawPath(self.shape().simplified())

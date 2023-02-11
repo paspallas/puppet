@@ -8,13 +8,11 @@ from PyQt5.QtGui import (
     QPainter,
     QPen,
     QResizeEvent,
-    QSurfaceFormat,
 )
 from PyQt5.QtWidgets import (
     QFrame,
     QGraphicsItem,
     QGraphicsView,
-    QOpenGLWidget,
     QSizePolicy,
 )
 
@@ -53,14 +51,13 @@ class CustomGraphicView(QGraphicsView):
             QGraphicsView.RubberBandDrag if options.drag else QGraphicsView.NoDrag
         )
 
-        self.setViewportUpdateMode(QGraphicsView.SmartViewportUpdate)
+        self.setViewportUpdateMode(QGraphicsView.FullViewportUpdate)
         self.setCacheMode(QGraphicsView.CacheBackground)
         self.setRenderHints(QPainter.Antialiasing)
         self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
 
         self.setTransformationAnchor(QGraphicsView.AnchorUnderMouse)
         self.setMouseTracking(True)
-        self.setOpenglViewport()
 
         ZoomControl(self)
         PanControl(self)
@@ -103,11 +100,3 @@ class CustomGraphicView(QGraphicsView):
             painter.setPen(pen)
             painter.drawLines(*lines)
             painter.drawRect(QRectF(-160, -112, 320, 224))
-
-    def setOpenglViewport(self) -> None:
-        fmt = QSurfaceFormat()
-        fmt.setSamples(1)
-        gl = QOpenGLWidget()
-        gl.setFormat(fmt)
-        self.setViewport(gl)
-        self.setRenderHints(QPainter.Antialiasing | QPainter.TextAntialiasing)
