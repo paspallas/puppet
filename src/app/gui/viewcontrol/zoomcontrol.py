@@ -28,14 +28,15 @@ class ZoomControl(QObject):
         self._animation = QTimeLine(160, self)
         self._animation.setEasingCurve(QEasingCurve.InOutCubic)
         self._animation.setUpdateInterval(16)
-        self._animation.valueChanged.connect(self.scalingTime)
-        self._animation.finished.connect(self.animationFinished)
+        self._animation.valueChanged.connect(self._scalingTime)
+        self._animation.finished.connect(self._animationFinished)
         self._numScalings = 0
         self._started = False
 
         self._view = view
         self._zoom_min = min_
         self._zoom_max = max_
+        self._eventPos: QPointF = None
 
         view.viewport().installEventFilter(self)
 
@@ -49,6 +50,7 @@ class ZoomControl(QObject):
             if e.modifiers() & (Qt.Modifier.CTRL | Qt.Modifier.ALT):
                 return False
 
+            self._eventPos = e.pos()
             self._numDegrees = e.angleDelta().y() / 8
             self._numSteps = self._numDegrees / 15
             self._numScalings += self._numSteps
@@ -64,36 +66,40 @@ class ZoomControl(QObject):
 
         return super().eventFilter(obj, e)
 
-    def zoom(self) -> float:
-        return round(
-            QStyleOptionGraphicsItem.levelOfDetailFromTransform(self._view.transform()),
-            4,
+    def _zoom(self) -> float:
+        return QStyleOptionGraphicsItem.levelOfDetailFromTransform(
+            self._view.transform()
         )
 
+    def _translate(self, oldPos: float) -> None:
+        newPos = self._view.mapToScene(self._eventPos)
+        delta = newPos - oldPos
+        self._view.translate(delta.x(), delta.y())
+
     @pyqtSlot(float)
-    def scalingTime(self, val: float) -> None:
+    def _scalingTime(self, val: float) -> None:
+        oldPos = self._view.mapToScene(self._eventPos)
+
         factor = 1.0 + (self._numScalings / 160.0)
-        lod = self.zoom()
-        level = lod * factor
+        level = self._zoom() * factor
 
         if self._zoom_min < level < self._zoom_max:
-            self._view.scale(factor, factor)
-            self.zoomLevelChanged.emit(level)
+            level = self._zoom()
         elif level > self._zoom_max:
-            self._view.scale(self._zoom_max / lod, self._zoom_max / lod)
+            factor = self._zoom_max / self._zoom()
+            level = self._zoom_max
             self._numScalings = 0
-            self.zoomLevelChanged.emit(self._zoom_max)
         elif level < self._zoom_min:
-            self._view.scale(self._zoom_min / lod, self._zoom_min / lod)
+            factor = self._zoom_min / self._zoom()
+            level = self._zoom_min
             self._numScalings = 0
-            self.zoomLevelChanged.emit(self._zoom_min)
+
+        self._view.scale(factor, factor)
+        self._translate(oldPos)
+        self.zoomLevelChanged.emit(level)
 
     @pyqtSlot(float)
     def setValue(self, value: float) -> None:
-        # avoid recursion when a slider is connected to the controller
-        if round(value, 4) == self.zoom():
-            return
-
         transform = self._view.transform()
         m12 = transform.m12()  # Vertical shearing
         m13 = transform.m13()  # Horizontal Projection
@@ -103,13 +109,19 @@ class ZoomControl(QObject):
         m32 = transform.m32()  # Vertical Position (DY)
         m33 = transform.m33()  # Additional Projection Factor
 
-        transform.setMatrix(value, m12, m13, m21, value, m23, m31, m32, m33)
-        self._view.setTransformationAnchor(QGraphicsView.AnchorViewCenter)
-        self._view.setTransform(transform)
-        self._view.setTransformationAnchor(QGraphicsView.AnchorUnderMouse)
+        if self._eventPos is None:
+            self._view.setTransformationAnchor(QGraphicsView.AnchorViewCenter)
+            transform.setMatrix(value, m12, m13, m21, value, m23, m31, m32, m33)
+            self._view.setTransform(transform)
+            self._view.setTransformationAnchor(QGraphicsView.NoAnchor)
+        else:
+            oldPos = self._view.mapToScene(self._eventPos)
+            transform.setMatrix(value, m12, m13, m21, value, m23, m31, m32, m33)
+            self._view.setTransform(transform)
+            self._translate(oldPos)
 
     @pyqtSlot()
-    def animationFinished(self) -> None:
+    def _animationFinished(self) -> None:
         if self._numScalings > 0:
             self._numScalings -= 1
         else:

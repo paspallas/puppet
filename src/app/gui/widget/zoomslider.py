@@ -1,5 +1,13 @@
 from PyQt5.QtCore import QPoint, QRectF, QSize, QSizeF, Qt, pyqtSignal, pyqtSlot
-from PyQt5.QtGui import QColor, QIcon, QPainter, QPaintEvent, QPixmap, QWheelEvent
+from PyQt5.QtGui import (
+    QColor,
+    QIcon,
+    QMouseEvent,
+    QPainter,
+    QPaintEvent,
+    QPixmap,
+    QWheelEvent,
+)
 from PyQt5.QtWidgets import QLabel, QVBoxLayout, QWidget
 
 from ...resources import resources
@@ -19,20 +27,20 @@ class ZoomSlider(QWidget):
         self.lupe = QLabel(self)
         self.lupe.setPixmap(QIcon(":/icon/32/lupe.png").pixmap(16, 16))
 
-        self.zoomSlider = DoubleSlider(Qt.Orientation.Vertical, self)
-        self.zoomSlider.setRange(min_, max_)
-        self.zoomSlider.setValue(min_)
+        self.slider = DoubleSlider(Qt.Orientation.Vertical, self)
+        self.slider.setRange(min_, max_)
+        self.slider.setValue(min_, False)
 
         vbox = QVBoxLayout(self)
         self.setLayout(vbox)
         vbox.addWidget(self.lupe)
-        vbox.addWidget(self.zoomSlider)
+        vbox.addWidget(self.slider)
 
-        self.zoomSlider.valueChanged.connect(self.zoomChanged)
+        self.slider.valueChanged.connect(self.zoomChanged)
 
     @pyqtSlot(float)
     def setValue(self, value: float) -> None:
-        self.zoomSlider.setValue(value)
+        self.slider.setValue(value, False)
 
     def paintEvent(self, e: QPaintEvent) -> None:
         painter = QPainter(self)
@@ -44,6 +52,9 @@ class ZoomSlider(QWidget):
         )
         painter.drawRoundedRect(rect, 10, 10)
 
-    def wheelEvent(self, event: QWheelEvent) -> None:
-        self.zoomSlider.wheelEvent(event)
-        event.accept()
+    def wheelEvent(self, e: QWheelEvent) -> None:
+        self.slider.wheelEvent(e)
+        e.accept()
+
+    def mousePressEvent(self, e: QMouseEvent) -> None:
+        e.accept()

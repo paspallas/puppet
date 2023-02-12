@@ -54,7 +54,8 @@ class CustomGraphicView(QGraphicsView):
         self.setRenderHints(QPainter.Antialiasing)
         self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
 
-        self.setTransformationAnchor(QGraphicsView.AnchorUnderMouse)
+        self.setTransformationAnchor(QGraphicsView.NoAnchor)
+        self.setResizeAnchor(QGraphicsView.NoAnchor)
         self.setMouseTracking(True)
 
     def resizeEvent(self, e: QResizeEvent) -> None:

@@ -32,8 +32,8 @@ class CharEditorUi:
 
         # set widgets over the scene viewport
         self.zoomSlider = ZoomSlider(min_=self.__min_zoom__, max_=self.__max_zoom__)
-        zoom.zoomLevelChanged.connect(self.zoomSlider.setValue)
         self.zoomSlider.zoomChanged.connect(zoom.setValue)
+        zoom.zoomLevelChanged.connect(self.zoomSlider.setValue)
 
         sliderVbox = QVBoxLayout()
         sliderVbox.addStretch()
