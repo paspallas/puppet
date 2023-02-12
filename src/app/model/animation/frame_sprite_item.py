@@ -1,7 +1,7 @@
 import typing
 from enum import IntEnum
 
-from PyQt5.QtCore import QPoint, Qt, QVariant, pyqtSlot
+from PyQt5.QtCore import QLineF, QPoint, Qt, QVariant, pyqtSlot
 from PyQt5.QtGui import QColor, QKeyEvent, QPainter, QPainterPath, QPen, QPixmap
 from PyQt5.QtWidgets import (
     QGraphicsItem,
@@ -111,10 +111,35 @@ class FrameSpriteItem(QGraphicsPixmapItem, Publisher):
         painter.drawPixmap(QPoint(), self.pixmap())
 
         if self.isSelected():
-            pen = QPen(Qt.magenta, 0, Qt.SolidLine, Qt.SquareCap)
+            color = QColor(255, 0, 255, 255)
+            pen = QPen(color, 0, Qt.SolidLine, Qt.SquareCap)
             painter.setPen(pen)
             painter.drawPath(self._outline)
 
-            pen.setColor(QColor(255, 0, 255, 100))
+            pen.setColor(QColor(255, 0, 255, 255))
             painter.setPen(pen)
-            painter.drawRect(self.boundingRect())
+
+            b = self.boundingRect()
+            tl = b.topLeft()
+            tr = b.topRight()
+            bl = b.bottomLeft()
+            br = b.bottomRight()
+
+            length = 4
+            lines = [
+                QLineF(tl.x(), tl.y(), tl.x() + length, tl.y()),
+                QLineF(tl.x(), tl.y(), tl.x(), tl.y() + length),
+                QLineF(tr.x() - length, tr.y(), tr.x(), tr.y()),
+                QLineF(tr.x(), tr.y(), tr.x(), tr.y() + length),
+                QLineF(bl.x(), bl.y(), bl.x() + length, bl.y()),
+                QLineF(bl.x(), bl.y(), bl.x(), bl.y() - length),
+                QLineF(br.x() - length, br.y(), br.x(), br.y()),
+                QLineF(br.x(), br.y(), br.x(), br.y() - length),
+            ]
+
+            painter.drawLines(*lines)
+
+            color.setAlpha(100)
+            pen.setColor(color)
+            painter.setPen(pen)
+            painter.drawRect(b)
