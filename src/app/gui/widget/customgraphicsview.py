@@ -1,20 +1,8 @@
 from typing import NamedTuple
 
 from PyQt5.QtCore import QLineF, QPointF, QRectF, Qt, pyqtSignal, pyqtSlot
-from PyQt5.QtGui import (
-    QBrush,
-    QColor,
-    QMouseEvent,
-    QPainter,
-    QPen,
-    QResizeEvent,
-)
-from PyQt5.QtWidgets import (
-    QFrame,
-    QGraphicsItem,
-    QGraphicsView,
-    QSizePolicy,
-)
+from PyQt5.QtGui import QBrush, QColor, QPainter, QPen, QResizeEvent, QWheelEvent
+from PyQt5.QtWidgets import QFrame, QGraphicsItem, QGraphicsView, QSizePolicy
 
 
 class CustomGraphicViewOptions(NamedTuple):
@@ -57,6 +45,16 @@ class CustomGraphicView(QGraphicsView):
         self.setTransformationAnchor(QGraphicsView.NoAnchor)
         self.setResizeAnchor(QGraphicsView.NoAnchor)
         self.setMouseTracking(True)
+
+    def wheelEvent(self, e: QWheelEvent) -> None:
+        if e.modifiers() & Qt.Modifier.ALT:
+            h = self.horizontalScrollBar()
+            h.setValue(h.value() + e.angleDelta().x() // 8)
+            e.accept()
+        elif e.modifiers() & Qt.Modifier.CTRL:
+            v = self.verticalScrollBar()
+            v.setValue(v.value() - e.angleDelta().y() // 8)
+            e.accept()
 
     def resizeEvent(self, e: QResizeEvent) -> None:
         if not self._centerOnResize:
