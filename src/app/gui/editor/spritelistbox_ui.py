@@ -123,7 +123,7 @@ class SpriteListBoxUi:
         spriteListLay.addWidget(self.list)
         spriteListLay.addLayout(btnBox)
 
-        self.spriteListBox = QGroupBox("Hierarchy", parent)
+        self.spriteListBox = QGroupBox("Sprite Order", parent)
         self.spriteListBox.setLayout(spriteListLay)
         self.spriteListBox.setFlat(True)
 

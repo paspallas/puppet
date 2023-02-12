@@ -1,8 +1,8 @@
 import typing
 from enum import IntEnum
 
-from PyQt5.QtCore import QPoint, Qt, QTimer, QVariant, pyqtSlot
-from PyQt5.QtGui import QColor, QKeyEvent, QPainter, QPen, QPixmap
+from PyQt5.QtCore import QPoint, Qt, QVariant, pyqtSlot
+from PyQt5.QtGui import QColor, QKeyEvent, QPainter, QPainterPath, QPen, QPixmap
 from PyQt5.QtWidgets import (
     QGraphicsItem,
     QGraphicsPixmapItem,
@@ -20,6 +20,7 @@ class ItemEvent(IntEnum):
     zChanged = 2
     vFlipChanged = 3
     hFlipChanged = 4
+    alphaChanged = 5
 
 
 class FrameSpriteItem(QGraphicsPixmapItem, Publisher):
@@ -41,11 +42,9 @@ class FrameSpriteItem(QGraphicsPixmapItem, Publisher):
             | QGraphicsItem.ItemSendsScenePositionChanges
         )
 
-        self._dashOffset = 0
-        self._timer = QTimer()
-        self._timer.setInterval(166)
-        self._timer.timeout.connect(self.animateDashOffset)
-        self._timer.start()
+        # make the item selectable regardless of transparency
+        item = QGraphicsPixmapItem(pixmap)
+        self._outline = item.shape().simplified()
 
     def keyPressEvent(self, e: QKeyEvent) -> None:
         if e.key() == Qt.Key.Key_Q:
@@ -68,29 +67,30 @@ class FrameSpriteItem(QGraphicsPixmapItem, Publisher):
             self.publish(ItemEvent.offsetChanged, 0, -1)
         elif e.key() in [Qt.Key_Down, Qt.Key_S]:
             self.publish(ItemEvent.offsetChanged, 0, 1)
+        elif e.key() == Qt.Key_T:
+            self.publish(ItemEvent.alphaChanged)
         else:
             super().keyPressEvent(e)
 
-    def wheelEvent(self, e: QGraphicsSceneWheelEvent) -> None:
-        if e.modifiers() & Qt.Modifier.ALT:
-            if e.delta() > 0:
-                z = int(self.zValue() - 1)
-                self.publish(ItemEvent.zChanged, z)
-            elif e.delta() < 0:
-                z = int(self.zValue() + 1)
-                self.publish(ItemEvent.zChanged, z)
+    # def wheelEvent(self, e: QGraphicsSceneWheelEvent) -> None:
+    #     if e.modifiers() & Qt.Modifier.ALT:
+    #         if e.delta() > 0:
+    #             z = int(self.zValue() - 1)
+    #             self.publish(ItemEvent.zChanged, z)
+    #         elif e.delta() < 0:
+    #             z = int(self.zValue() + 1)
+    #             self.publish(ItemEvent.zChanged, z)
 
-    def mousePressEvent(self, e: QGraphicsSceneMouseEvent) -> None:
-        self.setCursor(Qt.SizeAllCursor)
-        super().mousePressEvent(e)
+    # def mousePressEvent(self, e: QGraphicsSceneMouseEvent) -> None:
+    #     self.setCursor(Qt.SizeAllCursor)
+    #     super().mousePressEvent(e)
 
-    def mouseReleaseEvent(self, e: QGraphicsSceneMouseEvent) -> None:
-        self.setCursor(Qt.ArrowCursor)
-        super().mouseReleaseEvent(e)
+    # def mouseReleaseEvent(self, e: QGraphicsSceneMouseEvent) -> None:
+    #     self.setCursor(Qt.ArrowCursor)
+    #     super().mouseReleaseEvent(e)
 
-    def animateDashOffset(self) -> None:
-        self._dashOffset -= 1
-        self.update()
+    def shape(self) -> QPainterPath:
+        return self._outline
 
     def itemChange(
         self, change: QGraphicsItem.GraphicsItemChange, value: typing.Any
@@ -111,7 +111,10 @@ class FrameSpriteItem(QGraphicsPixmapItem, Publisher):
         painter.drawPixmap(QPoint(), self.pixmap())
 
         if self.isSelected():
-            pen = QPen(Qt.magenta, 0, Qt.DashLine, Qt.SquareCap)
-            pen.setDashOffset(self._dashOffset)
+            pen = QPen(Qt.magenta, 0, Qt.SolidLine, Qt.SquareCap)
             painter.setPen(pen)
-            painter.drawPath(self.shape().simplified())
+            painter.drawPath(self._outline)
+
+            pen.setColor(QColor(255, 0, 255, 100))
+            painter.setPen(pen)
+            painter.drawRect(self.boundingRect())

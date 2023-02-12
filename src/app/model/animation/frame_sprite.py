@@ -49,6 +49,7 @@ class FrameSprite(QObject):
         self.item.subscribe(ItemEvent.posChanged, self.onPosChanged)
         self.item.subscribe(ItemEvent.hFlipChanged, self.onHflipChanged)
         self.item.subscribe(ItemEvent.vFlipChanged, self.onVflipChanged)
+        self.item.subscribe(ItemEvent.alphaChanged, self.onAlphaChanged)
 
         self._name: str = name
         self._x: float = x
@@ -60,7 +61,9 @@ class FrameSprite(QObject):
 
         self._hide: bool = False
         self._lock: bool = False
-        
+
+        self._alphaStep: bool = False
+
         self.item.setVisible(not self._hide)
         self.item.setPos(self._x, self._y)
 
@@ -99,8 +102,9 @@ class FrameSprite(QObject):
 
     @x.setter
     def x(self, value: float):
-        self._x = value
-        self.item.setX(value)
+        if self._x != value:
+            self._x = value
+            self.item.setX(value)
 
     @property
     def y(self) -> float:
@@ -108,8 +112,9 @@ class FrameSprite(QObject):
 
     @y.setter
     def y(self, value: float):
-        self._y = value
-        self.item.setY(value)
+        if self._y != value:
+            self._y = value
+            self.item.setY(value)
 
     @property
     def alpha(self) -> int:
@@ -174,29 +179,35 @@ class FrameSprite(QObject):
             self.sigDecreaseZ.emit(self._zIndex)
 
     def onPosChanged(self, x: float, y: float) -> None:
-        self._x = x
-        self._y = y
+        self.x = x
+        self.y = y
 
         self.sigInternalDataChanged.emit(
             [(self._zIndex, FrameSpriteColumn.X), (self._zIndex, FrameSpriteColumn.Y)]
         )
 
     def onOffsetChanged(self, x: float, y: float) -> None:
-        self._x += x
-        self._y += y
+        self.x += x
+        self.y += y
 
         self.sigInternalDataChanged.emit(
             [(self._zIndex, FrameSpriteColumn.X), (self._zIndex, FrameSpriteColumn.Y)]
         )
 
     def onHflipChanged(self) -> None:
-        self._hflip = not self._hflip
-        Image.flipHorizontal(self.item)
-
+        self.hflip = not self._hflip
         self.sigInternalDataChanged.emit([(self._zIndex, FrameSpriteColumn.Hflip)])
 
     def onVflipChanged(self) -> None:
-        self._vflip = not self._vflip
-        Image.flipVertical(self.item)
-
+        self.vflip = not self._vflip
         self.sigInternalDataChanged.emit([(self._zIndex, FrameSpriteColumn.Vflip)])
+
+    def onAlphaChanged(self) -> None:
+        if self._alphaStep:
+            self.alpha = 0
+            self._alphaStep = False
+        else:
+            self._alphaStep = True
+            self.alpha = 90
+
+        self.sigInternalDataChanged.emit([(self._zIndex, FrameSpriteColumn.Alpha)])

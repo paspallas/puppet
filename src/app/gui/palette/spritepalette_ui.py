@@ -11,8 +11,13 @@ from PyQt5.QtWidgets import (
 )
 
 from ...resources import resources
-from ..widget import CustomGraphicScene, CustomGraphicSceneOptions
-from ..widget import CustomGraphicView, CustomGraphicViewOptions
+from ..viewcontrol import PanControl, ZoomControl
+from ..widget import (
+    CustomGraphicScene,
+    CustomGraphicSceneOptions,
+    CustomGraphicView,
+    CustomGraphicViewOptions,
+)
 
 
 class SpritePaletteUi:
@@ -26,6 +31,9 @@ class SpritePaletteUi:
             parent,
             options=CustomGraphicViewOptions(False, False, False, 16, False),
         )
+
+        PanControl(self.spritePalView)
+        ZoomControl(self.spritePalView)
 
         # sprites view
         sprBox = QVBoxLayout()

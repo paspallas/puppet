@@ -8,10 +8,14 @@ from ..widget import (
     CustomGraphicViewOptions,
     ZoomSlider,
 )
+from ..viewcontrol import ZoomControl, PanControl
 from .spritelistbox import SpriteListBox
 
 
 class CharEditorUi:
+    __max_zoom__ = 25
+    __min_zoom__ = 1
+
     def setupUi(self, parent: QWidget) -> None:
         self.editorScene = CustomGraphicScene(
             parent, options=CustomGraphicSceneOptions(1024, 1024)
@@ -23,9 +27,15 @@ class CharEditorUi:
             options=CustomGraphicViewOptions(True, True, True, 32, True),
         )
 
-        # widgets over the scene viewport
+        PanControl(self.editorView)
+        zoom = ZoomControl(self.editorView, self.__min_zoom__, self.__max_zoom__)
+
+        # set widgets over the scene viewport
+        self.zoomSlider = ZoomSlider(min_=self.__min_zoom__, max_=self.__max_zoom__)
+        zoom.zoomLevelChanged.connect(self.zoomSlider.setValue)
+        self.zoomSlider.zoomChanged.connect(zoom.setValue)
+
         sliderVbox = QVBoxLayout()
-        self.zoomSlider = ZoomSlider(min_=1, max_=25)
         sliderVbox.addStretch()
         sliderVbox.addWidget(self.zoomSlider)
 

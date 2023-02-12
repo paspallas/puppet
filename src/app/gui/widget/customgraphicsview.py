@@ -1,6 +1,6 @@
 from typing import NamedTuple
 
-from PyQt5.QtCore import QLineF, QRectF, Qt, pyqtSignal, pyqtSlot
+from PyQt5.QtCore import QLineF, QPointF, QRectF, Qt, pyqtSignal, pyqtSlot
 from PyQt5.QtGui import (
     QBrush,
     QColor,
@@ -15,8 +15,6 @@ from PyQt5.QtWidgets import (
     QGraphicsView,
     QSizePolicy,
 )
-
-from ..viewcontrol import PanControl, ZoomControl
 
 
 class CustomGraphicViewOptions(NamedTuple):
@@ -59,9 +57,6 @@ class CustomGraphicView(QGraphicsView):
         self.setTransformationAnchor(QGraphicsView.AnchorUnderMouse)
         self.setMouseTracking(True)
 
-        ZoomControl(self)
-        PanControl(self)
-
     def resizeEvent(self, e: QResizeEvent) -> None:
         if not self._centerOnResize:
             super().resizeEvent(e)
@@ -95,8 +90,29 @@ class CustomGraphicView(QGraphicsView):
             # center visual indicator
             lines = [QLineF(l, 0, r, 0), QLineF(0, t, 0, b)]
 
-            pen = QPen(QColor("#202020"), 0, Qt.DashLine)
+            pen = QPen(QColor("#080808"), 0, Qt.SolidLine)
             pen.setCosmetic(True)
             painter.setPen(pen)
             painter.drawLines(*lines)
             painter.drawRect(QRectF(-160, -112, 320, 224))
+
+    def drawForeground(self, painter: QPainter, rect: QRectF) -> None:
+        if not self._showCenterGrid:
+            return
+
+        start = 6
+        end = 2
+
+        lines = [
+            QLineF(-start, 0, -end, 0),
+            QLineF(0, -start, 0, -end),
+            QLineF(end, 0, start, 0),
+            QLineF(0, start, 0, end),
+        ]
+
+        painter.setRenderHint(QPainter.Antialiasing)
+        pen = QPen(QColor(210, 210, 210, 200), 2, Qt.SolidLine)
+        pen.setCosmetic(True)
+        painter.setPen(pen)
+        painter.drawLines(*lines)
+        painter.drawEllipse(QPointF(0, 0), 1, 1)
