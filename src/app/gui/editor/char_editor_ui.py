@@ -25,7 +25,7 @@ class CharEditorUi:
         self.editorView = CustomGraphicView(
             self.editorScene,
             parent,
-            options=CustomGraphicViewOptions(True, True, True, 32, True),
+            options=CustomGraphicViewOptions(True, True, 32, True),
         )
 
         PanControl(self.editorView)
@@ -34,6 +34,7 @@ class CharEditorUi:
         # set widgets over the scene viewport
         self.zoomSlider = ZoomSlider(min_=self.__min_zoom__, max_=self.__max_zoom__)
         self.zoomSlider.zoomChanged.connect(zoom.setValue)
+        self.editorView.zoomChanged.connect(self.zoomSlider.setValue)
         zoom.zoomLevelChanged.connect(self.zoomSlider.setValue)
 
         sliderVbox = QVBoxLayout()

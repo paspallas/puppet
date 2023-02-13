@@ -2,24 +2,28 @@ from typing import NamedTuple
 
 from PyQt5.QtCore import QLineF, QPointF, QRectF, Qt, pyqtSignal, pyqtSlot
 from PyQt5.QtGui import QBrush, QColor, QPainter, QPen, QResizeEvent, QWheelEvent
-from PyQt5.QtWidgets import QFrame, QGraphicsItem, QGraphicsView, QSizePolicy
+from PyQt5.QtWidgets import (
+    QFrame,
+    QGraphicsItem,
+    QGraphicsView,
+    QSizePolicy,
+    QStyleOptionGraphicsItem,
+)
 
 
 class CustomGraphicViewOptions(NamedTuple):
     drag: bool
     scroll_bar: bool
-    center_on_resize: bool
     grid_size: int
     show_center: bool
 
 
 class CustomGraphicView(QGraphicsView):
+    zoomChanged = pyqtSignal(float)
+
     def __init__(self, *args, options: CustomGraphicViewOptions, **kwargs) -> None:
         super().__init__(*args, **kwargs)
 
-        self._activeItem = None
-
-        self._centerOnResize = options.center_on_resize
         self._showCenterGrid = options.show_center
         self._gridSize = options.grid_size
 
@@ -37,13 +41,14 @@ class CustomGraphicView(QGraphicsView):
             QGraphicsView.RubberBandDrag if options.drag else QGraphicsView.NoDrag
         )
 
+        self.setResizeAnchor(QGraphicsView.AnchorViewCenter)
+        self.setTransformationAnchor(QGraphicsView.NoAnchor)
+        self.centerOn(0, 0)
+
         self.setViewportUpdateMode(QGraphicsView.FullViewportUpdate)
         self.setCacheMode(QGraphicsView.CacheBackground)
         self.setRenderHints(QPainter.Antialiasing)
         self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
-
-        self.setTransformationAnchor(QGraphicsView.NoAnchor)
-        self.setResizeAnchor(QGraphicsView.NoAnchor)
         self.setMouseTracking(True)
 
     def wheelEvent(self, e: QWheelEvent) -> None:
@@ -55,6 +60,12 @@ class CustomGraphicView(QGraphicsView):
             v = self.verticalScrollBar()
             v.setValue(v.value() - e.angleDelta().y() // 8)
             e.accept()
+
+    def fitInView(self, item: QGraphicsItem) -> None:
+        super().fitInView(item, Qt.KeepAspectRatio)
+        self.zoomChanged.emit(
+            QStyleOptionGraphicsItem.levelOfDetailFromTransform(self.transform())
+        )
 
     def drawBackground(self, painter: QPainter, rect: QRectF) -> None:
         painter.setRenderHint(QPainter.Antialiasing)

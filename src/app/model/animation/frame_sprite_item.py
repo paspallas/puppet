@@ -72,22 +72,31 @@ class FrameSpriteItem(QGraphicsPixmapItem, Publisher):
 
         elif e.key() == Qt.Key_V:
             self.publish(ItemEvent.vFlipChanged)
+
         elif e.key() == Qt.Key_H:
             self.publish(ItemEvent.hFlipChanged)
+
         elif e.key() in [Qt.Key_Left, Qt.Key_A]:
             self.publish(ItemEvent.offsetChanged, -1, 0)
+
         elif e.key() in [Qt.Key_Right, Qt.Key_D]:
             self.publish(ItemEvent.offsetChanged, 1, 0)
+
         elif e.key() in [Qt.Key_Up, Qt.Key_W]:
             self.publish(ItemEvent.offsetChanged, 0, -1)
+
         elif e.key() in [Qt.Key_Down, Qt.Key_S]:
             self.publish(ItemEvent.offsetChanged, 0, 1)
+
         elif e.key() == Qt.Key_T:
             self.publish(ItemEvent.alphaChanged)
+
         elif e.key() == Qt.Key_Space:
             self._overlay.enabled = not self._overlay.enabled
-            if e.modifiers() & Qt.Modifier.CTRL:
-                pass
+
+        elif e.key() == Qt.Key_Z:
+            self.scene().views()[0].fitInView(self)
+
         else:
             super().keyPressEvent(e)
 

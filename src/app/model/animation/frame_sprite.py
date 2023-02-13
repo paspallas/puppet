@@ -173,10 +173,10 @@ class FrameSprite(QObject):
             self._zIndex = value
             self.item.setZValue(value)
 
-    def dataChanged(
-        self, column: FrameSpriteColumn
-    ) -> typing.Tuple[int, FrameSpriteColumn]:
-        return (self._zIndex, column)
+    def changed(
+        self, *args: FrameSpriteColumn
+    ) -> typing.List[typing.Tuple[int, FrameSpriteColumn]]:
+        return [(self._zIndex, arg) for arg in args]
 
     def copy(self):
         item = FrameSprite(
@@ -210,10 +210,7 @@ class FrameSprite(QObject):
         self.y = y
 
         self.sigInternalDataChanged.emit(
-            [
-                self.dataChanged(FrameSpriteColumn.X),
-                self.dataChanged(FrameSpriteColumn.Y),
-            ]
+            self.changed(FrameSpriteColumn.X, FrameSpriteColumn.Y)
         )
 
     def onOffsetChanged(self, x: float, y: float) -> None:
@@ -221,19 +218,16 @@ class FrameSprite(QObject):
         self.y += y
 
         self.sigInternalDataChanged.emit(
-            [
-                self.dataChanged(FrameSpriteColumn.X),
-                self.dataChanged(FrameSpriteColumn.Y),
-            ]
+            self.changed(FrameSpriteColumn.X, FrameSpriteColumn.Y)
         )
 
     def onHflipChanged(self) -> None:
         self.hflip = not self._hflip
-        self.sigInternalDataChanged.emit([self.dataChanged(FrameSpriteColumn.Hflip)])
+        self.sigInternalDataChanged.emit(self.changed(FrameSpriteColumn.Hflip))
 
     def onVflipChanged(self) -> None:
         self.vflip = not self._vflip
-        self.sigInternalDataChanged.emit([self.dataChanged(FrameSpriteColumn.Vflip)])
+        self.sigInternalDataChanged.emit(self.changed(FrameSpriteColumn.Vflip))
 
     def onAlphaChanged(self) -> None:
         if self._alphaStep:
@@ -243,4 +237,4 @@ class FrameSprite(QObject):
             self._alphaStep = True
             self.alpha = 90
 
-        self.sigInternalDataChanged.emit([self.dataChanged(FrameSpriteColumn.Alpha)])
+        self.sigInternalDataChanged.emit(self.changed(FrameSpriteColumn.Alpha))

@@ -24,7 +24,7 @@ class CustomGraphicScene(QGraphicsScene):
 
         self.activeItem = None
         self.setSceneRect(
-            -options.width / 2, -options.height / 2, options.width, options.height
+            -options.width // 2, -options.height // 2, options.width, options.height
         )
 
     @pyqtSlot()
