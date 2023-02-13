@@ -86,6 +86,8 @@ class FrameSpriteItem(QGraphicsPixmapItem, Publisher):
             self.publish(ItemEvent.alphaChanged)
         elif e.key() == Qt.Key_Space:
             self._overlay.enabled = not self._overlay.enabled
+            if e.modifiers() & Qt.Modifier.CTRL:
+                pass
         else:
             super().keyPressEvent(e)
 

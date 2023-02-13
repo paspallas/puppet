@@ -63,7 +63,6 @@ class FrameSprite(QObject):
         self.item.subscribe(ItemEvent.vFlipChanged, self.onVflipChanged)
         self.item.subscribe(ItemEvent.alphaChanged, self.onAlphaChanged)
 
-        # defaults
         self._name: str = ""
         self._x: float = 0
         self._y: float = 0
@@ -75,7 +74,7 @@ class FrameSprite(QObject):
         self._lock: bool = False
         self._alphaStep: bool = False
 
-        # set variables through property setters to allow easy copying
+        # set variables through property setters to allow for easy copying
         self.name = name
         self.x = x
         self.y = y
@@ -174,6 +173,11 @@ class FrameSprite(QObject):
             self._zIndex = value
             self.item.setZValue(value)
 
+    def dataChanged(
+        self, column: FrameSpriteColumn
+    ) -> typing.Tuple[int, FrameSpriteColumn]:
+        return (self._zIndex, column)
+
     def copy(self):
         item = FrameSprite(
             self._name,
@@ -190,6 +194,11 @@ class FrameSprite(QObject):
 
         return item
 
+    def select(self) -> None:
+        self.item.scene().clearSelection()
+        self.item.setSelected(True)
+        self.item.update()
+
     def onItemZchanged(self, value: int) -> None:
         if value > self._zIndex:
             self.sigIncreaseZ.emit(self._zIndex)
@@ -201,7 +210,10 @@ class FrameSprite(QObject):
         self.y = y
 
         self.sigInternalDataChanged.emit(
-            [(self._zIndex, FrameSpriteColumn.X), (self._zIndex, FrameSpriteColumn.Y)]
+            [
+                self.dataChanged(FrameSpriteColumn.X),
+                self.dataChanged(FrameSpriteColumn.Y),
+            ]
         )
 
     def onOffsetChanged(self, x: float, y: float) -> None:
@@ -209,16 +221,19 @@ class FrameSprite(QObject):
         self.y += y
 
         self.sigInternalDataChanged.emit(
-            [(self._zIndex, FrameSpriteColumn.X), (self._zIndex, FrameSpriteColumn.Y)]
+            [
+                self.dataChanged(FrameSpriteColumn.X),
+                self.dataChanged(FrameSpriteColumn.Y),
+            ]
         )
 
     def onHflipChanged(self) -> None:
         self.hflip = not self._hflip
-        self.sigInternalDataChanged.emit([(self._zIndex, FrameSpriteColumn.Hflip)])
+        self.sigInternalDataChanged.emit([self.dataChanged(FrameSpriteColumn.Hflip)])
 
     def onVflipChanged(self) -> None:
         self.vflip = not self._vflip
-        self.sigInternalDataChanged.emit([(self._zIndex, FrameSpriteColumn.Vflip)])
+        self.sigInternalDataChanged.emit([self.dataChanged(FrameSpriteColumn.Vflip)])
 
     def onAlphaChanged(self) -> None:
         if self._alphaStep:
@@ -228,4 +243,4 @@ class FrameSprite(QObject):
             self._alphaStep = True
             self.alpha = 90
 
-        self.sigInternalDataChanged.emit([(self._zIndex, FrameSpriteColumn.Alpha)])
+        self.sigInternalDataChanged.emit([self.dataChanged(FrameSpriteColumn.Alpha)])

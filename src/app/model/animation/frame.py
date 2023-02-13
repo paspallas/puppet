@@ -70,6 +70,9 @@ class AnimationFrame(QObject):
         self.sigAddToScene.emit(copy.item)
         copy.item.addedToScene()
 
+    def select(self, item_index: int) -> None:
+        self.sprites[item_index].select()
+
     def get(self, item_index: int, attr_index: int) -> typing.Any:
         return getattr(self.sprites[item_index], FrameSprite.properties[attr_index])
 

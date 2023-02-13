@@ -18,7 +18,8 @@ class SpriteListBoxUi:
     def setupUi(self, parent: QWidget) -> None:
         self.list = QTreeView(parent)
         self.list.setMouseTracking(True)
-        self.list.setStyleSheet("QTreeView::item:hover{background-color:#33415D;}")
+        self.list.setWordWrap(True)
+        self.list.setStyleSheet("QTreeView::item:hover{background-color:#4A91D9;}")
         self.list.setRootIsDecorated(False)
         self.list.setDragEnabled(True)
         self.list.setAcceptDrops(True)

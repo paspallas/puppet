@@ -25,7 +25,7 @@ class CharEditorWidget(QWidget):
         self._ui.spriteListBox.sigEnabledChanged.connect(
             self._ui.spriteProperty.setEnabled
         )
-        self._ui.spriteListBox.sigRowChanged.connect(
+        self._ui.spriteListBox.sigItemChanged.connect(
             self._ui.spriteProperty.onSelectedItemChanged
         )
 

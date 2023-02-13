@@ -143,6 +143,9 @@ class AnimationFrameModel(QAbstractItemModel):
         self._dataSource.copy(index.row() + 1, index.row())
         self.layoutChanged.emit()
 
+    def selectItem(self, index: QModelIndex) -> None:
+        self._dataSource.select(index.row())
+
     def mimeTypes(self) -> typing.List[str]:
         return ["application/puppet-framedata"]
 

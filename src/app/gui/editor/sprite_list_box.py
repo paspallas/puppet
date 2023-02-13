@@ -17,7 +17,7 @@ from .sprite_list_box_ui import SpriteListBoxUi
 
 class SpriteListBox(QWidget):
     sigEnabledChanged = pyqtSignal(bool)
-    sigRowChanged = pyqtSignal(QModelIndex)
+    sigItemChanged = pyqtSignal(QModelIndex)
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -33,7 +33,6 @@ class SpriteListBox(QWidget):
         self._ui.list.setModel(model)
         self._ui.updateHeaders()
 
-        self._ui.list.selectionModel().currentRowChanged.connect(self.sigRowChanged)
         self._ui.list.setItemDelegateForColumn(
             1, IconCheckDelegate(IconType.VisibleIcon, True, self._ui.list)
         )
@@ -47,6 +46,7 @@ class SpriteListBox(QWidget):
         self._ui.downBtn.clicked.connect(self._moveItemDown)
         self._ui.delBtn.clicked.connect(self._deleteItem)
         self._ui.copyBtn.clicked.connect(self._copyItem)
+        self._ui.list.clicked.connect(self._selectItem)
 
     @pyqtSlot()
     def _moveItemUp(self) -> None:
@@ -71,6 +71,11 @@ class SpriteListBox(QWidget):
     def _copyItem(self) -> None:
         index = self._ui.list.currentIndex()
         self._ui.list.model().copyItem(index)
+
+    @pyqtSlot(QModelIndex)
+    def _selectItem(self, index: QModelIndex) -> None:
+        self._ui.list.model().selectItem(index)
+        self.sigItemChanged.emit(index)
 
     @pyqtSlot(QGraphicsItem)
     def setCurrentItem(self, item: QGraphicsItem) -> None:
