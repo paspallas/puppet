@@ -1,6 +1,7 @@
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QHBoxLayout, QVBoxLayout, QWidget
 
+from ..viewcontrol import PanControl, ZoomControl
 from ..widget import (
     CustomGraphicScene,
     CustomGraphicSceneOptions,
@@ -8,8 +9,8 @@ from ..widget import (
     CustomGraphicViewOptions,
     ZoomSlider,
 )
-from ..viewcontrol import ZoomControl, PanControl
-from .spritelistbox import SpriteListBox
+from .sprite_list_box import SpriteListBox
+from .sprite_property_widget import SpritePropertyWidget
 
 
 class CharEditorUi:
@@ -41,6 +42,9 @@ class CharEditorUi:
 
         hbox = QHBoxLayout()
         hbox.addLayout(sliderVbox, 0)
+        hbox.addStretch()
+        self.spriteProperty = SpritePropertyWidget(parent)
+        hbox.addWidget(self.spriteProperty, 0, Qt.AlignBottom)
         hbox.addStretch()
         self.spriteListBox = SpriteListBox()
         hbox.addWidget(self.spriteListBox, 0, Qt.AlignRight)

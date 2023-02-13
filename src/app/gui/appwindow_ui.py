@@ -19,3 +19,6 @@ class EditModeUi:
         parent.addDockWidget(Qt.BottomDockWidgetArea, self.spritePaletteDock)
         parent.addDockWidget(Qt.BottomDockWidgetArea, self.animEditorDock)
         parent.tabifyDockWidget(self.spritePaletteDock, self.animEditorDock)
+
+        self.spritePaletteDock.hide()
+        self.animEditorDock.hide()

@@ -4,6 +4,8 @@ from PyQt5.QtWidgets import QGraphicsItem, QGraphicsScene
 
 
 class Image:
+    __adjust__ = 0.5
+
     @staticmethod
     def setAlpha(alpha: int, pixmap: QPixmap) -> QPixmap:
         transparent = QPixmap(pixmap.size())
@@ -43,10 +45,18 @@ class Image:
         m32 = transform.m32()  # Vertical Position (DY)
         m33 = transform.m33()  # Additional Projection Factor
 
-        m31 = 0 if m31 > 0 else item.boundingRect().width() * m11
+        m31 = (
+            0
+            if m31 > 0
+            else item.boundingRect()
+            .adjusted(
+                Image.__adjust__, Image.__adjust__, -Image.__adjust__, -Image.__adjust__
+            )
+            .width()
+            * m11
+        )
 
         transform.setMatrix(-m11, m12, m13, m21, m22, m23, m31, m32, m33)
-
         item.setTransform(transform)
 
     @staticmethod
@@ -62,10 +72,18 @@ class Image:
         m32 = transform.m32()  # Vertical Position (DY)
         m33 = transform.m33()  # Additional Projection Factor
 
-        m32 = 0 if m32 > 0 else item.boundingRect().height() * m22
+        m32 = (
+            0
+            if m32 > 0
+            else item.boundingRect()
+            .adjusted(
+                Image.__adjust__, Image.__adjust__, -Image.__adjust__, -Image.__adjust__
+            )
+            .height()
+            * m22
+        )
 
         transform.setMatrix(m11, m12, m13, m21, -m22, m23, m31, m32, m33)
-
         item.setTransform(transform)
 
     @staticmethod

@@ -1,1 +1,1 @@
-from .chareditorwidget import CharEditorWidget
+from .char_editor_widget import CharEditorWidget

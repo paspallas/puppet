@@ -42,11 +42,12 @@ class CustomGraphicScene(QGraphicsScene):
             self.removeItem(item)
 
     def mousePressEvent(self, e: QGraphicsSceneMouseEvent) -> None:
+        super().mousePressEvent(e)
+
         if e.buttons() & Qt.LeftButton:
             self.activeItem = self.itemAt(e.scenePos(), self.views()[0].transform())
             if self.activeItem:
                 self.sigSelectedItem.emit(self.activeItem)
-        elif e.buttons() & Qt.RightButton:
-            self.renderFrame()
 
-        super().mousePressEvent(e)
+        # elif e.buttons() & Qt.RightButton:
+        #     self.renderFrame()

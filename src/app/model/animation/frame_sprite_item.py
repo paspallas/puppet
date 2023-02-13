@@ -4,10 +4,13 @@ from enum import IntEnum
 from PyQt5.QtCore import QLineF, QPoint, Qt, QVariant, pyqtSlot
 from PyQt5.QtGui import QColor, QKeyEvent, QPainter, QPainterPath, QPen, QPixmap
 from PyQt5.QtWidgets import (
+    QAction,
     QGraphicsItem,
     QGraphicsPixmapItem,
+    QGraphicsSceneContextMenuEvent,
     QGraphicsSceneMouseEvent,
     QGraphicsSceneWheelEvent,
+    QMenu,
     QWidget,
 )
 
@@ -72,14 +75,11 @@ class FrameSpriteItem(QGraphicsPixmapItem, Publisher):
         else:
             super().keyPressEvent(e)
 
-    # def wheelEvent(self, e: QGraphicsSceneWheelEvent) -> None:
-    #     if e.modifiers() & Qt.Modifier.ALT:
-    #         if e.delta() > 0:
-    #             z = int(self.zValue() - 1)
-    #             self.publish(ItemEvent.zChanged, z)
-    #         elif e.delta() < 0:
-    #             z = int(self.zValue() + 1)
-    #             self.publish(ItemEvent.zChanged, z)
+    def contextMenuEvent(self, e: QGraphicsSceneContextMenuEvent) -> None:
+        if self.isSelected():
+            menu = QMenu("sprite")
+            remove_action = menu.addAction("remove")
+            menu.exec_(e.screenPos())
 
     # def mousePressEvent(self, e: QGraphicsSceneMouseEvent) -> None:
     #     self.setCursor(Qt.SizeAllCursor)
@@ -119,7 +119,7 @@ class FrameSpriteItem(QGraphicsPixmapItem, Publisher):
             pen.setColor(QColor(255, 0, 255, 255))
             painter.setPen(pen)
 
-            b = self.boundingRect()
+            b = self.boundingRect().adjusted(0.5, 0.5, -0.5, -0.5)
             tl = b.topLeft()
             tr = b.topRight()
             bl = b.bottomLeft()

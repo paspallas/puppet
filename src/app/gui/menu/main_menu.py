@@ -24,17 +24,17 @@ class MainMenu(QObject):
         file_menu.addAction(file_quit)
 
         view_palette = parent._ui.spritePaletteDock.toggleViewAction()
-        view_palette.setShortcut("F3")
+        view_palette.setShortcut("F1")
         view_menu.addAction(view_palette)
 
         view_timeline = parent._ui.animEditorDock.toggleViewAction()
-        view_timeline.setShortcut("F4")
+        view_timeline.setShortcut("F2")
         view_menu.addAction(view_timeline)
 
         view_menu.addSeparator()
         view_fullscreen = QAction("Full Screen", parent)
         view_fullscreen.setCheckable(True)
-        view_fullscreen.setShortcut("Ctrl+Tab")
+        view_fullscreen.setShortcut("F11")
         view_fullscreen.triggered.connect(self.setfullScreen)
         view_menu.addAction(view_fullscreen)
 
