@@ -18,26 +18,14 @@ class AnimationFrame(QObject):
     sigAddedItem = pyqtSignal()
 
     # To other widgets
-    sigAddToScene = pyqtSignal(FrameSpriteItem)
-    sigDeleteFromScene = pyqtSignal(FrameSpriteItem)
+    sigAddToScene = pyqtSignal(QGraphicsItem)
+    sigDeleteFromScene = pyqtSignal(QGraphicsItem)
     sigSelectedItem = pyqtSignal(QGraphicsItem)
 
     def __init__(self):
         super().__init__()
 
         self.sprites: list[FrameSprite] = []
-
-        self._property = [
-            "name",
-            "hide",
-            "lock",
-            "x",
-            "y",
-            "alpha",
-            "hflip",
-            "vflip",
-            "zIndex",
-        ]
 
     def add(self, framesprite: FrameSprite) -> None:
         """Add a new item to the top of the scene"""
@@ -49,6 +37,7 @@ class AnimationFrame(QObject):
 
         framesprite.sigInternalDataChanged.connect(self.dataChanged)
         self.sigAddToScene.emit(framesprite.item)
+        framesprite.item.addedToScene()
 
     def fromPixmap(self, pixmap: QPixmap) -> None:
         framesprite = FrameSprite("test", pixmap)
@@ -61,9 +50,11 @@ class AnimationFrame(QObject):
 
         self.sigAddedItem.emit()
         self.sigAddToScene.emit(framesprite.item)
+        framesprite.item.addedToScene()
 
     def delete(self, item_index: int) -> None:
         item = self.sprites.pop(item_index)
+        item.item.aboutToBeRemoved()
         self.sigDeleteFromScene.emit(item.item)
 
         self.recalcZindexes()
@@ -77,15 +68,16 @@ class AnimationFrame(QObject):
 
         self.sigAddedItem.emit()
         self.sigAddToScene.emit(copy.item)
+        copy.item.addedToScene()
 
     def get(self, item_index: int, attr_index: int) -> typing.Any:
-        return getattr(self.sprites[item_index], self._property[attr_index])
+        return getattr(self.sprites[item_index], FrameSprite.properties[attr_index])
 
     def set(self, item_index: int, attr_index: int, value: typing.Any) -> None:
-        setattr(self.sprites[item_index], self._property[attr_index], value)
+        setattr(self.sprites[item_index], FrameSprite.properties[attr_index], value)
 
     def count(self) -> int:
-        return len(self._property)
+        return len(FrameSprite.properties)
 
     @pyqtSlot(int)
     def onIncreaseZ(self, z: int) -> None:

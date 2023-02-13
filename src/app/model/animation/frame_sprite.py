@@ -3,10 +3,10 @@ from enum import IntEnum
 
 from PyQt5.QtCore import QObject, pyqtSignal
 from PyQt5.QtGui import QPixmap
-from PyQt5.QtWidgets import QGraphicsPixmapItem, QGraphicsItem
+from PyQt5.QtWidgets import QGraphicsItem, QGraphicsPixmapItem
 
-from .frame_sprite_item import FrameSpriteItem, ItemEvent
 from ...util.image import Image
+from .frame_sprite_item import FrameSpriteItem, ItemEvent
 
 
 class FrameSpriteColumn(IntEnum):
@@ -30,6 +30,18 @@ class FrameSprite(QObject):
     sigIncreaseZ = pyqtSignal(int)
     sigDecreaseZ = pyqtSignal(int)
 
+    properties = [
+        "name",
+        "hide",
+        "lock",
+        "x",
+        "y",
+        "alpha",
+        "hflip",
+        "vflip",
+        "zIndex",
+    ]
+
     def __init__(
         self,
         name: str,
@@ -51,21 +63,25 @@ class FrameSprite(QObject):
         self.item.subscribe(ItemEvent.vFlipChanged, self.onVflipChanged)
         self.item.subscribe(ItemEvent.alphaChanged, self.onAlphaChanged)
 
-        self._name: str = name
-        self._x: float = x
-        self._y: float = y
-        self._vflip: bool = vflip
-        self._hflip: bool = hflip
-        self._alpha: int = alpha
+        # defaults
+        self._name: str = ""
+        self._x: float = 0
+        self._y: float = 0
+        self._vflip: bool = False
+        self._hflip: bool = False
+        self._alpha: int = 0
         self._zIndex: int = 0
-
         self._hide: bool = False
         self._lock: bool = False
-
         self._alphaStep: bool = False
 
-        self.item.setVisible(not self._hide)
-        self.item.setPos(self._x, self._y)
+        # set variables through property setters to allow easy copying
+        self.name = name
+        self.x = x
+        self.y = y
+        self.vflip = vflip
+        self.hflip = hflip
+        self.alpha = alpha
 
     @property
     def name(self) -> str:
@@ -134,6 +150,7 @@ class FrameSprite(QObject):
     def hflip(self, value: bool):
         if self._hflip != value:
             Image.flipHorizontal(self.item)
+            self.item.flipChanged()
         self._hflip = value
 
     @property
@@ -144,6 +161,7 @@ class FrameSprite(QObject):
     def vflip(self, value: bool):
         if self._vflip != value:
             Image.flipVertical(self.item)
+            self.item.flipChanged()
         self._vflip = value
 
     @property

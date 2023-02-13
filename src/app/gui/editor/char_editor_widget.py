@@ -1,5 +1,5 @@
 from PyQt5.QtCore import Qt, pyqtSignal, pyqtSlot
-from PyQt5.QtWidgets import QWidget
+from PyQt5.QtWidgets import QGraphicsItem, QWidget
 
 from ...model.chardocument import CharDocument
 from ...tool import SceneToolManager
@@ -16,6 +16,9 @@ class CharEditorWidget(QWidget):
         self._toolmanager = SceneToolManager(self._ui.editorScene)
         self._document: CharDocument = None
 
+        self.makeConnections()
+
+    def makeConnections(self) -> None:
         self._ui.editorScene.sigSelectedItem.connect(
             self._ui.spriteListBox.setCurrentItem
         )
@@ -33,10 +36,10 @@ class CharEditorWidget(QWidget):
 
         self._document = document
         self._document._currentEditableFrame.sigAddToScene.connect(
-            lambda item: self._ui.editorScene.addItem(item)
+            self._ui.editorScene.addItem
         )
         self._document._currentEditableFrame.sigDeleteFromScene.connect(
-            lambda item: self._ui.editorScene.removeItem(item)
+            self._ui.editorScene.removeItem
         )
         self._document._currentEditableFrame.sigSelectedItem.connect(
             self._ui.spriteListBox.setCurrentItem

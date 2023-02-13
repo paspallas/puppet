@@ -47,7 +47,9 @@ class CustomGraphicScene(QGraphicsScene):
         if e.buttons() & Qt.LeftButton:
             self.activeItem = self.itemAt(e.scenePos(), self.views()[0].transform())
             if self.activeItem:
-                self.sigSelectedItem.emit(self.activeItem)
+                if self.activeItem.flags() & QGraphicsItem.ItemIsSelectable:
+                    self.sigSelectedItem.emit(self.activeItem)
+                    print(self.activeItem)
 
         # elif e.buttons() & Qt.RightButton:
         #     self.renderFrame()

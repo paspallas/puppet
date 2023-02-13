@@ -1,13 +1,12 @@
 import typing
 from enum import IntEnum
 
-from PyQt5.QtCore import QLineF, QPoint, Qt, QVariant, pyqtSlot
-from PyQt5.QtGui import QColor, QKeyEvent, QPainter, QPainterPath, QPen, QPixmap
+from PyQt5.QtCore import QPoint, Qt, QVariant, pyqtSlot
+from PyQt5.QtGui import QKeyEvent, QPainter, QPainterPath, QPixmap
 from PyQt5.QtWidgets import (
     QAction,
     QGraphicsItem,
     QGraphicsPixmapItem,
-    QGraphicsRectItem,
     QGraphicsSceneContextMenuEvent,
     QGraphicsSceneMouseEvent,
     QGraphicsSceneWheelEvent,
@@ -17,6 +16,7 @@ from PyQt5.QtWidgets import (
 
 from ...util.image import Image
 from ...util.pubsub import Publisher
+from .overlay import Overlay
 
 
 class ItemEvent(IntEnum):
@@ -49,11 +49,14 @@ class FrameSpriteItem(QGraphicsPixmapItem, Publisher):
 
         # make the item selectable regardless of transparency level
         self._outline = Image.outline(pixmap)
+        # render the overlay in the correct position
+        self._overlay = Overlay(
+            self.boundingRect().adjusted(0.5, 0.5, -0.5, -0.5), self._outline
+        )
 
-        # TODO test child items
-        # child = QGraphicsRectItem(self.x(), self.y(), 100, 100, self)
-        # child.setBrush(Qt.red)
-        # child.setZValue(10000)
+    def addedToScene(self):
+        self.scene().addItem(self._overlay)
+        self._overlay.setZValue(self.zValue())
 
     def keyPressEvent(self, e: QKeyEvent) -> None:
         if e.key() == Qt.Key.Key_Q:
@@ -81,30 +84,36 @@ class FrameSpriteItem(QGraphicsPixmapItem, Publisher):
         else:
             super().keyPressEvent(e)
 
-    def contextMenuEvent(self, e: QGraphicsSceneContextMenuEvent) -> None:
-        if self.isSelected():
-            menu = QMenu("sprite")
-            remove_action = menu.addAction("remove")
-            menu.exec_(e.screenPos())
-
-    # def mousePressEvent(self, e: QGraphicsSceneMouseEvent) -> None:
-    #     self.setCursor(Qt.SizeAllCursor)
-    #     super().mousePressEvent(e)
-
-    # def mouseReleaseEvent(self, e: QGraphicsSceneMouseEvent) -> None:
-    #     self.setCursor(Qt.ArrowCursor)
-    #     super().mouseReleaseEvent(e)
+    # def contextMenuEvent(self, e: QGraphicsSceneContextMenuEvent) -> None:
+    #     if self.isSelected():
+    #         menu = QMenu("sprite")
+    #         remove_action = menu.addAction("remove")
+    #         menu.exec_(e.screenPos())
 
     def shape(self) -> QPainterPath:
         return self._outline
+
+    def setZValue(self, z: float) -> None:
+        super().setZValue(z)
+        self._overlay.setZValue(z)
 
     def itemChange(
         self, change: QGraphicsItem.GraphicsItemChange, value: typing.Any
     ) -> typing.Any:
         if change == QGraphicsItem.ItemPositionChange and self.scene():
+            self._overlay.setPos(value.x(), value.y())
             self.publish(ItemEvent.posChanged, value.x(), value.y())
+        elif change == QGraphicsItem.ItemSelectedChange and self.scene():
+            self._overlay.enabled = value
 
         return super().itemChange(change, value)
+
+    def flipChanged(self) -> None:
+        """Apply the transformation to the overlay"""
+        self._overlay.setTransform(self.transform())
+
+    def aboutToBeRemoved(self) -> None:
+        self.scene().removeItem(self._overlay)
 
     def paint(
         self,
@@ -115,37 +124,3 @@ class FrameSpriteItem(QGraphicsPixmapItem, Publisher):
         painter.setRenderHint(QPainter.Antialiasing)
         painter.setRenderHint(QPainter.SmoothPixmapTransform, False)
         painter.drawPixmap(QPoint(), self.pixmap())
-
-        if self.isSelected():
-            color = QColor(255, 0, 255, 255)
-            pen = QPen(color, 0, Qt.SolidLine, Qt.SquareCap)
-            painter.setPen(pen)
-            painter.drawPath(self._outline)
-
-            pen.setColor(QColor(255, 0, 255, 255))
-            painter.setPen(pen)
-
-            b = self.boundingRect().adjusted(0.5, 0.5, -0.5, -0.5)
-            tl = b.topLeft()
-            tr = b.topRight()
-            bl = b.bottomLeft()
-            br = b.bottomRight()
-
-            length = 4
-            lines = [
-                QLineF(tl.x(), tl.y(), tl.x() + length, tl.y()),
-                QLineF(tl.x(), tl.y(), tl.x(), tl.y() + length),
-                QLineF(tr.x() - length, tr.y(), tr.x(), tr.y()),
-                QLineF(tr.x(), tr.y(), tr.x(), tr.y() + length),
-                QLineF(bl.x(), bl.y(), bl.x() + length, bl.y()),
-                QLineF(bl.x(), bl.y(), bl.x(), bl.y() - length),
-                QLineF(br.x() - length, br.y(), br.x(), br.y()),
-                QLineF(br.x(), br.y(), br.x(), br.y() - length),
-            ]
-
-            painter.drawLines(*lines)
-
-            color.setAlpha(100)
-            pen.setColor(color)
-            painter.setPen(pen)
-            painter.drawRect(b)
