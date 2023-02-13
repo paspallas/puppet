@@ -7,6 +7,7 @@ from PyQt5.QtWidgets import (
     QAction,
     QGraphicsItem,
     QGraphicsPixmapItem,
+    QGraphicsRectItem,
     QGraphicsSceneContextMenuEvent,
     QGraphicsSceneMouseEvent,
     QGraphicsSceneWheelEvent,
@@ -14,6 +15,7 @@ from PyQt5.QtWidgets import (
     QWidget,
 )
 
+from ...util.image import Image
 from ...util.pubsub import Publisher
 
 
@@ -45,9 +47,13 @@ class FrameSpriteItem(QGraphicsPixmapItem, Publisher):
             | QGraphicsItem.ItemSendsScenePositionChanges
         )
 
-        # make the item selectable regardless of transparency
-        item = QGraphicsPixmapItem(pixmap)
-        self._outline = item.shape().simplified()
+        # make the item selectable regardless of transparency level
+        self._outline = Image.outline(pixmap)
+
+        # TODO test child items
+        # child = QGraphicsRectItem(self.x(), self.y(), 100, 100, self)
+        # child.setBrush(Qt.red)
+        # child.setZValue(10000)
 
     def keyPressEvent(self, e: QKeyEvent) -> None:
         if e.key() == Qt.Key.Key_Q:

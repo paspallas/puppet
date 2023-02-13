@@ -56,14 +56,6 @@ class CustomGraphicView(QGraphicsView):
             v.setValue(v.value() - e.angleDelta().y() // 8)
             e.accept()
 
-    def resizeEvent(self, e: QResizeEvent) -> None:
-        if not self._centerOnResize:
-            super().resizeEvent(e)
-            return
-
-        self.centerOn(0, 0)
-        super().resizeEvent(e)
-
     def drawBackground(self, painter: QPainter, rect: QRectF) -> None:
         painter.setRenderHint(QPainter.Antialiasing)
         painter.setPen(QPen(Qt.NoPen))

@@ -1,6 +1,6 @@
 from PyQt5.QtCore import QPoint, QRect, QRectF, QSize, Qt
-from PyQt5.QtGui import QColor, QImage, QPainter, QPixmap, QTransform
-from PyQt5.QtWidgets import QGraphicsItem, QGraphicsScene
+from PyQt5.QtGui import QColor, QImage, QPainter, QPainterPath, QPixmap, QTransform
+from PyQt5.QtWidgets import QGraphicsItem, QGraphicsPixmapItem, QGraphicsScene
 
 
 class Image:
@@ -85,6 +85,10 @@ class Image:
 
         transform.setMatrix(m11, m12, m13, m21, -m22, m23, m31, m32, m33)
         item.setTransform(transform)
+
+    @staticmethod
+    def outline(pixmap: QPixmap) -> QPainterPath:
+        return QGraphicsPixmapItem(pixmap).shape().simplified()
 
     @staticmethod
     def thumbnailFromScene(scene: QGraphicsScene) -> QImage:
