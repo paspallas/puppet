@@ -2,7 +2,7 @@ import typing
 from enum import IntEnum
 
 from PyQt5.QtCore import QPoint, Qt, QVariant, pyqtSlot
-from PyQt5.QtGui import QKeyEvent, QPainter, QPainterPath, QPixmap
+from PyQt5.QtGui import QColor, QKeyEvent, QPainter, QPainterPath, QPen, QPixmap
 from PyQt5.QtWidgets import (
     QAction,
     QGraphicsItem,
@@ -49,9 +49,12 @@ class FrameSpriteItem(QGraphicsPixmapItem, Publisher):
 
         # make the item selectable regardless of transparency level
         self._outline = Image.outline(pixmap)
+
         # render the overlay in the correct position
+        self._adj = 0.5
         self._overlay = Overlay(
-            self.boundingRect().adjusted(0.5, 0.5, -0.5, -0.5), self._outline
+            self.boundingRect().adjusted(self._adj, self._adj, -self._adj, -self._adj),
+            self._outline,
         )
 
     def addedToScene(self):
@@ -81,6 +84,8 @@ class FrameSpriteItem(QGraphicsPixmapItem, Publisher):
             self.publish(ItemEvent.offsetChanged, 0, 1)
         elif e.key() == Qt.Key_T:
             self.publish(ItemEvent.alphaChanged)
+        elif e.key() == Qt.Key_Space:
+            self._overlay.enabled = not self._overlay.enabled
         else:
             super().keyPressEvent(e)
 
@@ -103,8 +108,6 @@ class FrameSpriteItem(QGraphicsPixmapItem, Publisher):
         if change == QGraphicsItem.ItemPositionChange and self.scene():
             self._overlay.setPos(value.x(), value.y())
             self.publish(ItemEvent.posChanged, value.x(), value.y())
-        elif change == QGraphicsItem.ItemSelectedChange and self.scene():
-            self._overlay.enabled = value
 
         return super().itemChange(change, value)
 
@@ -124,3 +127,13 @@ class FrameSpriteItem(QGraphicsPixmapItem, Publisher):
         painter.setRenderHint(QPainter.Antialiasing)
         painter.setRenderHint(QPainter.SmoothPixmapTransform, False)
         painter.drawPixmap(QPoint(), self.pixmap())
+
+        if self.isSelected():
+            color = QColor(255, 0, 255, 100)
+            pen = QPen(color, 0, Qt.SolidLine, Qt.SquareCap)
+            painter.setPen(pen)
+            painter.drawRect(
+                self.boundingRect().adjusted(
+                    self._adj, self._adj, -self._adj, -self._adj
+                )
+            )

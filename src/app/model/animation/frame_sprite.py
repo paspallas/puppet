@@ -88,7 +88,7 @@ class FrameSprite(QObject):
         return self._name
 
     @name.setter
-    def name(self, value: str):
+    def name(self, value: str) -> None:
         self._name = value
 
     @property
@@ -96,7 +96,7 @@ class FrameSprite(QObject):
         return self._hide
 
     @hide.setter
-    def hide(self, value: bool):
+    def hide(self, value: bool) -> None:
         if self._hide != value:
             self._hide = value
             self.item.setVisible(not value)
@@ -106,7 +106,7 @@ class FrameSprite(QObject):
         return self._lock
 
     @lock.setter
-    def lock(self, value: bool):
+    def lock(self, value: bool) -> None:
         if self._lock != value:
             self._lock = value
             self.item.setFlag(QGraphicsItem.ItemIsMovable, not value)
@@ -117,7 +117,7 @@ class FrameSprite(QObject):
         return self._x
 
     @x.setter
-    def x(self, value: float):
+    def x(self, value: float) -> None:
         if self._x != value:
             self._x = value
             self.item.setX(value)
@@ -127,7 +127,7 @@ class FrameSprite(QObject):
         return self._y
 
     @y.setter
-    def y(self, value: float):
+    def y(self, value: float) -> None:
         if self._y != value:
             self._y = value
             self.item.setY(value)
@@ -137,7 +137,7 @@ class FrameSprite(QObject):
         return self._alpha
 
     @alpha.setter
-    def alpha(self, value: int):
+    def alpha(self, value: int) -> None:
         if self._alpha != value:
             self._alpha = value
             self.item.setPixmap(Image.setAlpha(value, self._pixmap))
@@ -147,7 +147,7 @@ class FrameSprite(QObject):
         return self._hflip
 
     @hflip.setter
-    def hflip(self, value: bool):
+    def hflip(self, value: bool) -> None:
         if self._hflip != value:
             Image.flipHorizontal(self.item)
             self.item.flipChanged()
@@ -158,7 +158,7 @@ class FrameSprite(QObject):
         return self._vflip
 
     @vflip.setter
-    def vflip(self, value: bool):
+    def vflip(self, value: bool) -> None:
         if self._vflip != value:
             Image.flipVertical(self.item)
             self.item.flipChanged()
@@ -169,7 +169,7 @@ class FrameSprite(QObject):
         return self._zIndex
 
     @zIndex.setter
-    def zIndex(self, value: int):
+    def zIndex(self, value: int) -> None:
         if self._zIndex != value:
             self._zIndex = value
             self.item.setZValue(value)

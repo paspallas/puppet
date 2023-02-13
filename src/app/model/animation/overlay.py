@@ -14,12 +14,21 @@ class Overlay(QGraphicsItem):
         self.setFlag(QGraphicsItem.ItemIsSelectable, False)
         self.setAcceptedMouseButtons(Qt.NoButton)
 
-        self.enabled = False
+        self._enabled = False
 
         self._rect = rect
         self._outline = outline
         self._anchors: typing.List[QLineF] = []
         self.computeBoundingAnchors()
+
+    @property
+    def enabled(self) -> bool:
+        return self._enabled
+
+    @enabled.setter
+    def enabled(self, value: bool) -> None:
+        self._enabled = value
+        self.update()
 
     def computeBoundingAnchors(self) -> None:
         tl = self._rect.topLeft()
@@ -47,17 +56,9 @@ class Overlay(QGraphicsItem):
 
     def paint(self, painter: QPainter, option, widget: QWidget) -> None:
         if self.enabled:
-            painter.setRenderHint(QPainter.Antialiasing)
-
             color = QColor(255, 0, 255, 255)
             pen = QPen(color, 0, Qt.SolidLine, Qt.SquareCap)
+            painter.setRenderHint(QPainter.Antialiasing)
             painter.setPen(pen)
-
             painter.drawPath(self._outline)
             painter.drawLines(*self._anchors)
-
-            color.setAlpha(100)
-            pen.setColor(color)
-            painter.setPen(pen)
-
-            painter.drawRect(self._rect)
