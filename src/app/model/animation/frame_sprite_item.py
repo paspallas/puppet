@@ -108,6 +108,8 @@ class FrameSpriteItem(QGraphicsPixmapItem, Publisher):
         if change == QGraphicsItem.ItemPositionChange and self.scene():
             self._overlay.setPos(value.x(), value.y())
             self.publish(ItemEvent.posChanged, value.x(), value.y())
+        elif change == QGraphicsItem.ItemSelectedChange and self.scene():
+            self._overlay.selected = value
 
         return super().itemChange(change, value)
 
