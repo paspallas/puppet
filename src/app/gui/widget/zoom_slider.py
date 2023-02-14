@@ -4,7 +4,7 @@ from PyQt5.QtWidgets import QLabel, QVBoxLayout, QWidget
 
 from ...resources import resources
 from .. import style
-from .doubleslider import DoubleSlider
+from .double_slider import DoubleSlider
 
 
 class ZoomSlider(QWidget):

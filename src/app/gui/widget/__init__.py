@@ -1,8 +1,8 @@
-from .colorbutton import ColorButton
-from .colorpicker import ColorPickerWidget
-from .customgraphicscene import CustomGraphicScene, CustomGraphicSceneOptions
-from .customgraphicsview import CustomGraphicView, CustomGraphicViewOptions
-from .doubleslider import DoubleSlider
-from .fancyslider import FancySlider
+from .color_button import ColorButton
+from .color_picker import ColorPickerWidget
+from .custom_graphic_scene import CustomGraphicScene, CustomGraphicSceneOptions
+from .custom_graphic_view import CustomGraphicView, CustomGraphicViewOptions
+from .double_slider import DoubleSlider
+from .fancy_slider import FancySlider
 from .ruler import Ruler
-from .zoomslider import ZoomSlider
+from .zoom_slider import ZoomSlider
