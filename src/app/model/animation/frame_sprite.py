@@ -1,7 +1,7 @@
 import typing
 from enum import IntEnum
 
-from PyQt5.QtCore import QObject, pyqtSignal
+from PyQt5.QtCore import Qt, QObject, pyqtSignal
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import QGraphicsItem, QGraphicsPixmapItem
 
@@ -26,6 +26,8 @@ class Index(IntEnum):
 class FrameSprite(QObject):
     """A sprite part of a frame"""
 
+    sigAddToScene = pyqtSignal(QGraphicsItem)
+    sigDelFromScene = pyqtSignal(QGraphicsItem)
     sigInternalDataChanged = pyqtSignal(list)
     sigIncreaseZ = pyqtSignal(int)
     sigDecreaseZ = pyqtSignal(int)
@@ -55,14 +57,7 @@ class FrameSprite(QObject):
         super().__init__()
 
         self._pixmap: QPixmap = pix
-        self.item = FrameSpriteItem(self._pixmap)
-        self.item.subscribe(ItemEvent.zChanged, self.onItemZchanged)
-        self.item.subscribe(ItemEvent.offsetChanged, self.onOffsetChanged)
-        self.item.subscribe(ItemEvent.posChanged, self.onPosChanged)
-        self.item.subscribe(ItemEvent.hFlipChanged, self.onHflipChanged)
-        self.item.subscribe(ItemEvent.vFlipChanged, self.onVflipChanged)
-        self.item.subscribe(ItemEvent.alphaChanged, self.onAlphaChanged)
-
+        self._item = FrameSpriteItem(self._pixmap)
         self._name: str = ""
         self._x: float = 0
         self._y: float = 0
@@ -81,6 +76,17 @@ class FrameSprite(QObject):
         self.hflip = hflip
         self.alpha = alpha
 
+    def connected(self) -> None:
+        self._item.subscribe(ItemEvent.zChanged, self.onItemZchanged)
+        self._item.subscribe(ItemEvent.offsetChanged, self.onOffsetChanged)
+        self._item.subscribe(ItemEvent.posChanged, self.onPosChanged)
+        self._item.subscribe(ItemEvent.hFlipChanged, self.onHflipChanged)
+        self._item.subscribe(ItemEvent.vFlipChanged, self.onVflipChanged)
+        self._item.subscribe(ItemEvent.alphaChanged, self.onAlphaChanged)
+
+        self.sigAddToScene.emit(self._item)
+        self._item.addedToScene()
+
     def get(self, index: int) -> typing.Any:
         return getattr(self, self.properties[index])
 
@@ -91,7 +97,7 @@ class FrameSprite(QObject):
         return [(self._z, index) for index in indexes]
 
     def copy(self):
-        item = FrameSprite(
+        sprite = FrameSprite(
             self._name,
             self._pixmap,
             self._x,
@@ -100,16 +106,20 @@ class FrameSprite(QObject):
             self._hflip,
             self._alpha,
         )
-        item.hide = False
-        item.lock = False
-        item.name += "_copy"
+        sprite.hide = False
+        sprite.lock = False
+        sprite.name += "_copy"
 
-        return item
+        return sprite
+
+    def delete(self) -> None:
+        self._item.aboutToBeRemoved()
+        self.sigDelFromScene.emit(self._item)
 
     def select(self) -> None:
-        self.item.scene().clearSelection()
-        self.item.setSelected(True)
-        self.item.update()
+        self._item.scene().clearSelection()
+        self._item.setSelected(True)
+        self._item.update()
 
     @staticmethod
     def count() -> int:
@@ -131,7 +141,7 @@ class FrameSprite(QObject):
     def hide(self, value: bool) -> None:
         if self._hide != value:
             self._hide = value
-            self.item.setVisible(not value)
+            self._item.setVisible(not value)
 
     @property
     def lock(self) -> bool:
@@ -141,8 +151,8 @@ class FrameSprite(QObject):
     def lock(self, value: bool) -> None:
         if self._lock != value:
             self._lock = value
-            self.item.setFlag(QGraphicsItem.ItemIsMovable, not value)
-            self.item.setFlag(QGraphicsItem.ItemIsSelectable, not value)
+            self._item.setFlag(QGraphicsItem.ItemIsMovable, not value)
+            self._item.setFlag(QGraphicsItem.ItemIsSelectable, not value)
 
     @property
     def x(self) -> float:
@@ -152,7 +162,7 @@ class FrameSprite(QObject):
     def x(self, value: float) -> None:
         if self._x != value:
             self._x = value
-            self.item.setX(value)
+            self._item.setX(value)
 
     @property
     def y(self) -> float:
@@ -162,7 +172,7 @@ class FrameSprite(QObject):
     def y(self, value: float) -> None:
         if self._y != value:
             self._y = value
-            self.item.setY(value)
+            self._item.setY(value)
 
     @property
     def alpha(self) -> int:
@@ -172,7 +182,7 @@ class FrameSprite(QObject):
     def alpha(self, value: int) -> None:
         if self._alpha != value:
             self._alpha = value
-            self.item.setPixmap(Image.setAlpha(value, self._pixmap))
+            self._item.setPixmap(Image.setAlpha(value, self._pixmap))
 
     @property
     def hflip(self) -> bool:
@@ -181,8 +191,8 @@ class FrameSprite(QObject):
     @hflip.setter
     def hflip(self, value: bool) -> None:
         if self._hflip != value:
-            Image.flipHorizontal(self.item)
-            self.item.flipChanged()
+            Image.flipHorizontal(self._item)
+            self._item.flipChanged()
         self._hflip = value
 
     @property
@@ -192,8 +202,8 @@ class FrameSprite(QObject):
     @vflip.setter
     def vflip(self, value: bool) -> None:
         if self._vflip != value:
-            Image.flipVertical(self.item)
-            self.item.flipChanged()
+            Image.flipVertical(self._item)
+            self._item.flipChanged()
         self._vflip = value
 
     @property
@@ -204,7 +214,7 @@ class FrameSprite(QObject):
     def z(self, value: int) -> None:
         if self._z != value:
             self._z = value
-            self.item.setZValue(value)
+            self._item.setZValue(value)
 
     def onItemZchanged(self, z: int) -> None:
         if z > self._z:

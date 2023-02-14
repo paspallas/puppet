@@ -19,9 +19,9 @@ class CharEditorWidget(QWidget):
         self.makeConnections()
 
     def makeConnections(self) -> None:
-        self._ui.editorScene.sigSelectedItem.connect(
-            self._ui.spriteListBox.setCurrentItem
-        )
+        # self._ui.editorScene.sigSelectedItem.connect(
+        #     self._ui.spriteListBox.setCurrentItem
+        # )
         self._ui.spriteListBox.sigEnabledChanged.connect(
             self._ui.spriteProperty.setEnabled
         )

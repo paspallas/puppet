@@ -1,84 +1,95 @@
 import typing
 
-from PyQt5.QtCore import QObject, pyqtSignal, pyqtSlot
+from PyQt5.QtCore import QObject, Qt, pyqtSignal, pyqtSlot
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import QGraphicsItem
 
 from .frame_sprite import FrameSprite
-from .frame_sprite_item import FrameSpriteItem
 
 
 class AnimationFrame(QObject):
     """A Collection of framesprites that compose an animation frame"""
 
+    # to models
     sigFrameDataChanged = pyqtSignal(int, int)
     sigFrameLayoutAboutToChange = pyqtSignal()
     sigFrameLayoutChanged = pyqtSignal()
     sigAddedItem = pyqtSignal()
 
+    # to widgets
     sigAddToScene = pyqtSignal(QGraphicsItem)
     sigDeleteFromScene = pyqtSignal(QGraphicsItem)
-    sigSelectedItem = pyqtSignal(QGraphicsItem)
+    sigSelectedItem = pyqtSignal(int)
 
     def __init__(self):
         super().__init__()
 
         self.sprites: list[FrameSprite] = []
 
-    def add(self, framesprite: FrameSprite) -> None:
-        """Add a new item to the top of the scene"""
-
+    def add(self, sprite: FrameSprite) -> None:
+        self.bound(sprite)
         self.sprites.insert(0, framesprite)
-
-        # Set the higher zindex
-        framesprite.z = len(self) - 1
-
-        framesprite.sigInternalDataChanged.connect(self.dataChanged)
-        self.sigAddToScene.emit(framesprite.item)
-        framesprite.item.addedToScene()
-
-    def fromPixmap(self, pixmap: QPixmap) -> None:
-        framesprite = FrameSprite("test", pixmap)
-        self.sprites.insert(0, framesprite)
-
-        framesprite.sigInternalDataChanged.connect(self.dataChanged)
-        framesprite.sigIncreaseZ.connect(self.onIncreaseZ)
-        framesprite.sigDecreaseZ.connect(self.onDecreaseZ)
-        framesprite.z = len(self) - 1
+        sprite.z = len(self) - 1
+        sprite.ready()
 
         self.sigAddedItem.emit()
-        self.sigAddToScene.emit(framesprite.item)
-        framesprite.item.addedToScene()
 
-    def delete(self, item_index: int) -> None:
-        item = self.sprites.pop(item_index)
-        item.item.aboutToBeRemoved()
-        self.sigDeleteFromScene.emit(item.item)
+    def fromPixmap(self, pixmap: QPixmap) -> None:
+        sprite = FrameSprite("New", pixmap)
+        self.sprites.insert(0, sprite)
+        sprite.z = len(self) - 1
+
+        self.bound(sprite)
+
+        self.sigAddedItem.emit()
+
+    def delete(self, index: int) -> None:
+        sprite = self.sprites.pop(index)
+        sprite.delete()
+        self.unbound(sprite)
 
         self.recalcZindexes()
 
     def copy(self, dst: int, src: int) -> None:
-        framesprite = self.sprites[src]
-        copy = framesprite.copy()
-        copy.sigInternalDataChanged.connect(self.dataChanged)
+        sprite = self.sprites[src]
+        copy = sprite.copy()
         self.sprites.insert(dst, copy)
         self.recalcZindexes()
 
+        self.bound(copy)
+
         self.sigAddedItem.emit()
-        self.sigAddToScene.emit(copy.item)
-        copy.item.addedToScene()
 
-    def select(self, item_index: int) -> None:
-        self.sprites[item_index].select()
+    def select(self, item: int) -> None:
+        self.sprites[item].select()
 
-    def get(self, item_index: int, attr_index: int) -> typing.Any:
-        return self.sprites[item_index].get(attr_index)
+    def get(self, item: int, attr: int) -> typing.Any:
+        return self.sprites[item].get(attr)
 
-    def set(self, item_index: int, attr_index: int, value: typing.Any) -> None:
-        self.sprites[item_index].set(attr_index, value)
+    def set(self, item: int, attr: int, value: typing.Any) -> None:
+        self.sprites[item].set(attr, value)
 
     def count(self) -> int:
         return FrameSprite.count()
+
+    def bound(self, sprite: FrameSprite) -> None:
+        sprite.sigInternalDataChanged.connect(self.dataChanged)
+        sprite.sigAddToScene.connect(self.addGraphicItem, type=Qt.DirectConnection)
+        sprite.sigDelFromScene.connect(self.removeGraphicItem, type=Qt.DirectConnection)
+        sprite.sigIncreaseZ.connect(self.onIncreaseZ, type=Qt.DirectConnection)
+        sprite.sigDecreaseZ.connect(self.onDecreaseZ, type=Qt.DirectConnection)
+
+        sprite.connected()
+
+    def unbound(self, sprite: FrameSprite) -> None:
+        sprite.sigInternalDataChanged.disconnect()
+        sprite.sigAddToScene.disconnect()
+        sprite.sigDelFromScene.disconnect()
+        sprite.sigIncreaseZ.disconnect()
+        sprite.sigDecreaseZ.disconnect()
+
+    def itemIndex(self, z: int) -> int:
+        return len(self) - z - 1
 
     @pyqtSlot(int)
     def onIncreaseZ(self, z: int) -> None:
@@ -86,13 +97,12 @@ class AnimationFrame(QObject):
             return
 
         self.sigFrameLayoutAboutToChange.emit()
-
-        item_index = len(self) - 1 - z
-        self.moveup(item_index)
-        sprite = self.sprites[item_index - 1]
-
+        index = self.itemIndex(z)
+        self.moveup(index)
+        sprite = self.sprites[index - 1]
         self.sigFrameLayoutChanged.emit()
-        self.sigSelectedItem.emit(sprite.item)
+
+        self.sigSelectedItem.emit(self.itemIndex(sprite.z))
 
     @pyqtSlot(int)
     def onDecreaseZ(self, z: int) -> None:
@@ -100,28 +110,27 @@ class AnimationFrame(QObject):
             return
 
         self.sigFrameLayoutAboutToChange.emit()
-
-        item_index = len(self) - 1 - z
-        self.movedown(item_index)
-        sprite = self.sprites[item_index + 1]
-
+        index = self.itemIndex(z)
+        self.movedown(index)
+        sprite = self.sprites[index + 1]
         self.sigFrameLayoutChanged.emit()
-        self.sigSelectedItem.emit(sprite.item)
+
+        self.sigSelectedItem.emit(self.itemIndex(sprite.z))
 
     @pyqtSlot(int)
-    def moveup(self, item_index: int) -> None:
+    def moveup(self, index: int) -> None:
         """Raise the zindex of an item"""
 
-        item = self.sprites.pop(item_index)
-        self.sprites.insert(item_index - 1, item)
+        item = self.sprites.pop(index)
+        self.sprites.insert(index - 1, item)
         self.recalcZindexes()
 
     @pyqtSlot(int)
-    def movedown(self, item_index: int) -> None:
+    def movedown(self, index: int) -> None:
         """Lower the zindex of an item"""
 
-        item = self.sprites.pop(item_index)
-        self.sprites.insert(item_index + 1, item)
+        item = self.sprites.pop(index)
+        self.sprites.insert(index + 1, item)
         self.recalcZindexes()
 
     def moveTo(self, dst: int, src: int) -> None:
@@ -142,4 +151,12 @@ class AnimationFrame(QObject):
     @pyqtSlot(list)
     def dataChanged(self, indexes: typing.List[typing.Tuple[int, int]]) -> None:
         for index in indexes:
-            self.sigFrameDataChanged.emit(len(self) - index[0] - 1, index[1])
+            self.sigFrameDataChanged.emit(self.itemIndex(index[0]), index[1])
+
+    @pyqtSlot(QGraphicsItem)
+    def addGraphicItem(self, item: QGraphicsItem) -> None:
+        self.sigAddToScene.emit(item)
+
+    @pyqtSlot(QGraphicsItem)
+    def removeGraphicItem(self, item: QGraphicsItem) -> None:
+        self.sigDeleteFromScene.emit(item)

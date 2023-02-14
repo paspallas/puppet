@@ -77,12 +77,10 @@ class SpriteListBox(QWidget):
         self._ui.list.model().selectRow(index)
         self.sigItemChanged.emit(index)
 
-    @pyqtSlot(QGraphicsItem)
-    def setCurrentItem(self, item: QGraphicsItem) -> None:
-        """Set the current item when the users selects an item in the editor view"""
-
+    @pyqtSlot(int)
+    def setCurrentItem(self, row: int) -> None:
         self._ui.list.setCurrentIndex(
-            self._ui.list.model().itemFromZValue(int(item.zValue()))
+            self._ui.list.model().createIndex(row, 0, QModelIndex())
         )
 
     def paintEvent(self, e: QPaintEvent):

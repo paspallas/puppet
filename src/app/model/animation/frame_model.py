@@ -1,5 +1,6 @@
 import pickle
 import typing
+
 from PyQt5.QtCore import (
     QAbstractItemModel,
     QMimeData,
@@ -209,6 +210,3 @@ class AnimationFrameModel(QAbstractItemModel):
         )
 
         self.sigModelDataChanged.emit(index.row())
-
-    def itemFromZValue(self, item: int) -> QModelIndex:
-        return self.createIndex(len(self._dataSource) - item - 1, 0, QModelIndex())

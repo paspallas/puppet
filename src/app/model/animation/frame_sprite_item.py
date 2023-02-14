@@ -56,10 +56,13 @@ class FrameSpriteItem(QGraphicsPixmapItem, Publisher):
             self.boundingRect().adjusted(self._adj, self._adj, -self._adj, -self._adj),
             self._outline,
         )
+        self._overlay.setZValue(self.zValue())
 
     def addedToScene(self):
         self.scene().addItem(self._overlay)
-        self._overlay.setZValue(self.zValue())
+
+    def aboutToBeRemoved(self) -> None:
+        self.scene().removeItem(self._overlay)
 
     def keyPressEvent(self, e: QKeyEvent) -> None:
         if e.key() == Qt.Key.Key_Q:
@@ -127,9 +130,6 @@ class FrameSpriteItem(QGraphicsPixmapItem, Publisher):
     def flipChanged(self) -> None:
         """Apply the transformation to the overlay"""
         self._overlay.setTransform(self.transform())
-
-    def aboutToBeRemoved(self) -> None:
-        self.scene().removeItem(self._overlay)
 
     def paint(
         self,
