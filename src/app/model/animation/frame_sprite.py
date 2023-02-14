@@ -20,7 +20,7 @@ class FrameSpriteColumn(IntEnum):
     Alpha = 5
     Hflip = 6
     Vflip = 7
-    Zindex = 8
+    Z = 8
 
 
 class FrameSprite(QObject):
@@ -69,7 +69,7 @@ class FrameSprite(QObject):
         self._vflip: bool = False
         self._hflip: bool = False
         self._alpha: int = 0
-        self._zIndex: int = 0
+        self._z: int = 0
         self._hide: bool = False
         self._lock: bool = False
         self._alphaStep: bool = False
@@ -164,19 +164,19 @@ class FrameSprite(QObject):
         self._vflip = value
 
     @property
-    def zIndex(self) -> int:
-        return self._zIndex
+    def z(self) -> int:
+        return self._z
 
-    @zIndex.setter
-    def zIndex(self, value: int) -> None:
-        if self._zIndex != value:
-            self._zIndex = value
+    @z.setter
+    def z(self, value: int) -> None:
+        if self._z != value:
+            self._z = value
             self.item.setZValue(value)
 
     def changed(
         self, *args: FrameSpriteColumn
     ) -> typing.List[typing.Tuple[int, FrameSpriteColumn]]:
-        return [(self._zIndex, arg) for arg in args]
+        return [(self._z, arg) for arg in args]
 
     def copy(self):
         item = FrameSprite(
@@ -200,10 +200,10 @@ class FrameSprite(QObject):
         self.item.update()
 
     def onItemZchanged(self, value: int) -> None:
-        if value > self._zIndex:
-            self.sigIncreaseZ.emit(self._zIndex)
+        if value > self._z:
+            self.sigIncreaseZ.emit(self._z)
         else:
-            self.sigDecreaseZ.emit(self._zIndex)
+            self.sigDecreaseZ.emit(self._z)
 
     def onPosChanged(self, x: float, y: float) -> None:
         self.x = x

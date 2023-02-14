@@ -11,13 +11,11 @@ from .frame_sprite_item import FrameSpriteItem
 class AnimationFrame(QObject):
     """A Collection of framesprites that compose an animation frame"""
 
-    # To model
     sigFrameDataChanged = pyqtSignal(int, int)
     sigFrameLayoutAboutToChange = pyqtSignal()
     sigFrameLayoutChanged = pyqtSignal()
     sigAddedItem = pyqtSignal()
 
-    # To other widgets
     sigAddToScene = pyqtSignal(QGraphicsItem)
     sigDeleteFromScene = pyqtSignal(QGraphicsItem)
     sigSelectedItem = pyqtSignal(QGraphicsItem)
@@ -33,7 +31,7 @@ class AnimationFrame(QObject):
         self.sprites.insert(0, framesprite)
 
         # Set the higher zindex
-        framesprite.zIndex = len(self) - 1
+        framesprite.z = len(self) - 1
 
         framesprite.sigInternalDataChanged.connect(self.dataChanged)
         self.sigAddToScene.emit(framesprite.item)
@@ -46,7 +44,7 @@ class AnimationFrame(QObject):
         framesprite.sigInternalDataChanged.connect(self.dataChanged)
         framesprite.sigIncreaseZ.connect(self.onIncreaseZ)
         framesprite.sigDecreaseZ.connect(self.onDecreaseZ)
-        framesprite.zIndex = len(self) - 1
+        framesprite.z = len(self) - 1
 
         self.sigAddedItem.emit()
         self.sigAddToScene.emit(framesprite.item)
@@ -136,7 +134,7 @@ class AnimationFrame(QObject):
     def recalcZindexes(self) -> None:
         """Z indexes are reversed from the item position in the list"""
         for i, item in enumerate(reversed(self.sprites)):
-            item.zIndex = i
+            item.z = i
 
     def __len__(self) -> int:
         return len(self.sprites)
