@@ -4,7 +4,7 @@ from PyQt5.QtCore import QObject, pyqtSignal, pyqtSlot
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import QGraphicsItem
 
-from .frame_sprite import FrameSprite, FrameSpriteColumn
+from .frame_sprite import FrameSprite
 from .frame_sprite_item import FrameSpriteItem
 
 
@@ -72,13 +72,13 @@ class AnimationFrame(QObject):
         self.sprites[item_index].select()
 
     def get(self, item_index: int, attr_index: int) -> typing.Any:
-        return getattr(self.sprites[item_index], FrameSprite.properties[attr_index])
+        return self.sprites[item_index].get(attr_index)
 
     def set(self, item_index: int, attr_index: int, value: typing.Any) -> None:
-        setattr(self.sprites[item_index], FrameSprite.properties[attr_index], value)
+        self.sprites[item_index].set(attr_index, value)
 
     def count(self) -> int:
-        return len(FrameSprite.properties)
+        return FrameSprite.count()
 
     @pyqtSlot(int)
     def onIncreaseZ(self, z: int) -> None:

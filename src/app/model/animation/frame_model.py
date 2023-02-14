@@ -11,7 +11,7 @@ from PyQt5.QtCore import (
 )
 
 from .frame import AnimationFrame
-from .frame_sprite import FrameSpriteColumn as fsc
+from .frame_sprite import Index
 
 
 class AnimationFrameModel(QAbstractItemModel):
@@ -51,8 +51,8 @@ class AnimationFrameModel(QAbstractItemModel):
             return QVariant(self._dataSource.get(index.row(), index.column()))
 
         if role == Qt.ItemDataRole.CheckStateRole and index.column() in [
-            fsc.Hide,
-            fsc.Lock,
+            Index.Hide,
+            Index.Lock,
         ]:
             return QVariant(self._dataSource.get(index.row(), index.column()))
 
@@ -84,7 +84,7 @@ class AnimationFrameModel(QAbstractItemModel):
             | super().flags(index)
         )
 
-        if index.column() in [fsc.Hide, fsc.Lock]:
+        if index.column() in [Index.Hide, Index.Lock]:
             return flags | Qt.ItemIsUserCheckable
 
         return flags
@@ -106,9 +106,6 @@ class AnimationFrameModel(QAbstractItemModel):
         return QModelIndex()
 
     def newRow(self) -> None:
-        """New items added from the spritepalette
-        We want them at the top row
-        """
         self.beginInsertRows(QModelIndex(), 0, 0)
         self.endInsertRows()
 
