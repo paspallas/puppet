@@ -31,6 +31,8 @@ class FrameSprite(QObject):
     sigInternalDataChanged = pyqtSignal(list)
     sigIncreaseZ = pyqtSignal(int)
     sigDecreaseZ = pyqtSignal(int)
+    sigHint = pyqtSignal(int)
+    sigDeHint = pyqtSignal()
 
     properties = [
         "name",
@@ -67,7 +69,6 @@ class FrameSprite(QObject):
         self._z: int = 0
         self._hide: bool = False
         self._lock: bool = False
-        self._alphaStep: bool = False
 
         self.name = name
         self.x = x
@@ -82,7 +83,8 @@ class FrameSprite(QObject):
         self._item.subscribe(ItemEvent.posChanged, self.onPosChanged)
         self._item.subscribe(ItemEvent.hFlipChanged, self.onHflipChanged)
         self._item.subscribe(ItemEvent.vFlipChanged, self.onVflipChanged)
-        self._item.subscribe(ItemEvent.alphaChanged, self.onAlphaChanged)
+        self._item.subscribe(ItemEvent.enableHint, lambda: self.sigHint.emit(self.z))
+        self._item.subscribe(ItemEvent.disableHint, lambda: self.sigDeHint.emit())
 
         self.sigAddToScene.emit(self._item)
         self._item.addedToScene()
@@ -241,13 +243,3 @@ class FrameSprite(QObject):
     def onVflipChanged(self) -> None:
         self.vflip = not self._vflip
         self.sigInternalDataChanged.emit(self.changed(Index.Vflip))
-
-    def onAlphaChanged(self) -> None:
-        if self._alphaStep:
-            self.alpha = 0
-            self._alphaStep = False
-        else:
-            self._alphaStep = True
-            self.alpha = 90
-
-        self.sigInternalDataChanged.emit(self.changed(Index.Alpha))

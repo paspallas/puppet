@@ -25,7 +25,8 @@ class ItemEvent(IntEnum):
     zChanged = 2
     vFlipChanged = 3
     hFlipChanged = 4
-    alphaChanged = 5
+    enableHint = 5
+    disableHint = 6
 
 
 class FrameSpriteItem(QGraphicsPixmapItem, Publisher):
@@ -65,11 +66,11 @@ class FrameSpriteItem(QGraphicsPixmapItem, Publisher):
         self.scene().removeItem(self._overlay)
 
     def keyPressEvent(self, e: QKeyEvent) -> None:
-        if e.key() == Qt.Key.Key_Q:
+        if e.key() == Qt.Key.Key_R:
             z = int(self.zValue()) + 1
             self.publish(ItemEvent.zChanged, z)
 
-        elif e.key() == Qt.Key_E:
+        elif e.key() == Qt.Key_F:
             z = int(self.zValue() - 1)
             self.publish(ItemEvent.zChanged, z)
 
@@ -91,8 +92,8 @@ class FrameSpriteItem(QGraphicsPixmapItem, Publisher):
         elif e.key() in [Qt.Key_Down, Qt.Key_S]:
             self.publish(ItemEvent.offsetChanged, 0, 1)
 
-        elif e.key() == Qt.Key_T:
-            self.publish(ItemEvent.alphaChanged)
+        elif e.key() == Qt.Key_T and not e.isAutoRepeat():
+            self.publish(ItemEvent.enableHint)
 
         elif e.key() == Qt.Key_Space:
             self._overlay.enabled = not self._overlay.enabled
@@ -102,6 +103,13 @@ class FrameSpriteItem(QGraphicsPixmapItem, Publisher):
 
         else:
             super().keyPressEvent(e)
+
+    def keyReleaseEvent(self, e: QKeyEvent) -> None:
+        if e.key() == Qt.Key_T and not e.isAutoRepeat():
+            self.publish(ItemEvent.disableHint)
+
+        else:
+            super().keyReleaseEvent(e)
 
     # def contextMenuEvent(self, e: QGraphicsSceneContextMenuEvent) -> None:
     #     if self.isSelected():

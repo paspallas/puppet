@@ -1,4 +1,6 @@
 import typing
+from . import operation
+
 
 from PyQt5.QtCore import QObject, Qt, pyqtSignal, pyqtSlot
 from PyQt5.QtGui import QPixmap
@@ -78,6 +80,14 @@ class AnimationFrame(QObject):
         sprite.sigDelFromScene.connect(self.removeGraphicItem, type=Qt.DirectConnection)
         sprite.sigIncreaseZ.connect(self.onIncreaseZ, type=Qt.DirectConnection)
         sprite.sigDecreaseZ.connect(self.onDecreaseZ, type=Qt.DirectConnection)
+        sprite.sigHint.connect(
+            lambda selected: operation.HighLightSelected.apply(
+                self.sprites, self.itemIndex(selected)
+            )
+        )
+        sprite.sigDeHint.connect(
+            lambda: operation.HighLightSelected.revert(self.sprites)
+        )
 
         sprite.connected()
 

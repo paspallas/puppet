@@ -20,7 +20,6 @@ class CustomGraphicScene(QGraphicsScene):
     def __init__(self, *args, options: CustomGraphicSceneOptions, **kwargs):
         super().__init__(*args, **kwargs)
 
-        self.activeItem = None
         self.setSceneRect(
             -options.width // 2, -options.height // 2, options.width, options.height
         )
@@ -41,7 +40,6 @@ class CustomGraphicScene(QGraphicsScene):
     def _onSelectionChanged(self) -> None:
         item = self.mouseGrabberItem()
         if item:
-            print(item)
             self.sigSelectedItem.emit(item)
 
     # def mousePressEvent(self, e: QGraphicsSceneMouseEvent) -> None:
