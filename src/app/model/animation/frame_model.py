@@ -135,12 +135,12 @@ class AnimationFrameModel(QAbstractItemModel):
         self.endRemoveRows()
         return True
 
-    def copyItem(self, index: QModelIndex) -> None:
+    def copyRow(self, index: QModelIndex) -> None:
         self.layoutAboutToBeChanged.emit()
         self._dataSource.copy(index.row() + 1, index.row())
         self.layoutChanged.emit()
 
-    def selectItem(self, index: QModelIndex) -> None:
+    def selectRow(self, index: QModelIndex) -> None:
         self._dataSource.select(index.row())
 
     def mimeTypes(self) -> typing.List[str]:

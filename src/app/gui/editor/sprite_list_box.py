@@ -70,11 +70,11 @@ class SpriteListBox(QWidget):
     @pyqtSlot()
     def _copyItem(self) -> None:
         index = self._ui.list.currentIndex()
-        self._ui.list.model().copyItem(index)
+        self._ui.list.model().copyRow(index)
 
     @pyqtSlot(QModelIndex)
     def _selectItem(self, index: QModelIndex) -> None:
-        self._ui.list.model().selectItem(index)
+        self._ui.list.model().selectRow(index)
         self.sigItemChanged.emit(index)
 
     @pyqtSlot(QGraphicsItem)
