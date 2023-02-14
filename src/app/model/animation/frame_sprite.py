@@ -87,6 +87,30 @@ class FrameSprite(QObject):
     def set(self, index: int, value: typing.Any) -> None:
         setattr(self, self.properties[index], value)
 
+    def changed(self, *indexes: Index) -> typing.List[typing.Tuple[int, Index]]:
+        return [(self._z, index) for index in indexes]
+
+    def copy(self):
+        item = FrameSprite(
+            self._name,
+            self._pixmap,
+            self._x,
+            self._y,
+            self._vflip,
+            self._hflip,
+            self._alpha,
+        )
+        item.hide = False
+        item.lock = False
+        item.name += "_copy"
+
+        return item
+
+    def select(self) -> None:
+        self.item.scene().clearSelection()
+        self.item.setSelected(True)
+        self.item.update()
+
     @staticmethod
     def count() -> int:
         return len(FrameSprite.properties)
@@ -182,32 +206,8 @@ class FrameSprite(QObject):
             self._z = value
             self.item.setZValue(value)
 
-    def changed(self, *indexes: Index) -> typing.List[typing.Tuple[int, Index]]:
-        return [(self._z, index) for index in indexes]
-
-    def copy(self):
-        item = FrameSprite(
-            self._name,
-            self._pixmap,
-            self._x,
-            self._y,
-            self._vflip,
-            self._hflip,
-            self._alpha,
-        )
-        item.hide = False
-        item.lock = False
-        item.name += "_copy"
-
-        return item
-
-    def select(self) -> None:
-        self.item.scene().clearSelection()
-        self.item.setSelected(True)
-        self.item.update()
-
-    def onItemZchanged(self, value: int) -> None:
-        if value > self._z:
+    def onItemZchanged(self, z: int) -> None:
+        if z > self._z:
             self.sigIncreaseZ.emit(self._z)
         else:
             self.sigDecreaseZ.emit(self._z)
