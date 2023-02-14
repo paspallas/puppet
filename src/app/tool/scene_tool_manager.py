@@ -3,7 +3,7 @@ from importlib import import_module as imodule
 from PyQt5.QtCore import QCoreApplication, QEvent, QObject, Qt, pyqtSlot
 from PyQt5.QtWidgets import QGraphicsScene
 
-from .abstracttool import AbstractTool
+from .abstract_tool import AbstractTool
 
 
 class SceneToolManager(QObject):

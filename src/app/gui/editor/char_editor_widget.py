@@ -1,7 +1,7 @@
 from PyQt5.QtCore import Qt, pyqtSignal, pyqtSlot
 from PyQt5.QtWidgets import QGraphicsItem, QWidget
 
-from ...model.chardocument import CharDocument
+from ...model.document import Document
 from ...tool import SceneToolManager
 from .char_editor_ui import CharEditorUi
 
@@ -14,7 +14,7 @@ class CharEditorWidget(QWidget):
         self._ui.setupUi(self)
 
         self._toolmanager = SceneToolManager(self._ui.editorScene)
-        self._document: CharDocument = None
+        self._document: Document = None
 
         self.makeConnections()
 
@@ -29,7 +29,7 @@ class CharEditorWidget(QWidget):
             self._ui.spriteProperty.onSelectedItemChanged
         )
 
-    def setDocument(self, document: CharDocument) -> None:
+    def setDocument(self, document: Document) -> None:
         if self._document is not None:
             self._document._currentEditableFrame.sigAddToScene.disconnect()
             self._document._currentEditableFrame.sigDeleteFromScene.disconnect()

@@ -8,8 +8,6 @@ from PyQt5.QtWidgets import (
     QWidget,
 )
 
-from ...util.image import Image
-
 
 class CustomGraphicSceneOptions(NamedTuple):
     width: int
@@ -27,9 +25,7 @@ class CustomGraphicScene(QGraphicsScene):
             -options.width // 2, -options.height // 2, options.width, options.height
         )
 
-    @pyqtSlot()
-    def renderFrame(self) -> None:
-        Image.thumbnailFromScene(self)
+        self.selectionChanged.connect(self._onSelectionChanged)
 
     @pyqtSlot(list)
     def addItems(self, items: list[QGraphicsItem]) -> None:
@@ -41,15 +37,22 @@ class CustomGraphicScene(QGraphicsScene):
         for item in items:
             self.removeItem(item)
 
-    def mousePressEvent(self, e: QGraphicsSceneMouseEvent) -> None:
-        super().mousePressEvent(e)
+    @pyqtSlot()
+    def _onSelectionChanged(self) -> None:
+        item = self.mouseGrabberItem()
+        if item:
+            print(item)
+            self.sigSelectedItem.emit(item)
 
-        if e.buttons() & Qt.LeftButton:
-            self.activeItem = self.itemAt(e.scenePos(), self.views()[0].transform())
-            if self.activeItem:
-                if self.activeItem.flags() & QGraphicsItem.ItemIsSelectable:
-                    self.sigSelectedItem.emit(self.activeItem)
-                    print(self.activeItem)
+    # def mousePressEvent(self, e: QGraphicsSceneMouseEvent) -> None:
+    #     super().mousePressEvent(e)
 
-        # elif e.buttons() & Qt.RightButton:
-        #     self.renderFrame()
+    #     if e.buttons() & Qt.LeftButton:
+    #         self.activeItem = self.itemAt(e.scenePos(), self.views()[0].transform())
+    #         if self.activeItem:
+    #             if self.activeItem.flags() & QGraphicsItem.ItemIsSelectable:
+    #                 self.sigSelectedItem.emit(self.activeItem)
+    #                 print(self.activeItem)
+
+    # elif e.buttons() & Qt.RightButton:
+    #     self.renderFrame()

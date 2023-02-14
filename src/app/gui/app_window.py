@@ -1,7 +1,7 @@
 from PyQt5.QtWidgets import QMainWindow
 
-from ..model.chardocument import CharDocument
-from .appwindow_ui import EditModeUi
+from ..model.document import Document
+from .app_window_ui import EditModeUi
 from .menu.main_menu import MainMenu
 
 
@@ -16,7 +16,7 @@ class AppWindow(QMainWindow):
         self._ui.setupUi(self)
         self._menu = MainMenu(self)
 
-        self._document = CharDocument()
+        self._document = Document()
 
         self._ui.charEditor.setDocument(self._document)
         self._ui.spritePaletteDock.setDocument(self._document)

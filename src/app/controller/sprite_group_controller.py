@@ -1,7 +1,6 @@
 from PyQt5.QtCore import QObject, pyqtSlot
 
-from ..model.spritegroup import SpriteGroup, SpriteGroupCollectionModel
-from ..model.spritesheet import SpriteSheet
+from ..model.spritesheet import SpriteGroup, SpriteGroupCollectionModel, SpriteSheet
 
 
 class SpriteGroupController(QObject):

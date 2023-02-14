@@ -1,13 +1,9 @@
 from PyQt5.QtCore import QObject, pyqtSignal, pyqtSlot
 from PyQt5.QtWidgets import QGraphicsItem
 
-from .animation.animation_list import AnimationList
-from .animation.animation_list_model import AnimationListModel
-from .animation.animation_model import AnimationModel
-from .animation.frame import AnimationFrame
-from .animation.frame_model import AnimationFrameModel
-from .sprite import Sprite
-from .spritesheet import SpriteSheetCollectionModel
+from .animation import AnimationList, AnimationListModel, AnimationModel
+from .animation_frame import AnimationFrame, AnimationFrameModel
+from .spritesheet import Sprite, SpriteSheetCollectionModel
 
 
 # TODO used by the spritesheets
@@ -27,7 +23,7 @@ class SpriteCollectionModel(QObject):
         self.spriteAddedToCollection.emit(sprite)
 
 
-class CharDocument(QObject):
+class Document(QObject):
     sigSpritesChanged = pyqtSignal()
     sigSpriteSheetsChanged = pyqtSignal()
     sigSpritesChanged = pyqtSignal()
@@ -48,7 +44,7 @@ class CharDocument(QObject):
         self._spriteSheets = SpriteSheetCollectionModel()
         self._sprites = SpriteCollectionModel()
 
-        #! test the model from the chardocument
+        #! test the model from the document
         self._currentEditableFrame = AnimationFrame()
         self._currentFrameModel = AnimationFrameModel()
         self._currentFrameModel.setDataSource(self._currentEditableFrame)

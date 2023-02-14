@@ -1,2 +1,2 @@
-from .pancontrol import PanControl
-from .zoomcontrol import ZoomControl
+from .pan_control import PanControl
+from .zoom_control import ZoomControl

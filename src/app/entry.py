@@ -5,7 +5,7 @@ import qtmodern.windows
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QApplication
 
-from .gui.appwindow import AppWindow
+from .gui import AppWindow
 
 try:
     from PyQt5.QtWinExtras import QtWin

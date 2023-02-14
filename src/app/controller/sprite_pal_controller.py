@@ -2,18 +2,16 @@ from PyQt5.QtCore import QCoreApplication, QObject, Qt, pyqtSlot
 from PyQt5.QtWidgets import QGraphicsItem, QProgressDialog
 
 from ..gui.dialog import OpenImageDialog
-from ..model.chardocument import CharDocument
-from ..model.sprite import Sprite
-from ..model.spritesheet import SpriteSheetCollectionModel
-
-from ..model.animation.frame_sprite import FrameSprite
+from ..model.animation_frame import FrameSprite
+from ..model.document import Document
+from ..model.spritesheet import Sprite, SpriteSheetCollectionModel
 
 
 class SpritePaletteController(QObject):
-    def __init__(self, document: CharDocument):
+    def __init__(self, document: Document):
         super().__init__()
 
-        self._document: CharDocument = document
+        self._document: Document = document
 
     @pyqtSlot()
     def addSpriteSheet(self) -> None:

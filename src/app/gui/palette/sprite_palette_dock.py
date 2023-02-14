@@ -1,12 +1,15 @@
 from PyQt5.QtCore import Qt, pyqtSignal, pyqtSlot
-from PyQt5.QtWidgets import QDockWidget, QWidget, QGraphicsItem
+from PyQt5.QtWidgets import QDockWidget, QGraphicsItem, QWidget
 
-from ...controller import SpritePaletteController, SpriteGroupController
-from ...model.sprite import Sprite
-from ...model.spritegroup import SpriteGroupCollectionModel
-from ...model.spritesheet import SpriteSheet, SpriteSheetCollectionModel
-from ...model.chardocument import CharDocument
-from .spritepalette_ui import SpritePaletteUi
+from ...controller import SpriteGroupController, SpritePaletteController
+from ...model.document import Document
+from ...model.spritesheet import (
+    Sprite,
+    SpriteGroupCollectionModel,
+    SpriteSheet,
+    SpriteSheetCollectionModel,
+)
+from .sprite_palette_ui import SpritePaletteUi
 
 
 class SpritePaletteDock(QDockWidget):
@@ -30,7 +33,7 @@ class SpritePaletteDock(QDockWidget):
 
         self._ui.spritePalScene.sigSelectedItem.connect(self.sigSelectedSprite)
 
-    def setDocument(self, document: CharDocument) -> None:
+    def setDocument(self, document: Document) -> None:
         self._model = document.spriteSheets()
         self._controller = SpritePaletteController(document)
         self._makeConnections()

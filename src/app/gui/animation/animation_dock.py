@@ -1,7 +1,7 @@
 from PyQt5.QtCore import QModelIndex, Qt, pyqtSignal, pyqtSlot
 from PyQt5.QtWidgets import QDockWidget, QWidget
 
-from ...model.chardocument import CharDocument
+from ...model.document import Document
 from .animation_ui import AnimationUi
 
 
@@ -19,7 +19,7 @@ class AnimationEditorDock(QDockWidget):
         self._ui = AnimationUi()
         self._ui.setupUi(self._container)
 
-    def setDocument(self, document: CharDocument) -> None:
+    def setDocument(self, document: Document) -> None:
         self._document = document
 
         self._ui.animationList.setModel(self._document.animationListModel())

@@ -10,8 +10,7 @@ from PyQt5.QtWidgets import (
     QWidget,
 )
 
-from ..util import Image
-from .frame import Frame
+from ...util import Image
 
 
 class Sprite(QGraphicsPixmapItem):

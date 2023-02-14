@@ -11,7 +11,7 @@ from PyQt5.QtCore import (
     pyqtSlot,
 )
 
-from .frame import AnimationFrame
+from .animation_frame import AnimationFrame
 from .frame_sprite import Index
 
 
