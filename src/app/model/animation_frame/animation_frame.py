@@ -62,13 +62,13 @@ class AnimationFrame(QObject):
 
         self.sigAddedItem.emit()
 
-    def select(self, item: int) -> None:
+    def select(self, index: int) -> None:
         self.sprites[item].select()
 
-    def get(self, item: int, attr: int) -> typing.Any:
+    def get(self, index: int, attr: int) -> typing.Any:
         return self.sprites[item].get(attr)
 
-    def set(self, item: int, attr: int, value: typing.Any) -> None:
+    def set(self, index: int, attr: int, value: typing.Any) -> None:
         self.sprites[item].set(attr, value)
 
     def count(self) -> int:
