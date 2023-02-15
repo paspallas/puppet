@@ -30,7 +30,10 @@ class SpriteListBox(QWidget):
         self._makeConnections()
 
     def setModel(self, model: QAbstractItemModel) -> None:
-        self._ui.list.setModel(model)
+        self._model = model
+        self._model.sigModelRowCountChanged.connect(self.onListSizeChanged)
+
+        self._ui.list.setModel(self._model)
         self._ui.updateHeaders()
 
         self._ui.list.setItemDelegateForColumn(
@@ -83,5 +86,19 @@ class SpriteListBox(QWidget):
             self._ui.list.model().createIndex(row, 0, QModelIndex())
         )
 
+    @pyqtSlot(int)
+    def onListSizeChanged(self, size: int) -> None:
+        print("list size changed")
+        if size > 0:
+            self._buttonState(True)
+        else:
+            self._buttonState(False)
+
     def paintEvent(self, e: QPaintEvent):
         style.paintWidget(self)
+
+    def _buttonState(self, enabled: bool) -> None:
+        self._ui.upBtn.setEnabled(enabled)
+        self._ui.downBtn.setEnabled(enabled)
+        self._ui.copyBtn.setEnabled(enabled)
+        self._ui.delBtn.setEnabled(enabled)

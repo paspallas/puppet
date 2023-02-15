@@ -1,10 +1,13 @@
 import typing
 
-from ..model.animation_frame import FrameSprite, FrameSpriteItem
+from ..model.animation_frame.frame_sprite import FrameSprite
 
 
 class SpriteStack:
-    """Stack of sprites that represent the current sprite z ordering
+    """Stack of sprites that represent the current sprite z ordering.
+
+    Maps QModelIndexes between the stack indexes and QAbstractItemModel.
+
     Guarantees that the contents are rendered in the correct order when
     a QTreeView is used for visualization.
     """
@@ -16,70 +19,71 @@ class SpriteStack:
         return len(self._data)
 
     def __getitem__(self, model_index: int) -> FrameSprite:
-        return self._data[self._translateIndex(model_index)]
+        return self._data[self.spriteIndex(model_index)]
+
+    def __iter__(self):
+        self._currentIndex = 0
+        return self
+
+    def __next__(self):
+        if self._currentIndex < len(self._data):
+            sprite = self._data[self._currentIndex]
+            self._currentIndex += 1
+            return sprite
+        raise StopIteration
 
     def push(self, sprite: FrameSprite) -> None:
         sprite.z = len(self._data)
         self._data.append(sprite)
 
     def pop(self, model_index: int) -> FrameSprite:
-        self._data.pop(self._translateIndex(model_index))
+        sprite = self._data.pop(self.spriteIndex(model_index))
         self._updateZindex()
+        return sprite
 
     def inc(self, model_index: int) -> None:
         if len(self._data) == 1:
             raise IndexError("The sprite stack has only one element")
 
-        index = self._translateIndex(model_index)
-        sprite = self._data.pop(index)
-        self._data.insert(index + 1, sprite)
-        self._updateZindex()
+        self.spriteUp(self.spriteIndex(model_index))
 
     def dec(self, model_index: int) -> None:
         if len(self._data) == 1:
             raise IndexError("The sprite stack has only one element")
 
-        index = self._translateIndex(model_index)
-        sprite = self._data.pop(index)
-        self._data.insert(index - 1, sprite)
-        self._updateZindex()
+        self.spriteDown(self.spriteIndex(model_index))
 
     def move(self, model_index_src: int, model_index_dst: int) -> None:
-        src = self._translateIndex(model_index_src)
-        dst = self._translateIndex(model_index_dst)
+        src = self.spriteIndex(model_index_src)
+        dst = self.spriteIndex(model_index_dst)
+
         sprite = self._data.pop(src)
         self._data.insert(dst, sprite)
         self._updateZindex()
 
-    def _translateIndex(self, model_index: int) -> int:
+    def insert(self, model_index: int, sprite: FrameSprite) -> None:
+        self._data.insert(self.spriteIndex(model_index), sprite)
+        self._updateZindex()
+
+    def last(self) -> int:
+        return len(self._data) - 1
+
+    def spriteIndex(self, model_index: int) -> int:
         return len(self._data) - 1 - model_index
+
+    def modelIndex(self, sprite_index: int) -> int:
+        return self.spriteIndex(sprite_index)
 
     def _updateZindex(self) -> None:
         for i, sprite in enumerate(self._data):
             sprite.z = i
 
-    # @pyqtSlot(int)
-    # def onIncreaseZ(self, z: int) -> None:
-    #     if z + 1 > len(self) - 1:
-    #         return
+    def spriteUp(self, sprite_index: int) -> None:
+        sprite = self._data.pop(sprite_index)
+        self._data.insert(sprite_index + 1, sprite)
+        self._updateZindex()
 
-    #     self.sigFrameLayoutAboutToChange.emit()
-    #     index = self.itemIndex(z)
-    #     self.moveup(index)
-    #     sprite = self.sprites[index - 1]
-    #     self.sigFrameLayoutChanged.emit()
-
-    #     self.sigSelectedItem.emit(self.itemIndex(sprite.z))
-
-    # @pyqtSlot(int)
-    # def onDecreaseZ(self, z: int) -> None:
-    #     if z - 1 < 0:
-    #         return
-
-    #     self.sigFrameLayoutAboutToChange.emit()
-    #     index = self.itemIndex(z)
-    #     self.movedown(index)
-    #     sprite = self.sprites[index + 1]
-    #     self.sigFrameLayoutChanged.emit()
-
-    #     self.sigSelectedItem.emit(self.itemIndex(sprite.z))
+    def spriteDown(self, sprite_index: int) -> None:
+        sprite = self._data.pop(sprite_index)
+        self._data.insert(sprite_index - 1, sprite)
+        self._updateZindex()

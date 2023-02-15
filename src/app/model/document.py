@@ -26,7 +26,6 @@ class SpriteCollectionModel(QObject):
 class Document(QObject):
     sigSpritesChanged = pyqtSignal()
     sigSpriteSheetsChanged = pyqtSignal()
-    sigSpritesChanged = pyqtSignal()
 
     sigSpriteAddedToCollection = pyqtSignal(QGraphicsItem)
 

@@ -1,6 +1,6 @@
 import typing
 
-from PyQt5.QtCore import Qt, pyqtSignal, pyqtSlot
+from PyQt5.QtCore import Qt, pyqtSignal, pyqtSlot, pyqtProperty
 from PyQt5.QtWidgets import QFrame, QHBoxLayout, QLabel, QSlider, QWidget
 
 
@@ -74,3 +74,13 @@ class FancySlider(QWidget):
 
     def minimum(self) -> int:
         return self._slider.minimum()
+
+    # support QDataWidgetMapper
+    @pyqtProperty(int, user=True)
+    def sliderValue(self) -> int:
+        return self.value()
+
+    @sliderValue.setter
+    def sliderValue(self, value: int) -> None:
+        self._slider.setValue(value)
+        self.valueChanged.emit(value)

@@ -3,7 +3,7 @@ RC  := pyrcc5
 PY 	:= python
 
 .PHONY:
-test:
+run:
 	@$(PY) src/main.py
 
 .PHONY:
