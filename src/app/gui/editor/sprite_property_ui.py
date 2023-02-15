@@ -31,7 +31,7 @@ class SpritePropertyUi:
         self.yLbl.setAlignment(Qt.AlignRight | Qt.AlignCenter)
         self.yLbl.setBuddy(self.ySpin)
 
-        self.opacitySlide = FancySlider(Qt.Horizontal)
+        self.opacitySlide = FancySlider()
         self.opacitySlide.setRange(0, 100)
         self.opacitySlide.setValue(0)
         self.opacityLbl = QLabel("Alpha")
