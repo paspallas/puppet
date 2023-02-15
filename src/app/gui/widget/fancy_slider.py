@@ -1,7 +1,7 @@
 import typing
 
 from PyQt5.QtCore import Qt, pyqtSignal, pyqtSlot
-from PyQt5.QtWidgets import QHBoxLayout, QLabel, QSlider, QWidget
+from PyQt5.QtWidgets import QFrame, QHBoxLayout, QLabel, QSlider, QWidget
 
 
 class FancySlider(QWidget):
@@ -16,9 +16,14 @@ class FancySlider(QWidget):
         super().__init__(parent)
 
         self._slider = QSlider(Qt.Horizontal)
-        self._label = QLabel("", self)
-        self._label.setMinimumWidth(20)
-        self._label.setAlignment(Qt.AlignRight | Qt.AlignVCenter)
+        self._label = QLabel("")
+        self._label.setMinimumWidth(30)
+        self._label.setAlignment(Qt.AlignVCenter | Qt.AlignRight)
+        self._label.setFrameShape(QFrame.StyledPanel)
+        self._label.setFrameShadow(QFrame.Sunken)
+        self._label.setStyleSheet(
+            "background-color: rgb(42, 42, 42); border-radius: 2px;"
+        )
 
         self._slider.actionTriggered.connect(self.actionTriggered)
         self._slider.rangeChanged.connect(self.rangeChanged)
@@ -27,7 +32,9 @@ class FancySlider(QWidget):
         self._slider.sliderReleased.connect(self.sliderReleased)
         self._slider.valueChanged.connect(self.valueChanged)
 
-        self._slider.valueChanged.connect(lambda x: self._label.setText(f"{x}"))
+        self._slider.valueChanged.connect(
+            lambda value: self._label.setText(f"{value} ")
+        )
 
         layout = QHBoxLayout(self)
         layout.setContentsMargins(0, 0, 0, 0)
@@ -38,7 +45,7 @@ class FancySlider(QWidget):
     @pyqtSlot(int)
     def setValue(self, value: int) -> None:
         self._slider.setValue(value)
-        self._label.setText(f"{value}")
+        self._label.setText(f"{value} ")
 
     def value(self) -> int:
         return self._slider.value()
