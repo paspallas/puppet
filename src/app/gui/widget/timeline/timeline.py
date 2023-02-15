@@ -13,7 +13,7 @@ from PyQt5.QtWidgets import (
     QGraphicsSceneMouseEvent,
     QGraphicsSceneHoverEvent,
 )
-from PyQt5.QtGui import QColor, QBrush, QPainter, QWheelEvent
+from PyQt5.QtGui import QColor, QBrush, QPainter, QPen, QWheelEvent
 
 
 class KeyFrame(QGraphicsObject):
@@ -119,7 +119,7 @@ class KeyFrame(QGraphicsObject):
 
 class TimeLineScene(QGraphicsScene):
     def __init__(self, *args, **kwargs) -> None:
-        super().__init__(0, 0, 1024, 200)
+        super().__init__(0, 0, 2000, 200)
 
     def addKeyFrame(self, key: KeyFrame) -> None:
         self.addItem(key)
@@ -130,16 +130,34 @@ class TimeLineView(QGraphicsView):
         super().__init__(scene, parent)
 
         self.setMouseTracking(True)
-        self.setContentsMargins(0, 0, 0, 0)
+        self.setContentsMargins(10, 10, 10, 10)
 
         self.setRenderHint(QPainter.Antialiasing)
         self.setViewportUpdateMode(QGraphicsView.SmartViewportUpdate)
         self.setCacheMode(QGraphicsView.CacheBackground)
         self.setTransformationAnchor(QGraphicsView.AnchorUnderMouse)
+        self.setResizeAnchor(QGraphicsView.AnchorViewCenter)
+        self.centerOn(0, 0)
         self.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
 
         self.scalings = 0
+
+    def drawBackground(self, painter: QPainter, rect: QRectF) -> None:
+        painter.setRenderHint(QPainter.Antialiasing)
+        pen = QPen(Qt.black, 0, Qt.SolidLine, Qt.SquareCap)
+        pen.setCosmetic(True)
+        painter.setPen(pen)
+
+        xSize = 10
+        ySize = 20
+
+        left = int(rect.left() - rect.left() % xSize)
+        top = int(rect.top() - rect.top() % ySize)
+
+        for y in range(top, int(rect.bottom()), ySize):
+            for x in range(left, int(rect.right()), xSize):
+                painter.drawRect(QRectF(x, y, xSize, ySize))
 
     def wheelEvent(self, e: QWheelEvent) -> None:
         if e.modifiers() & Qt.Modifier.CTRL:
