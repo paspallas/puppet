@@ -16,6 +16,7 @@ class CustomGraphicSceneOptions(NamedTuple):
 
 class CustomGraphicScene(QGraphicsScene):
     sigSelectedItem = pyqtSignal(QGraphicsItem)
+    sigNoSelectedItem = pyqtSignal()
 
     def __init__(self, *args, options: CustomGraphicSceneOptions, **kwargs):
         super().__init__(*args, **kwargs)
@@ -39,18 +40,13 @@ class CustomGraphicScene(QGraphicsScene):
     @pyqtSlot()
     def _onSelectionChanged(self) -> None:
         item = self.mouseGrabberItem()
-        if item:
-            self.sigSelectedItem.emit(item)
+        if item is None:
+            self.sigNoSelectedItem.emit()
 
-    # def mousePressEvent(self, e: QGraphicsSceneMouseEvent) -> None:
-    #     super().mousePressEvent(e)
+    def mousePressEvent(self, e: QGraphicsSceneMouseEvent) -> None:
+        super().mousePressEvent(e)
 
-    #     if e.buttons() & Qt.LeftButton:
-    #         self.activeItem = self.itemAt(e.scenePos(), self.views()[0].transform())
-    #         if self.activeItem:
-    #             if self.activeItem.flags() & QGraphicsItem.ItemIsSelectable:
-    #                 self.sigSelectedItem.emit(self.activeItem)
-    #                 print(self.activeItem)
-
-    # elif e.buttons() & Qt.RightButton:
-    #     self.renderFrame()
+        if e.buttons() & Qt.LeftButton:
+            item = self.itemAt(e.scenePos(), self.views()[0].transform())
+            if item and item.flags() & QGraphicsItem.ItemIsSelectable:
+                self.sigSelectedItem.emit(item)

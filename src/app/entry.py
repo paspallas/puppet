@@ -1,9 +1,8 @@
 import sys
 
-import qtmodern.styles
-import qtmodern.windows
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QApplication
+from qtmodern import styles
 
 from .gui import AppWindow
 
@@ -19,7 +18,7 @@ def start() -> None:
     QApplication.setAttribute(Qt.AA_EnableHighDpiScaling, True)
 
     app = QApplication([])
-    qtmodern.styles.dark(app)
+    styles.dark(app)
 
     main_window = AppWindow()
 

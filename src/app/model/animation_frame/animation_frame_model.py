@@ -19,7 +19,6 @@ class AnimationFrameModel(QAbstractItemModel):
     """Interface between the view and the current editable animation frame"""
 
     sigModelDataChanged = pyqtSignal(int)
-    sigModelRowCountChanged = pyqtSignal(int)
 
     def __init__(self):
         super().__init__()
@@ -211,4 +210,3 @@ class AnimationFrameModel(QAbstractItemModel):
         )
 
         self.sigModelDataChanged.emit(index.row())
-        self.sigModelRowCountChanged.emit(len(self._dataSource))

@@ -1,7 +1,7 @@
 import typing
 from enum import IntEnum
 
-from PyQt5.QtCore import QPoint, Qt, QVariant, pyqtSlot
+from PyQt5.QtCore import QLineF, QPoint, QPointF, QRectF, Qt, QVariant, pyqtSlot
 from PyQt5.QtGui import QColor, QKeyEvent, QPainter, QPainterPath, QPen, QPixmap
 from PyQt5.QtWidgets import (
     QAction,
@@ -16,6 +16,7 @@ from PyQt5.QtWidgets import (
 
 from ...util.image import Image
 from ...util.pubsub import Publisher
+from .item_context_menu import ItemMenuDelegate
 from .overlay import Overlay
 
 
@@ -32,7 +33,7 @@ class ItemEvent(IntEnum):
 class FrameSpriteItem(QGraphicsPixmapItem, Publisher):
     """A graphicsitem used for visualization and user interaction in the editor scene.
 
-    QGraphicsItems can't inherit from QObject so an alternative publisher, subscriber
+    QGraphicsItems can't inherit from QObject so an alternative publisher - subscriber
     interface is implemented. Using QGraphicsObject is discouraged in this particular
     scenario for performance considerations.
     """
@@ -48,16 +49,46 @@ class FrameSpriteItem(QGraphicsPixmapItem, Publisher):
             | QGraphicsItem.ItemSendsScenePositionChanges
         )
 
+        self.computeCenterIndicator()
+
         # make the item selectable regardless of transparency level
         self._outline = Image.outline(pixmap)
 
-        # render the overlay in the correct position
-        self._adj = 0.5
         self._overlay = Overlay(
-            self.boundingRect().adjusted(self._adj, self._adj, -self._adj, -self._adj),
+            self.boundingRect(),
             self._outline,
         )
         self._overlay.setZValue(self.zValue())
+
+    def computeCenterIndicator(self) -> None:
+        offset = 100
+        b = self.boundingRect()
+        self._centerIndicator = [
+            QLineF(
+                b.left() - offset,
+                b.height() // 2,
+                b.left(),
+                b.height() // 2,
+            ),
+            QLineF(
+                b.right(),
+                b.height() // 2,
+                b.right() + offset,
+                b.height() // 2,
+            ),
+            QLineF(
+                b.width() // 2,
+                b.top() - offset,
+                b.width() // 2,
+                b.top(),
+            ),
+            QLineF(
+                b.width() // 2,
+                b.bottom(),
+                b.width() // 2,
+                b.bottom() + offset,
+            ),
+        ]
 
     def addedToScene(self):
         self.scene().addItem(self._overlay)
@@ -111,11 +142,16 @@ class FrameSpriteItem(QGraphicsPixmapItem, Publisher):
         else:
             super().keyReleaseEvent(e)
 
-    # def contextMenuEvent(self, e: QGraphicsSceneContextMenuEvent) -> None:
-    #     if self.isSelected():
-    #         menu = QMenu("sprite")
-    #         remove_action = menu.addAction("remove")
-    #         menu.exec_(e.screenPos())
+    def contextMenuEvent(self, e: QGraphicsSceneContextMenuEvent) -> None:
+        if self.isSelected():
+            menu = ItemMenuDelegate(self, e.screenPos())
+            menu.exec()
+
+    def isCentered(self) -> bool:
+        return self.sceneBoundingRect().center() == self.scene().sceneRect().center()
+
+    def boundingRect(self) -> QRectF:
+        return super().boundingRect().adjusted(0.5, 0.5, -0.5, -0.5)
 
     def shape(self) -> QPainterPath:
         return self._outline
@@ -136,7 +172,7 @@ class FrameSpriteItem(QGraphicsPixmapItem, Publisher):
         return super().itemChange(change, value)
 
     def flipChanged(self) -> None:
-        """Apply the transformation to the overlay"""
+        # Apply the transformation to the overlay
         self._overlay.setTransform(self.transform())
 
     def paint(
@@ -150,11 +186,12 @@ class FrameSpriteItem(QGraphicsPixmapItem, Publisher):
         painter.drawPixmap(QPoint(), self.pixmap())
 
         if self.isSelected():
-            color = QColor(255, 0, 255, 100)
+            color = QColor(0, 255, 255, 200)
             pen = QPen(color, 0, Qt.SolidLine, Qt.SquareCap)
             painter.setPen(pen)
-            painter.drawRect(
-                self.boundingRect().adjusted(
-                    self._adj, self._adj, -self._adj, -self._adj
-                )
-            )
+            painter.drawRect(self.boundingRect())
+
+            if self.isCentered():
+                pen.setColor(Qt.cyan)
+                painter.setPen(pen)
+                painter.drawLines(*self._centerIndicator)

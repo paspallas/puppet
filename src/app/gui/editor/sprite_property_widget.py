@@ -17,6 +17,7 @@ class SpritePropertyWidget(QWidget):
         self._ui.setupUi(self)
         self._mapper = QDataWidgetMapper(self)
         self._model: QAbstractItemModel = None
+        self.setEnabled(False)
 
     def setModel(self, model) -> None:
         self._model = model
@@ -48,16 +49,12 @@ class SpritePropertyWidget(QWidget):
         self._mapper.setCurrentModelIndex(index)
 
     @pyqtSlot(int)
-    def onModelDataChanged(self, index) -> None:
+    def onModelDataChanged(self, index: int) -> None:
         self._mapper.setCurrentIndex(index)
 
     @pyqtSlot(bool)
     def setEnabled(self, enabled: bool) -> None:
-        self._ui.xSpin.setEnabled(enabled)
-        self._ui.ySpin.setEnabled(enabled)
-        self._ui.opacitySlide.setEnabled(enabled)
-        self._ui.flipHorizontalChk.setEnabled(enabled)
-        self._ui.flipVerticalChk.setEnabled(enabled)
+        super().setEnabled(False)
 
-    def paintEvent(self, e: QPaintEvent):
+    def paintEvent(self, e: QPaintEvent) -> None:
         style.paintWidget(self)
