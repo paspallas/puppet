@@ -4,7 +4,6 @@ from PyQt5.QtWidgets import QHBoxLayout, QVBoxLayout, QWidget
 from ..viewcontrol import PanControl, ZoomControl
 from ..widget import (
     CustomGraphicScene,
-    CustomGraphicSceneOptions,
     CustomGraphicView,
     CustomGraphicViewOptions,
     ZoomSlider,
@@ -18,10 +17,7 @@ class CharEditorUi:
     __min_zoom__ = 1
 
     def setupUi(self, parent: QWidget) -> None:
-        self.editorScene = CustomGraphicScene(
-            parent, options=CustomGraphicSceneOptions(1024, 1024)
-        )
-
+        self.editorScene = CustomGraphicScene(1024, 1024, parent)
         self.editorView = CustomGraphicView(
             self.editorScene,
             parent,

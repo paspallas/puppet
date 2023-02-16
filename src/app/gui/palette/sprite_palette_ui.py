@@ -14,7 +14,6 @@ from ...resources import resources
 from ..viewcontrol import PanControl, ZoomControl
 from ..widget import (
     CustomGraphicScene,
-    CustomGraphicSceneOptions,
     CustomGraphicView,
     CustomGraphicViewOptions,
 )
@@ -22,10 +21,7 @@ from ..widget import (
 
 class SpritePaletteUi:
     def setupUi(self, parent: QWidget):
-        self.spritePalScene = CustomGraphicScene(
-            parent=parent, options=CustomGraphicSceneOptions(200, 200)
-        )
-
+        self.spritePalScene = CustomGraphicScene(200, 200, parent)
         self.spritePalView = CustomGraphicView(
             self.spritePalScene,
             parent,

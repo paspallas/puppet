@@ -1,6 +1,6 @@
-from typing import NamedTuple
+import typing
 
-from PyQt5.QtCore import Qt, pyqtSignal, pyqtSlot
+from PyQt5.QtCore import QObject, Qt, pyqtSignal, pyqtSlot
 from PyQt5.QtWidgets import (
     QGraphicsItem,
     QGraphicsScene,
@@ -9,21 +9,16 @@ from PyQt5.QtWidgets import (
 )
 
 
-class CustomGraphicSceneOptions(NamedTuple):
-    width: int
-    height: int
-
-
 class CustomGraphicScene(QGraphicsScene):
     sigSelectedItem = pyqtSignal(QGraphicsItem)
-    sigNoSelectedItem = pyqtSignal()
+    sigNoItemSelected = pyqtSignal()
 
-    def __init__(self, *args, options: CustomGraphicSceneOptions, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __init__(
+        self, width: float, height: float, parent: typing.Optional[QObject] = None
+    ) -> None:
+        super().__init__(parent)
 
-        self.setSceneRect(
-            -options.width // 2, -options.height // 2, options.width, options.height
-        )
+        self.setSceneRect(-width // 2, -height // 2, width, height)
 
         self.selectionChanged.connect(self._onSelectionChanged)
 
@@ -41,7 +36,7 @@ class CustomGraphicScene(QGraphicsScene):
     def _onSelectionChanged(self) -> None:
         item = self.mouseGrabberItem()
         if item is None:
-            self.sigNoSelectedItem.emit()
+            self.sigNoItemSelected.emit()
 
     def mousePressEvent(self, e: QGraphicsSceneMouseEvent) -> None:
         super().mousePressEvent(e)
