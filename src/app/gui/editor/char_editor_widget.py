@@ -22,6 +22,9 @@ class CharEditorWidget(QWidget):
         # self._ui.editorScene.sigSelectedItem.connect(
         #     self._ui.spriteListBox.setCurrentItem
         # )
+        self._ui.editorScene.sigNoItemSelected.connect(
+            self._ui.spriteListBox.clearSelection
+        )
         self._ui.spriteListBox.sigEnabledChanged.connect(
             self._ui.spriteProperty.setEnabled
         )

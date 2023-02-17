@@ -8,6 +8,7 @@ from PyQt5.QtWidgets import (
     QGraphicsItem,
     QGraphicsRectItem,
     QGraphicsObject,
+    QGraphicsDropShadowEffect,
     QStyleOptionGraphicsItem,
     QWidget,
     QGraphicsSceneMouseEvent,
@@ -26,6 +27,8 @@ class KeyFrame(QGraphicsObject):
         self._rect = QRectF(x, y, w, h)
         # self.setX(x)
         # self.setY(y)
+
+        self.setGraphicsEffect(QGraphicsDropShadowEffect(self))
 
         flags = (
             QGraphicsItem.ItemIsSelectable
@@ -138,8 +141,8 @@ class TimeLineView(QGraphicsView):
         self.setTransformationAnchor(QGraphicsView.AnchorUnderMouse)
         self.setResizeAnchor(QGraphicsView.AnchorViewCenter)
         self.centerOn(0, 0)
-        self.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
-        self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        self.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOn)
+        self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOn)
 
         self.scalings = 0
 
@@ -174,6 +177,7 @@ class TimeLineView(QGraphicsView):
 
 if __name__ == "__main__":
     import sys
+    from qtmodern import styles
     from PyQt5.QtWidgets import QApplication, QMainWindow
 
     class Window(QMainWindow):
@@ -198,5 +202,6 @@ if __name__ == "__main__":
             self.scene.addKeyFrame(key_2)
 
     app = QApplication([])
+    styles.dark(app)
     w = Window()
     sys.exit(app.exec_())

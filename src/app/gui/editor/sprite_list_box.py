@@ -2,12 +2,13 @@ from PyQt5.QtCore import (
     QAbstractItemModel,
     QModelIndex,
     QObject,
+    QItemSelectionModel,
     Qt,
     QVariant,
     pyqtSignal,
     pyqtSlot,
 )
-from PyQt5.QtGui import QPaintEvent
+from PyQt5.QtGui import QPaintEvent, QMouseEvent, QWheelEvent
 from PyQt5.QtWidgets import QAbstractItemView, QGraphicsItem, QWidget
 
 from ..delegate.icon_delegate import IconCheckDelegate, IconType
@@ -85,6 +86,10 @@ class SpriteListBox(QWidget):
             self._ui.list.model().createIndex(row, 0, QModelIndex())
         )
 
+    @pyqtSlot()
+    def clearSelection(self) -> None:
+        self._ui.list.clearSelection()
+
     @pyqtSlot(int)
     def onListSizeChanged(self, size: int) -> None:
         if size > 0:
@@ -103,3 +108,9 @@ class SpriteListBox(QWidget):
     def _upDownButtonsState(self, enabled: bool) -> None:
         self._ui.upBtn.setEnabled(enabled)
         self._ui.downBtn.setEnabled(enabled)
+
+    def mousePressEvent(self, e: QMouseEvent) -> None:
+        e.accept()
+
+    def wheelEvent(self, e: QWheelEvent) -> None:
+        e.accept()
