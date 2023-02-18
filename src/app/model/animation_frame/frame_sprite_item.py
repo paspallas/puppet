@@ -129,9 +129,6 @@ class FrameSpriteItem(QGraphicsPixmapItem, Publisher):
         elif e.key() == Qt.Key_Space:
             self._overlay.enabled = not self._overlay.enabled
 
-        elif e.key() == Qt.Key_Z:
-            self.scene().views()[0].fitInView(self)
-
         else:
             super().keyPressEvent(e)
 
