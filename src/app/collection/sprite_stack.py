@@ -72,7 +72,7 @@ class SpriteStack:
         return len(self._data) - 1 - model_index
 
     def modelIndex(self, sprite_index: int) -> int:
-        return self.spriteIndex(sprite_index)
+        return len(self._data) - 1 - sprite_index
 
     def _updateZindex(self) -> None:
         for i, sprite in enumerate(self._data):

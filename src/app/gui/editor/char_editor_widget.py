@@ -50,9 +50,6 @@ class CharEditorWidget(QWidget):
 
         self._ui.spriteProperty.setModel(self._document._currentFrameModel)
         self._ui.spriteListBox.setModel(self._document._currentFrameModel)
-        self._document._currentFrameModel.sigModelDataChanged.connect(
-            self._ui.spriteProperty.onModelDataChanged
-        )
 
     @pyqtSlot(str, bool)
     def sltSetTool(self, tool_cls: str, activate: bool) -> None:

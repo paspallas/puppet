@@ -13,7 +13,7 @@ from .frame_sprite import FrameSprite
 class AnimationFrame(QObject):
     """A Collection of framesprites that compose an animation frame"""
 
-    sigFrameDataChanged = pyqtSignal(int, int)
+    sigFrameDataChanged = pyqtSignal(list)
     sigFrameLayoutAboutToChange = pyqtSignal()
     sigFrameLayoutChanged = pyqtSignal()
     sigAddedItem = pyqtSignal()
@@ -114,10 +114,13 @@ class AnimationFrame(QObject):
 
     @pyqtSlot(list)
     def spriteDataChanged(self, indexes: typing.List[typing.Tuple[int, int]]) -> None:
-        for sprite_index in indexes:
-            self.sigFrameDataChanged.emit(
-                self._sprites.modelIndex(sprite_index[0]), sprite_index[1]
-            )
+        modelIndexes = []
+
+        # TODO make this more efficient
+        for sprite_index, data_index in indexes:
+            modelIndexes.append((self._sprites.modelIndex(sprite_index), data_index))
+
+        self.sigFrameDataChanged.emit(modelIndexes)
 
     @pyqtSlot(QGraphicsItem)
     def addGraphicItem(self, item: QGraphicsItem) -> None:

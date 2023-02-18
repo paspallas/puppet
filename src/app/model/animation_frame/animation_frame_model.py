@@ -18,8 +18,6 @@ from .frame_sprite import Index
 class AnimationFrameModel(QAbstractItemModel):
     """Interface between the view and the current editable animation frame"""
 
-    sigModelDataChanged = pyqtSignal(int)
-
     def __init__(self):
         super().__init__()
 
@@ -198,15 +196,12 @@ class AnimationFrameModel(QAbstractItemModel):
 
         return False
 
-    @pyqtSlot(int, int)
-    def dataSourceChanged(self, row: int, column: int) -> None:
-        """Update the model and notify interested views"""
-        index = self.index(row, column, QModelIndex())
-
-        self.dataChanged.emit(
-            index,
-            index,
-            [Qt.ItemDataRole.DisplayRole, Qt.ItemDataRole.EditRole],
-        )
-
-        self.sigModelDataChanged.emit(index.row())
+    @pyqtSlot(list)
+    def dataSourceChanged(
+        self, modelIndexes: typing.List[typing.Tuple[int, int]]
+    ) -> None:
+        for row, col in modelIndexes:
+            index = self.index(row, col, QModelIndex())
+            self.dataChanged.emit(
+                index, index, [Qt.ItemDataRole.DisplayRole, Qt.ItemDataRole.EditRole]
+            )

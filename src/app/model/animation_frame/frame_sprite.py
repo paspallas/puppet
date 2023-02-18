@@ -79,7 +79,6 @@ class FrameSprite(QObject):
 
     def connected(self) -> None:
         self._item.subscribe(ItemEvent.zChanged, self.onItemZchanged)
-        self._item.subscribe(ItemEvent.offsetChanged, self.onOffsetChanged)
         self._item.subscribe(ItemEvent.posChanged, self.onPosChanged)
         self._item.subscribe(ItemEvent.hFlipChanged, self.onHflipChanged)
         self._item.subscribe(ItemEvent.vFlipChanged, self.onVflipChanged)
@@ -121,6 +120,7 @@ class FrameSprite(QObject):
     def select(self) -> None:
         self._item.scene().clearSelection()
         self._item.setSelected(True)
+        self._item.scene().setFocusItem(self._item, Qt.OtherFocusReason)
         self._item.update()
 
     @staticmethod
@@ -164,7 +164,9 @@ class FrameSprite(QObject):
     def x(self, value: float) -> None:
         if self._x != value:
             self._x = value
+            self._item.setNotify(False)
             self._item.setX(value)
+            self._item.setNotify(True)
 
     @property
     def y(self) -> float:
@@ -174,7 +176,9 @@ class FrameSprite(QObject):
     def y(self, value: float) -> None:
         if self._y != value:
             self._y = value
+            self._item.setNotify(False)
             self._item.setY(value)
+            self._item.setNotify(True)
 
     @property
     def alpha(self) -> int:
@@ -219,20 +223,14 @@ class FrameSprite(QObject):
             self._item.setZValue(value)
 
     def onItemZchanged(self, z: int) -> None:
-        if z > self._z:
-            self.sigIncreaseZ.emit(self._z)
+        if z > self.z:
+            self.sigIncreaseZ.emit(self.z)
         else:
-            self.sigDecreaseZ.emit(self._z)
+            self.sigDecreaseZ.emit(self.z)
 
     def onPosChanged(self, x: float, y: float) -> None:
-        self.x = x
-        self.y = y
-
-        self.sigInternalDataChanged.emit(self.changed(Index.X, Index.Y))
-
-    def onOffsetChanged(self, x: float, y: float) -> None:
-        self.x += x
-        self.y += y
+        self._x = x
+        self._y = y
 
         self.sigInternalDataChanged.emit(self.changed(Index.X, Index.Y))
 

@@ -22,12 +22,11 @@ from .overlay import Overlay
 
 class ItemEvent(IntEnum):
     posChanged = 0
-    offsetChanged = 1
-    zChanged = 2
-    vFlipChanged = 3
-    hFlipChanged = 4
-    enableHint = 5
-    disableHint = 6
+    zChanged = 1
+    vFlipChanged = 2
+    hFlipChanged = 3
+    enableHint = 4
+    disableHint = 5
 
 
 class FrameSpriteItem(QGraphicsPixmapItem, Publisher):
@@ -97,6 +96,9 @@ class FrameSpriteItem(QGraphicsPixmapItem, Publisher):
         self.scene().removeItem(self._overlay)
 
     def keyPressEvent(self, e: QKeyEvent) -> None:
+        if e.isAutoRepeat():
+            return super().keyPressEvent(e)
+
         if e.key() == Qt.Key.Key_R:
             z = int(self.zValue()) + 1
             self.publish(ItemEvent.zChanged, z)
@@ -112,18 +114,18 @@ class FrameSpriteItem(QGraphicsPixmapItem, Publisher):
             self.publish(ItemEvent.hFlipChanged)
 
         elif e.key() in [Qt.Key_Left, Qt.Key_A]:
-            self.publish(ItemEvent.offsetChanged, -1, 0)
+            self.setOffset(-1, 0)
 
         elif e.key() in [Qt.Key_Right, Qt.Key_D]:
-            self.publish(ItemEvent.offsetChanged, 1, 0)
+            self.setOffset(1, 0)
 
         elif e.key() in [Qt.Key_Up, Qt.Key_W]:
-            self.publish(ItemEvent.offsetChanged, 0, -1)
+            self.setOffset(0, -1)
 
         elif e.key() in [Qt.Key_Down, Qt.Key_S]:
-            self.publish(ItemEvent.offsetChanged, 0, 1)
+            self.setOffset(0, 1)
 
-        elif e.key() == Qt.Key_T and not e.isAutoRepeat():
+        elif e.key() == Qt.Key_T:
             self.publish(ItemEvent.enableHint)
 
         elif e.key() == Qt.Key_Space:
@@ -133,11 +135,18 @@ class FrameSpriteItem(QGraphicsPixmapItem, Publisher):
             super().keyPressEvent(e)
 
     def keyReleaseEvent(self, e: QKeyEvent) -> None:
-        if e.key() == Qt.Key_T and not e.isAutoRepeat():
+        if e.isAutoRepeat():
+            return super().keyReleaseEvent(e)
+
+        if e.key() == Qt.Key_T:
             self.publish(ItemEvent.disableHint)
 
         else:
             super().keyReleaseEvent(e)
+
+    def setOffset(self, x: float, y: float) -> None:
+        self.setX(self.x() + x)
+        self.setY(self.y() + y)
 
     def contextMenuEvent(self, e: QGraphicsSceneContextMenuEvent) -> None:
         if self.isSelected():
@@ -166,10 +175,9 @@ class FrameSpriteItem(QGraphicsPixmapItem, Publisher):
         elif change == QGraphicsItem.ItemSelectedChange and self.scene():
             self._overlay.selected = value
 
-        return super().itemChange(change, value)
+        return value
 
     def flipChanged(self) -> None:
-        # Apply the transformation to the overlay
         self._overlay.setTransform(self.transform())
 
     def paint(

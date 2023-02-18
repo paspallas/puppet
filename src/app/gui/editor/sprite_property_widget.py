@@ -1,7 +1,8 @@
 from PyQt5.QtCore import QAbstractItemModel, QModelIndex, Qt, QVariant, pyqtSlot
-from PyQt5.QtGui import QPaintEvent
+from PyQt5.QtGui import QMouseEvent, QPaintEvent, QWheelEvent
 from PyQt5.QtWidgets import QDataWidgetMapper, QWidget
 
+from ...model.animation_frame import AnimationFrameModel
 from .. import style
 from .sprite_property_ui import SpritePropertyUi
 
@@ -16,8 +17,8 @@ class SpritePropertyWidget(QWidget):
         self._ui = SpritePropertyUi()
         self._ui.setupUi(self)
         self._mapper = QDataWidgetMapper(self)
-        self._model: QAbstractItemModel = None
-        self.setEnabled(False)
+        self._model: AnimationFrameModel = None
+        # self.setEnabled(False)
 
     def setModel(self, model) -> None:
         self._model = model
@@ -48,13 +49,16 @@ class SpritePropertyWidget(QWidget):
     def onSelectedItemChanged(self, index: QModelIndex) -> None:
         self._mapper.setCurrentModelIndex(index)
 
-    @pyqtSlot(int)
-    def onModelDataChanged(self, index: int) -> None:
-        self._mapper.setCurrentIndex(index)
-
     @pyqtSlot(bool)
     def setEnabled(self, enabled: bool) -> None:
-        super().setEnabled(False)
+        super().setEnabled(enabled)
 
     def paintEvent(self, e: QPaintEvent) -> None:
         style.paintWidget(self)
+
+    # We don't want the scene to receive mouse events
+    def mousePressEvent(self, e: QMouseEvent) -> None:
+        e.accept()
+
+    def wheelEvent(self, e: QWheelEvent) -> None:
+        e.accept()
