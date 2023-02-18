@@ -148,7 +148,7 @@ class FrameSpriteItem(QGraphicsPixmapItem, Publisher):
             menu.exec()
 
     def isCentered(self) -> bool:
-        return self.sceneBoundingRect().center() == self.scene().sceneRect().center()
+        return self.sceneBoundingRect().center() == QPointF(0, 0)
 
     def boundingRect(self) -> QRectF:
         return super().boundingRect().adjusted(0.5, 0.5, -0.5, -0.5)
