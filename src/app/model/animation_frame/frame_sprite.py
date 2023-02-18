@@ -119,8 +119,9 @@ class FrameSprite(QObject):
 
     def select(self) -> None:
         self._item.scene().clearSelection()
+        self._item.setFocus()
+        self._item.scene().views()[0].setFocus()
         self._item.setSelected(True)
-        self._item.scene().setFocusItem(self._item, Qt.OtherFocusReason)
         self._item.update()
 
     @staticmethod
