@@ -1,10 +1,10 @@
 import typing
 from enum import IntEnum
 
+import grid
 from PyQt5.QtCore import QPointF, QRectF, Qt, pyqtSignal
-from PyQt5.QtGui import QColor, QPainter
+from PyQt5.QtGui import QColor, QPainter, QPen
 from PyQt5.QtWidgets import (
-    QGraphicsDropShadowEffect,
     QGraphicsItem,
     QGraphicsObject,
     QGraphicsSceneHoverEvent,
@@ -23,8 +23,7 @@ class KeyFrameItem(QGraphicsObject):
     __selectedColor__ = QColor(Qt.cyan)
     __normalColor__ = QColor(Qt.magenta)
     __controlRectWidth__ = 2
-    __controlRectHeight__ = 20
-    __step__ = 10
+    __controlRectHeight__ = grid.__height__
 
     sigTrackDurationChanged = pyqtSignal(float)
 
@@ -41,7 +40,6 @@ class KeyFrameItem(QGraphicsObject):
         )
 
         self.setFlags(flags)
-        self.setGraphicsEffect(QGraphicsDropShadowEffect(self))
         self.setAcceptHoverEvents(True)
 
         self._leftControlRect = QRectF(
@@ -72,14 +70,11 @@ class KeyFrameItem(QGraphicsObject):
 
         return False
 
-    def alignToGrid(self, value: float) -> float:
-        return round(value / self.__step__) * self.__step__
-
     def itemChange(
         self, change: QGraphicsItem.GraphicsItemChange, value: typing.Any
     ) -> typing.Any:
         if change == QGraphicsItem.ItemPositionChange and self.scene():
-            return QPointF(self.alignToGrid(value.x()), self.pos().y())
+            return QPointF(grid.alignToGrid(value.x()), self.pos().y())
 
         return super().itemChange(change, value)
 
@@ -87,34 +82,36 @@ class KeyFrameItem(QGraphicsObject):
         self.prepareGeometryChange()
 
         delta = pos.x() - self._resizeOrigin
-        if abs(delta) < self.__step__:
+        if abs(delta) < grid.__width__:
             return
 
         r = QRectF(self._rect)
 
         if self._controlRect == Rect.Left:
             if delta > 0:
-                r.adjust(self.__step__, 0, 0, 0)
+                r.adjust(grid.__width__, 0, 0, 0)
 
-                if r.width() >= self.__step__:
+                if r.width() >= grid.__width__:
                     self._rect = r
-                    self._leftControlRect.adjust(self.__step__, 0, self.__step__, 0)
+                    self._leftControlRect.adjust(grid.__width__, 0, grid.__width__, 0)
                     self.sigTrackDurationChanged.emit(self._rect.width())
             elif delta < 0:
-                self._rect.adjust(-self.__step__, 0, 0, 0)
-                self._leftControlRect.adjust(-self.__step__, 0, -self.__step__, 0)
+                self._rect.adjust(-grid.__width__, 0, 0, 0)
+                self._leftControlRect.adjust(-grid.__width__, 0, -grid.__width__, 0)
                 self.sigTrackDurationChanged.emit(self._rect.width())
         elif self._controlRect == Rect.Right:
             if delta > 0:
-                self._rect.adjust(0, 0, self.__step__, 0)
-                self._rightControlRect.adjust(self.__step__, 0, self.__step__, 0)
+                self._rect.adjust(0, 0, grid.__width__, 0)
+                self._rightControlRect.adjust(grid.__width__, 0, grid.__width__, 0)
                 self.sigTrackDurationChanged.emit(self._rect.width())
             elif delta < 0:
-                r.adjust(0, 0, -self.__step__, 0)
+                r.adjust(0, 0, -grid.__width__, 0)
 
-                if r.width() >= self.__step__:
+                if r.width() >= grid.__width__:
                     self._rect = r
-                    self._rightControlRect.adjust(-self.__step__, 0, -self.__step__, 0)
+                    self._rightControlRect.adjust(
+                        -grid.__width__, 0, -grid.__width__, 0
+                    )
                     self.sigTrackDurationChanged.emit(self._rect.width())
 
         self._resizeOrigin = pos.x()
@@ -151,6 +148,9 @@ class KeyFrameItem(QGraphicsObject):
         self, painter: QPainter, option: QStyleOptionGraphicsItem, widget: QWidget
     ) -> None:
         painter.setRenderHint(QPainter.Antialiasing)
+        pen = QPen(Qt.black, 0, Qt.SolidLine)
+        pen.setCosmetic(True)
+        painter.setPen(pen)
 
         if self.isSelected():
             painter.setBrush(self.__selectedColor__)

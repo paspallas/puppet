@@ -1,6 +1,7 @@
 from enum import IntEnum
 import typing
 
+import grid
 from PyQt5.QtCore import Qt, QRectF, QPointF, QPoint, pyqtSignal
 from PyQt5.QtWidgets import (
     QGraphicsView,
@@ -18,6 +19,7 @@ from PyQt5.QtGui import QColor, QBrush, QPainter, QPen, QWheelEvent
 
 
 from key_frame_item import KeyFrameItem
+from play_head_item import PlayHeadItem
 
 
 class TimeLineScene(QGraphicsScene):
@@ -36,7 +38,7 @@ class TimeLineView(QGraphicsView):
         self.setContentsMargins(10, 10, 10, 10)
 
         self.setRenderHint(QPainter.Antialiasing)
-        self.setViewportUpdateMode(QGraphicsView.SmartViewportUpdate)
+        self.setViewportUpdateMode(QGraphicsView.FullViewportUpdate)
         self.setTransformationAnchor(QGraphicsView.AnchorUnderMouse)
         self.setResizeAnchor(QGraphicsView.AnchorViewCenter)
         self.centerOn(0, 0)
@@ -51,15 +53,12 @@ class TimeLineView(QGraphicsView):
         pen.setCosmetic(True)
         painter.setPen(pen)
 
-        xSize = 10
-        ySize = 20
+        left = int(rect.left() - rect.left() % grid.__width__)
+        top = int(rect.top() - rect.top() % grid.__height__)
 
-        left = int(rect.left() - rect.left() % xSize)
-        top = int(rect.top() - rect.top() % ySize)
-
-        for y in range(top, int(rect.bottom()), ySize):
-            for x in range(left, int(rect.right()), xSize):
-                painter.drawRect(QRectF(x, y, xSize, ySize))
+        for y in range(top, int(rect.bottom()), grid.__height__):
+            for x in range(left, int(rect.right()), grid.__width__):
+                painter.drawRect(QRectF(x, y, grid.__width__, grid.__height__))
 
     def wheelEvent(self, e: QWheelEvent) -> None:
         if e.modifiers() & Qt.Modifier.CTRL:
@@ -96,10 +95,12 @@ if __name__ == "__main__":
         def populate(self) -> None:
             key_1 = KeyFrameItem(10, 60, 10, 20)
             key_2 = KeyFrameItem(160, 60, 150, 20)
+            head = PlayHeadItem(10)
             key_2.sigTrackDurationChanged.connect(self.trackDuration)
 
             self.scene.addKeyFrame(key_1)
             self.scene.addKeyFrame(key_2)
+            self.scene.addItem(head)
 
         def trackDuration(self, value: float) -> None:
             print(f"track {value // 10} frames long")
