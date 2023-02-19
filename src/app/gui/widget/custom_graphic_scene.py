@@ -19,6 +19,7 @@ class CustomGraphicScene(QGraphicsScene):
         super().__init__(parent)
 
         self.setSceneRect(-width // 2, -height // 2, width, height)
+        self.focusItemChanged.connect(self._onFocusItemChanged)
 
     @pyqtSlot(list)
     def addItems(self, items: typing.List[QGraphicsItem]) -> None:
@@ -30,13 +31,11 @@ class CustomGraphicScene(QGraphicsScene):
         for item in items:
             self.removeItem(item)
 
-    def mousePressEvent(self, e: QGraphicsSceneMouseEvent) -> None:
-        super().mousePressEvent(e)
-
-        if e.buttons() & Qt.LeftButton:
-            item = self.itemAt(e.scenePos(), self.views()[0].transform())
-            if item:
-                if item.flags() & QGraphicsItem.ItemIsSelectable:
-                    self.sigSelectedItem.emit(item)
-            else:
-                self.sigNoItemSelected.emit()
+    @pyqtSlot(QGraphicsItem, QGraphicsItem, Qt.FocusReason)
+    def _onFocusItemChanged(
+        self, new: QGraphicsItem, old: QGraphicsItem, reason: Qt.FocusReason
+    ) -> None:
+        if new is None:
+            self.sigNoItemSelected.emit()
+        else:
+            self.sigSelectedItem.emit(new)
