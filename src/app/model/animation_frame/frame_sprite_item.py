@@ -99,7 +99,7 @@ class FrameSpriteItem(QGraphicsPixmapItem, Publisher):
         if e.isAutoRepeat():
             return
 
-        if e.key() == Qt.Key.Key_R:
+        if e.key() == Qt.Key_R:
             z = int(self.zValue()) + 1
             self.publish(ItemEvent.zChanged, z)
 

@@ -4,7 +4,7 @@ PY 	:= python
 
 .PHONY:
 run:
-	@$(PY) src/main.py
+	@$(PY) src
 
 .PHONY:
 app:

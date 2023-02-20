@@ -14,12 +14,14 @@ from PyQt5.QtWidgets import (
     QWidget,
     QGraphicsSceneMouseEvent,
     QGraphicsSceneHoverEvent,
+    qApp,
 )
-from PyQt5.QtGui import QColor, QBrush, QPainter, QPen, QWheelEvent
+from PyQt5.QtGui import QColor, QBrush, QPainter, QPen, QWheelEvent, QFontMetrics
 
-
+from grid import Grid
 from key_frame_item import KeyFrameItem
 from play_head_item import PlayHeadItem
+from time_ruler import TimeRuler
 
 
 class TimeLineScene(QGraphicsScene):
@@ -35,7 +37,7 @@ class TimeLineView(QGraphicsView):
         super().__init__(scene, parent)
 
         self.setMouseTracking(True)
-        self.setContentsMargins(10, 10, 10, 10)
+        self.setContentsMargins(0, 0, 0, 0)
 
         self.setRenderHint(QPainter.Antialiasing)
         self.setViewportUpdateMode(QGraphicsView.FullViewportUpdate)
@@ -45,20 +47,24 @@ class TimeLineView(QGraphicsView):
         self.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOn)
         self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOn)
 
+        self._playHead = PlayHeadItem(0)
+        self.scene().addItem(self._playHead)
+
+        self._timeRuler = TimeRuler()
+        self._grid = Grid()
+        self._grid.computeGrid(self.scene().sceneRect())
         self.scalings = 0
 
+        self._makeConnections()
+
+    def _makeConnections(self) -> None:
+        self._playHead.sigPlayHeadPositionChange.connect(
+            self._timeRuler.onPlayBackPositionChange
+        )
+
     def drawBackground(self, painter: QPainter, rect: QRectF) -> None:
-        painter.setRenderHint(QPainter.Antialiasing)
-        pen = QPen(QColor(30, 30, 30), 0, Qt.SolidLine, Qt.SquareCap)
-        pen.setCosmetic(True)
-        painter.setPen(pen)
-
-        left = int(rect.left() - rect.left() % grid.__width__)
-        top = int(rect.top() - rect.top() % grid.__height__)
-
-        for y in range(top, int(rect.bottom()), grid.__height__):
-            for x in range(left, int(rect.right()), grid.__width__):
-                painter.drawRect(QRectF(x, y, grid.__width__, grid.__height__))
+        self._grid.paint(painter)
+        self._timeRuler.paint(painter, rect, self.scene().width(), self.font())
 
     def wheelEvent(self, e: QWheelEvent) -> None:
         if e.modifiers() & Qt.Modifier.CTRL:
@@ -71,41 +77,3 @@ class TimeLineView(QGraphicsView):
 
             factor = 1.0 + (self.scalings / 160.0)
             self.scale(factor, 1.0)
-
-
-if __name__ == "__main__":
-    import sys
-    from qtmodern import styles
-    from PyQt5.QtWidgets import QApplication, QMainWindow
-
-    class Window(QMainWindow):
-        def __init__(self) -> None:
-            super().__init__()
-
-            self.setWindowTitle("Timeline")
-
-            self.scene = TimeLineScene(self)
-            self.view = TimeLineView(self.scene, self)
-
-            self.setCentralWidget(self.view)
-            self.show()
-
-            self.populate()
-
-        def populate(self) -> None:
-            key_1 = KeyFrameItem(10, 60, 10, 20)
-            key_2 = KeyFrameItem(160, 60, 150, 20)
-            head = PlayHeadItem(10)
-            key_2.sigTrackDurationChanged.connect(self.trackDuration)
-
-            self.scene.addKeyFrame(key_1)
-            self.scene.addKeyFrame(key_2)
-            self.scene.addItem(head)
-
-        def trackDuration(self, value: float) -> None:
-            print(f"track {value // 10} frames long")
-
-    app = QApplication([])
-    styles.dark(app)
-    w = Window()
-    sys.exit(app.exec_())

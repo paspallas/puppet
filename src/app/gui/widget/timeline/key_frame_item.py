@@ -74,7 +74,7 @@ class KeyFrameItem(QGraphicsObject):
         self, change: QGraphicsItem.GraphicsItemChange, value: typing.Any
     ) -> typing.Any:
         if change == QGraphicsItem.ItemPositionChange and self.scene():
-            return QPointF(grid.alignToGrid(value.x()), self.pos().y())
+            return QPointF(grid.Grid.alignTo(value.x()), self.pos().y())
 
         return super().itemChange(change, value)
 
