@@ -77,7 +77,7 @@ class PlayHeadItem(QGraphicsObject):
         painter.drawLine(line)
         pen.setColor(self.__shadow__)
         painter.setPen(pen)
-        painter.drawRoundedRect(self._rect, 2, 2, Qt.AbsoluteSize)
+        painter.drawRoundedRect(self._rect, 1, 1, Qt.AbsoluteSize)
 
     @pyqtSlot(int)
     def setPlaybackPosition(frame: int) -> None:

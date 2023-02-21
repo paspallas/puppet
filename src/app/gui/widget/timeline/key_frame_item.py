@@ -40,6 +40,8 @@ class KeyFrameItem(QGraphicsObject):
         )
 
         self.setFlags(flags)
+        self.setCacheMode(QGraphicsItem.DeviceCoordinateCache)
+        self.setZValue(-1)
         self.setAcceptHoverEvents(True)
 
         self._leftControlRect = QRectF(
@@ -79,13 +81,12 @@ class KeyFrameItem(QGraphicsObject):
         return super().itemChange(change, value)
 
     def changeItemWidth(self, pos: QPointF) -> None:
-        self.prepareGeometryChange()
-
         delta = pos.x() - self._resizeOrigin
         if abs(delta) < grid.__width__:
             return
 
         r = QRectF(self._rect)
+        self.prepareGeometryChange()
 
         if self._controlRect == Rect.Left:
             if delta > 0:
@@ -99,6 +100,7 @@ class KeyFrameItem(QGraphicsObject):
                 self._rect.adjust(-grid.__width__, 0, 0, 0)
                 self._leftControlRect.adjust(-grid.__width__, 0, -grid.__width__, 0)
                 self.sigTrackDurationChanged.emit(self._rect.width())
+
         elif self._controlRect == Rect.Right:
             if delta > 0:
                 self._rect.adjust(0, 0, grid.__width__, 0)
@@ -117,8 +119,11 @@ class KeyFrameItem(QGraphicsObject):
         self._resizeOrigin = pos.x()
 
     def hoverMoveEvent(self, e: QGraphicsSceneHoverEvent) -> None:
-        if self.insideControlRects(e.pos()):
-            self.setCursor(Qt.SizeHorCursor)
+        if self.isSelected():
+            if self.insideControlRects(e.pos()):
+                self.setCursor(Qt.SizeHorCursor)
+            else:
+                self.setCursor(Qt.ArrowCursor)
         else:
             self.setCursor(Qt.ArrowCursor)
 
@@ -133,7 +138,7 @@ class KeyFrameItem(QGraphicsObject):
 
     def mousePressEvent(self, e: QGraphicsSceneMouseEvent) -> None:
         if e.buttons() == Qt.LeftButton:
-            if self.insideControlRects(e.pos()):
+            if self.isSelected() and self.insideControlRects(e.pos()):
                 self._isResizing = True
                 self._resizeOrigin = e.pos().x()
 
