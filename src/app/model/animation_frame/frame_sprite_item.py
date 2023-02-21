@@ -48,6 +48,7 @@ class FrameSpriteItem(QGraphicsPixmapItem, Publisher):
             | QGraphicsItem.ItemSendsScenePositionChanges
         )
 
+        self.setCacheMode(QGraphicsItem.DeviceCoordinateCache)
         self.computeCenterIndicator()
 
         # make the item selectable regardless of transparency level

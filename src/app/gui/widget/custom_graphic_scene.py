@@ -19,6 +19,7 @@ class CustomGraphicScene(QGraphicsScene):
         super().__init__(parent)
 
         self.setSceneRect(-width // 2, -height // 2, width, height)
+        self.setItemIndexMethod(QGraphicsScene.NoIndex)
         self.focusItemChanged.connect(self._onFocusItemChanged)
 
     @pyqtSlot(list)

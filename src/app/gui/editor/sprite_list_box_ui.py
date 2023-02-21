@@ -22,6 +22,7 @@ class SpriteListBoxUi:
         self.list.setStyleSheet("QTreeView::item:hover{background-color:#4A91D9;}")
         self.list.setRootIsDecorated(False)
         self.list.setDragEnabled(True)
+        self.list.setUniformRowHeights(True)
         self.list.setAcceptDrops(True)
         self.list.setDragDropOverwriteMode(False)
         self.list.setDragDropMode(QAbstractItemView.DragDrop)

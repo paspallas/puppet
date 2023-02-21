@@ -12,6 +12,7 @@ class Overlay(QGraphicsItem):
         super().__init__()
 
         self.setFlag(QGraphicsItem.ItemIsSelectable, False)
+        self.setFlag(QGraphicsItem.ItemIgnoresParentOpacity, True)
         self.setAcceptedMouseButtons(Qt.NoButton)
 
         self._enabled = False

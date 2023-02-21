@@ -42,8 +42,8 @@ class CustomGraphicView(QGraphicsView):
         self.setResizeAnchor(QGraphicsView.AnchorViewCenter)
         self.setTransformationAnchor(QGraphicsView.NoAnchor)
         self.centerOn(0, 0)
-
         self.setViewportUpdateMode(QGraphicsView.FullViewportUpdate)
+        self.setOptimizationFlag(QGraphicsView.DontAdjustForAntialiasing)
         self.setCacheMode(QGraphicsView.CacheBackground)
         self.setRenderHints(QPainter.Antialiasing)
         self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
