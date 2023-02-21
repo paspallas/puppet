@@ -131,23 +131,25 @@ class KeyFrameItem(QGraphicsObject):
 
         super().hoverMoveEvent(e)
 
-    def mouseMoveEvent(self, e: QGraphicsSceneMouseEvent) -> None:
-        if self._isResizing:
-            self.changeItemWidth(e.pos())
-
-        else:
-            super().mouseMoveEvent(e)
-
     def mousePressEvent(self, e: QGraphicsSceneMouseEvent) -> None:
         if e.buttons() == Qt.LeftButton:
             if self.isSelected() and self.insideControlRects(e.pos()):
                 self._isResizing = True
+                self.setOpacity(0.3)
                 self._resizeOrigin = e.pos().x()
 
         super().mousePressEvent(e)
 
+    def mouseMoveEvent(self, e: QGraphicsSceneMouseEvent) -> None:
+        if self._isResizing:
+            self.changeItemWidth(e.pos())
+        else:
+            super().mouseMoveEvent(e)
+
     def mouseReleaseEvent(self, e: QGraphicsSceneMouseEvent) -> None:
-        self._isResizing = False
+        if self._isResizing:
+            self._isResizing = False
+            self.setOpacity(1)
 
         super().mouseReleaseEvent(e)
 

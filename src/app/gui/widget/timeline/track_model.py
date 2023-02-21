@@ -1,4 +1,3 @@
-import pickle
 import typing
 
 from PyQt5.QtCore import (
@@ -22,6 +21,17 @@ class TrackModel(QAbstractItemModel):
         super().__init__()
 
         self._dataSource: Track = None
+
+        self.rootItem = Track([], None)
+        for c in ["head", "torso", "front_leg"]:
+            child = Track([c, ""], self.rootItem)
+            self.rootItem.appendChild(child)
+
+        parent = self.rootItem.childItems[1]
+        translation = Track(["Translation", 10], parent)
+        rotation = Track(["Rotation", 60], parent)
+        parent.appendChild(translation)
+        parent.appendChild(rotation)
 
     # def setDataSource(self, source: AnimationFrame) -> None:
     #     self.beginResetModel()
@@ -47,8 +57,8 @@ class TrackModel(QAbstractItemModel):
             return QVariant()
 
         if role in [Qt.ItemDataRole.DisplayRole, Qt.ItemDataRole.EditRole]:
-            return "Test Track"
-            return QVariant(self._dataSource.get(index.row(), index.column()))
+            item = index.internalPointer()
+            return item.data[index.column()]
 
         if role == Qt.ItemDataRole.SizeHintRole:
             return QSize(0, 20)
@@ -93,22 +103,42 @@ class TrackModel(QAbstractItemModel):
         return flags
 
     def index(self, row: int, column: int, parent: QModelIndex = ...) -> QModelIndex:
-        if row < 0 or row >= 1:
+        #! for different column counts invalidate the model index when needed
+        if not self.hasIndex(row, column, parent):
             return QModelIndex()
-        return self.createIndex(row, column)
+
+        if not parent.isValid():
+            parentItem = self.rootItem
+        else:
+            parentItem = parent.internalPointer()
+
+        childItem = parentItem.childItems[row]
+        if childItem:
+            return self.createIndex(row, column, childItem)
+        return QModelIndex()
 
     def rowCount(self, parent: QModelIndex = ...) -> int:
-        if parent.isValid():
+        if parent.column() > 0:
             return 0
 
-        return 1
-        # return len(self._dataSource)
+        if not parent.isValid():
+            parentItem = self.rootItem
+        else:
+            parentItem = parent.internalPointer()
+
+        return len(parentItem.childItems)
 
     def columnCount(self, parent: QModelIndex = ...) -> int:
-        return 1
+        return 2
 
-    def parent(self, child: QModelIndex) -> QModelIndex:
-        return QModelIndex()
+    def parent(self, index: QModelIndex) -> QModelIndex:
+        if not index.isValid():
+            return QModelIndex()
+
+        parentItem = index.internalPointer().parentItem
+        if parentItem == self.rootItem:
+            return QModelIndex()
+        return self.createIndex(parentItem.row(), 0, parentItem)
 
     def newRow(self) -> None:
         self.beginInsertRows(QModelIndex(), 0, 0)

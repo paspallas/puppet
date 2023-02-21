@@ -1,12 +1,13 @@
 import typing
 
 from PyQt5.QtCore import Qt, pyqtSignal, pyqtSlot
-from PyQt5.QtWidgets import QWidget, QHBoxLayout, QTreeView, QVBoxLayout
+from PyQt5.QtWidgets import QWidget, QHBoxLayout, QTreeView, QVBoxLayout, QComboBox
 
 from key_frame_item import KeyFrameItem
 from timeline import TimeLineView, TimeLineScene
 from play_back_controller import PlayBackController
 from track_model import TrackModel
+from track_item import TrackItem
 
 
 class AnimationDock(QWidget):
@@ -16,14 +17,18 @@ class AnimationDock(QWidget):
         self._trackModel = TrackModel()
         self._playBackControl = PlayBackController()
 
+        self._animCombo = QComboBox()
+        self._animCombo.addItems(["Iddle", "Run", "Attack"])
         self._trackView = QTreeView()
         self._trackView.setHeaderHidden(True)
         self._trackView.setMouseTracking(True)
         self._trackView.setUniformRowHeights(True)
+        self._trackView.setAnimated(True)
         self._trackView.setModel(self._trackModel)
 
         trackBox = QVBoxLayout()
         trackBox.addSpacing(60)
+        trackBox.addWidget(self._animCombo)
         trackBox.addWidget(self._trackView)
 
         self._timeLineScene = TimeLineScene()
@@ -54,8 +59,11 @@ if __name__ == "__main__":
             key_1 = KeyFrameItem(50, 60, 10, 20)
             key_2 = KeyFrameItem(160 + 50, 60, 150, 20)
 
-            self.dock._timeLineScene.addKeyFrame(key_1)
-            self.dock._timeLineScene.addKeyFrame(key_2)
+            track = TrackItem()
+            self.dock._timeLineScene.addItem(track)
+            track.addedToScene()
+            self.dock._timeLineScene.addItem(key_1)
+            self.dock._timeLineScene.addItem(key_2)
 
     app = QApplication([])
     styles.dark(app)

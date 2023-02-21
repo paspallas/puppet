@@ -19,7 +19,7 @@ class TimeRuler(QObject):
         self._playbackPosition = 0
 
     def paint(self, painter: QPainter, rect: QRectF, width: float, font: QFont) -> None:
-        painter.setRenderHint(QPainter.Antialiasing)
+        painter.setRenderHints(QPainter.Antialiasing | QPainter.TextAntialiasing)
 
         pen = QPen(__markerColor__, 0, Qt.SolidLine)
         pen.setCosmetic(True)

@@ -28,9 +28,6 @@ class TimeLineScene(QGraphicsScene):
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(0, 0, 2000, 200)
 
-    def addKeyFrame(self, key: KeyFrameItem) -> None:
-        self.addItem(key)
-
 
 class TimeLineView(QGraphicsView):
     def __init__(self, scene: QGraphicsScene, parent) -> None:

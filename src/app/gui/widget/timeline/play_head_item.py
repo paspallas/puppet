@@ -52,9 +52,9 @@ class PlayHeadItem(QGraphicsObject):
 
     def keyPressEvent(self, e: QKeyEvent) -> None:
         if e.key() in [Qt.Key_A, Qt.Key_Left]:
-            self.setX(self.x() - grid.__width__)
+            self.setX(self.x() - (grid.__width__ + self.__size__ / 2))
         elif e.key() in [Qt.Key_D, Qt.Key_Right]:
-            self.setX(self.x() + grid.__width__)
+            self.setX(self.x() + self.__size__ / 2)
         else:
             super().keyPressEvent(e)
 
