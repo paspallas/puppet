@@ -30,7 +30,9 @@ class KeyFrameItem(QGraphicsObject):
     def __init__(self, x: float, y: float, w: float, h: float) -> None:
         super().__init__()
 
-        self._rect = QRectF(x, y, w, h)
+        self._rect = QRectF(0, 0, w, h)
+        self.setX(x)
+        self.setY(y)
 
         flags = (
             QGraphicsItem.ItemIsSelectable
@@ -45,16 +47,16 @@ class KeyFrameItem(QGraphicsObject):
         self.setAcceptHoverEvents(True)
 
         self._leftControlRect = QRectF(
-            x, y, self.__controlRectWidth__, self.__controlRectHeight__
+            0, 0, self.__controlRectWidth__, self.__controlRectHeight__
         )
         self._rightControlRect = QRectF(
-            (x + w) - self.__controlRectWidth__,
-            y,
+            w - self.__controlRectWidth__,
+            0,
             self.__controlRectWidth__,
             self.__controlRectHeight__,
         )
 
-        self._controlRect = None
+        self._selectedCtrlRect = None
         self._resizeOrigin = 0.0
         self._isResizing = False
 
@@ -63,11 +65,11 @@ class KeyFrameItem(QGraphicsObject):
 
     def insideControlRects(self, pos: QPointF) -> bool:
         if self._leftControlRect.contains(pos):
-            self._controlRect = Rect.Left
+            self._selectedCtrlRect = Rect.Left
             return True
 
         if self._rightControlRect.contains(pos):
-            self._controlRect = Rect.Right
+            self._selectedCtrlRect = Rect.Right
             return True
 
         return False
@@ -88,7 +90,7 @@ class KeyFrameItem(QGraphicsObject):
         r = QRectF(self._rect)
         self.prepareGeometryChange()
 
-        if self._controlRect == Rect.Left:
+        if self._selectedCtrlRect == Rect.Left:
             if delta > 0:
                 r.adjust(grid.__width__, 0, 0, 0)
 
@@ -101,7 +103,7 @@ class KeyFrameItem(QGraphicsObject):
                 self._leftControlRect.adjust(-grid.__width__, 0, -grid.__width__, 0)
                 self.sigTrackDurationChanged.emit(self._rect.width())
 
-        elif self._controlRect == Rect.Right:
+        elif self._selectedCtrlRect == Rect.Right:
             if delta > 0:
                 self._rect.adjust(0, 0, grid.__width__, 0)
                 self._rightControlRect.adjust(grid.__width__, 0, grid.__width__, 0)

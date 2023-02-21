@@ -1,7 +1,7 @@
 import typing
 
 from PyQt5.QtCore import Qt, pyqtSignal, pyqtSlot
-from PyQt5.QtWidgets import QWidget, QHBoxLayout, QTreeView
+from PyQt5.QtWidgets import QWidget, QHBoxLayout, QTreeView, QVBoxLayout
 
 from key_frame_item import KeyFrameItem
 from timeline import TimeLineView, TimeLineScene
@@ -16,15 +16,21 @@ class AnimationDock(QWidget):
         self._trackModel = TrackModel()
         self._playBackControl = PlayBackController()
 
-        self._trackView = QTreeView(self)
+        self._trackView = QTreeView()
+        self._trackView.setHeaderHidden(True)
+        self._trackView.setMouseTracking(True)
         self._trackView.setUniformRowHeights(True)
         self._trackView.setModel(self._trackModel)
+
+        trackBox = QVBoxLayout()
+        trackBox.addSpacing(60)
+        trackBox.addWidget(self._trackView)
 
         self._timeLineScene = TimeLineScene()
         self._timeLineView = TimeLineView(self._timeLineScene, self)
 
         hbox = QHBoxLayout(self)
-        hbox.addWidget(self._trackView, 1)
+        hbox.addLayout(trackBox, 2)
         hbox.addWidget(self._timeLineView, 5)
 
 
@@ -37,7 +43,7 @@ if __name__ == "__main__":
         def __init__(self) -> None:
             super().__init__()
 
-            self.setWindowTitle("Timeline")
+            self.setWindowTitle("Dope Sheet")
             self.dock = AnimationDock()
             self.setCentralWidget(self.dock)
             self.show()
@@ -45,8 +51,8 @@ if __name__ == "__main__":
             self.populate()
 
         def populate(self) -> None:
-            key_1 = KeyFrameItem(10, 60, 10, 20)
-            key_2 = KeyFrameItem(160, 60, 150, 20)
+            key_1 = KeyFrameItem(50, 60, 10, 20)
+            key_2 = KeyFrameItem(160 + 50, 60, 150, 20)
 
             self.dock._timeLineScene.addKeyFrame(key_1)
             self.dock._timeLineScene.addKeyFrame(key_2)

@@ -34,27 +34,28 @@ class TimeRuler(QObject):
         fm = QFontMetrics(font)
 
         for x in range(0, int(width), grid.__width__):
+            posx = x + grid.__xoffset__ + __pxPerFrame__
+
             if x % (grid.__width__ * __pxPerFrame__) == 0:
-                if x != 0:
-                    label = f"{x // grid.__width__}f"
-                    r = QRectF(fm.boundingRect(label).translated(x, 0))
+                label = f"{x // grid.__width__}f"
 
-                    # center the text in the time mark
-                    r.translate(-r.width() / 2, r.height())
+                # center the text in the time mark
+                r = QRectF(fm.boundingRect(label).translated(posx, 0))
+                r.translate(-r.width() / 2, r.height())
 
-                    if self._playbackPosition == x:
-                        pen.setColor(__hilightColor__)
-                    else:
-                        pen.setColor(__textColor__)
-                    painter.setPen(pen)
-                    painter.drawText(r, label)
+                if self._playbackPosition == posx:
+                    pen.setColor(__hilightColor__)
+                else:
+                    pen.setColor(__textColor__)
 
+                painter.setPen(pen)
+                painter.drawText(r, label)
                 pen.setColor(__markerColor__)
                 painter.setPen(pen)
-                painter.drawLine(x, __height__ - 15, x, __height__)
+                painter.drawLine(posx, __height__ - 15, posx, __height__)
 
             else:
-                painter.drawLine(x, __height__ - 5, x, __height__)
+                painter.drawLine(posx, __height__ - 5, posx, __height__)
 
     @pyqtSlot(float)
     def onPlayBackPositionChange(self, value: float) -> None:

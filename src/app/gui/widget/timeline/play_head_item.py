@@ -2,7 +2,7 @@ import typing
 
 import grid
 from PyQt5.QtCore import QLineF, QPointF, QRectF, Qt, pyqtSignal, pyqtSlot
-from PyQt5.QtGui import QColor, QPainter, QPainterPath, QPen, QKeyEvent
+from PyQt5.QtGui import QColor, QKeyEvent, QPainter, QPainterPath, QPen
 from PyQt5.QtWidgets import (
     QGraphicsItem,
     QGraphicsObject,
@@ -10,21 +10,22 @@ from PyQt5.QtWidgets import (
     QStyleOptionGraphicsItem,
     QWidget,
 )
+from time_ruler import __height__
 
 
 class PlayHeadItem(QGraphicsObject):
     __color__ = QColor(50, 205, 50)
-    __shadow__ = QColor(20, 20, 20, 200)
+    __shadow__ = QColor(220, 220, 220, 200)
     __size__ = grid.__width__
 
     sigPlayHeadPositionChange = pyqtSignal(float)
 
-    def __init__(self, x: float) -> None:
+    def __init__(self) -> None:
         super().__init__()
 
         self._rect = QRectF(-self.__size__ / 2, 0, self.__size__, self.__size__)
-        self.setX(x)
-        self.setY(23)
+        self.setX(grid.__xoffset__)
+        self.setY(__height__)
 
         flags = (
             QGraphicsItem.ItemIsSelectable
@@ -43,10 +44,8 @@ class PlayHeadItem(QGraphicsObject):
         self, change: QGraphicsItem.GraphicsItemChange, value: typing.Any
     ) -> typing.Any:
         if change == QGraphicsItem.ItemPositionChange and self.scene():
-            x = grid.Grid.alignTo(value.x())
-            # x = grid.Grid.alignTo(value.x()) + grid.__width__ / 4
+            x = grid.Grid.alignTo(value.x(), self.__size__ / 2)
             self.sigPlayHeadPositionChange.emit(x)
-
             return QPointF(x, self.pos().y())
 
         return super().itemChange(change, value)

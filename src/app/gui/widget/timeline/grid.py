@@ -5,6 +5,8 @@ from PyQt5.QtGui import QColor, QPainter, QPen
 
 __width__ = 10
 __height__ = 20
+__xoffset__ = 50
+__yoffset__ = 60
 __color__ = QColor(30, 30, 30)
 
 
@@ -15,9 +17,9 @@ class Grid:
     def computeGrid(self, rect: QRectF) -> None:
         self._lines.clear()
 
-        left = int(rect.left() - rect.left() % __width__)
+        left = int(rect.left() - (rect.left() % __width__)) + __xoffset__
         right = int(rect.right())
-        top = int(rect.top() - rect.top() % __height__)
+        top = int(rect.top() - rect.top() % __height__) + __yoffset__
         bottom = int(rect.bottom())
 
         for x in range(left, right, __width__):
@@ -33,10 +35,10 @@ class Grid:
         painter.setPen(pen)
         painter.drawLines(*self._lines)
 
-        # for y in range(top, int(rect.bottom()), __height__):
-        #     for x in range(left, int(rect.right()), __width__):
-        #         painter.drawRect(QRectF(x, y, __width__, __height__))
-
     @staticmethod
-    def alignTo(x: float) -> float:
-        return round(x / __width__) * __width__
+    def alignTo(x: float, offset: float = 0) -> float:
+        pos = round(x / __width__) * __width__
+        if pos < __xoffset__:
+            pos = __xoffset__
+
+        return pos + offset
