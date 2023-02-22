@@ -33,13 +33,14 @@ class TimeLineView(QGraphicsView):
     def __init__(self, scene: QGraphicsScene, parent) -> None:
         super().__init__(scene, parent)
 
+        self.setAlignment(Qt.AlignTop)
         self.setMouseTracking(True)
         self.setRenderHint(QPainter.Antialiasing)
         self.setOptimizationFlag(QGraphicsView.DontAdjustForAntialiasing)
         self.setViewportUpdateMode(QGraphicsView.FullViewportUpdate)
         self.setTransformationAnchor(QGraphicsView.AnchorUnderMouse)
         self.setResizeAnchor(QGraphicsView.AnchorViewCenter)
-        self.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOn)
+        self.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
         self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOn)
         self.centerOn(0, 0)
 
