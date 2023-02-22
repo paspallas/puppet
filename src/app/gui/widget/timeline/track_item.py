@@ -59,6 +59,9 @@ class TrackItem(QGraphicsObject):
 
         return height
 
+    def collapsed(self) -> bool:
+        return self._collapsed
+
     def itemChange(
         self, change: QGraphicsItem.GraphicsItemChange, value: typing.Any
     ) -> typing.Any:

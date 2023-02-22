@@ -9,13 +9,13 @@ __xoffset__ = 50
 __yoffset__ = 60
 __color__ = QColor(30, 30, 30)
 
+__lines__: typing.List[QLineF] = []
+
 
 class Grid:
-    def __init__(self) -> None:
-        self._lines = []
-
-    def computeGrid(self, rect: QRectF) -> None:
-        self._lines.clear()
+    @staticmethod
+    def computeGrid(rect: QRectF) -> None:
+        __lines__.clear()
 
         left = int(rect.left() - (rect.left() % __pxPerFrame__)) + __xoffset__
         right = int(rect.right())
@@ -23,17 +23,18 @@ class Grid:
         bottom = int(rect.bottom())
 
         for x in range(left, right, __pxPerFrame__):
-            self._lines.append(QLineF(x, top, x, bottom))
+            __lines__.append(QLineF(x, top, x, bottom))
 
-        for y in range(top, bottom, __trackHeight__):
-            self._lines.append(QLineF(0, y, right, y))
+        for y in range(top, bottom + 1, __trackHeight__):
+            __lines__.append(QLineF(0, y, right, y))
 
-    def paint(self, painter: QPainter) -> None:
+    @staticmethod
+    def paint(painter: QPainter) -> None:
         painter.setRenderHint(QPainter.Antialiasing)
         pen = QPen(__color__, 0, Qt.SolidLine, Qt.SquareCap)
         pen.setCosmetic(True)
         painter.setPen(pen)
-        painter.drawLines(*self._lines)
+        painter.drawLines(*__lines__)
 
     @staticmethod
     def alignTo(x: float, offset: float = 0) -> float:

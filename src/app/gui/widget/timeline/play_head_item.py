@@ -1,6 +1,7 @@
 import typing
 
 import grid
+import time_ruler
 from PyQt5.QtCore import QLineF, QPointF, QRectF, Qt, pyqtSignal, pyqtSlot
 from PyQt5.QtGui import QColor, QKeyEvent, QPainter, QPainterPath, QPen
 from PyQt5.QtWidgets import (
@@ -10,7 +11,6 @@ from PyQt5.QtWidgets import (
     QStyleOptionGraphicsItem,
     QWidget,
 )
-from time_ruler import __height__
 
 
 class PlayHeadItem(QGraphicsObject):
@@ -25,7 +25,7 @@ class PlayHeadItem(QGraphicsObject):
 
         self._rect = QRectF(-self.__size__ / 2, 0, self.__size__, self.__size__)
         self.setX(grid.__xoffset__)
-        self.setY(__height__)
+        self.setY(time_ruler.__height__)
 
         flags = (
             QGraphicsItem.ItemIsSelectable
@@ -70,7 +70,7 @@ class PlayHeadItem(QGraphicsObject):
             self._rect.center().x(),
             self._rect.height() / 2,
             self._rect.center().x(),
-            self.scene().sceneRect().height(),
+            self.scene().sceneRect().height() - time_ruler.__height__,
         )
         painter.drawLine(line)
         pen.setColor(self.__shadow__)

@@ -2,6 +2,7 @@ import typing
 import random
 
 import grid
+import time_ruler
 from PyQt5.QtCore import Qt, QObject, pyqtSignal, pyqtSlot
 from PyQt5.QtWidgets import QGraphicsScene
 from PyQt5.QtGui import QColor
@@ -47,6 +48,7 @@ class TrackManager(QObject):
 
         self._setChildVisible(not collapsed, index)
         self._updateTrackPositions(offset, index)
+        self._updateSceneRect()
 
     def _updateTrackPositions(self, offset: int, index: int) -> None:
         for t in self._tracks[index + 1 :]:
@@ -56,3 +58,17 @@ class TrackManager(QObject):
         t = self._tracks[index]
         for child in t.childItems():
             child.setVisible(visible)
+
+    def _updateSceneRect(self) -> None:
+        height = time_ruler.__height__ + grid.__trackHeight__
+
+        for t in self._tracks:
+            height += grid.__trackHeight__
+            if not t.collapsed():
+                for child in t.childItems():
+                    height += grid.__trackHeight__ if child.isVisible() else 0
+
+        r = self._scene.sceneRect()
+        r.setHeight(height)
+        self._scene.setSceneRect(r)
+        grid.Grid.computeGrid(r)

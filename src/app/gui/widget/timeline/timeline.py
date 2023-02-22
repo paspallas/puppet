@@ -35,6 +35,7 @@ class TimeLineView(QGraphicsView):
 
         self.setMouseTracking(True)
         self.setRenderHint(QPainter.Antialiasing)
+        self.setOptimizationFlag(QGraphicsView.DontAdjustForAntialiasing)
         self.setViewportUpdateMode(QGraphicsView.FullViewportUpdate)
         self.setTransformationAnchor(QGraphicsView.AnchorUnderMouse)
         self.setResizeAnchor(QGraphicsView.AnchorViewCenter)
@@ -46,8 +47,7 @@ class TimeLineView(QGraphicsView):
         self.scene().addItem(self._playHead)
 
         self._timeRuler = TimeRuler()
-        self._grid = Grid()
-        self._grid.computeGrid(self.scene().sceneRect())
+        Grid.computeGrid(self.scene().sceneRect())
         self.scalings = 0
 
         self._makeConnections()
@@ -58,7 +58,7 @@ class TimeLineView(QGraphicsView):
         )
 
     def drawBackground(self, painter: QPainter, rect: QRectF) -> None:
-        self._grid.paint(painter)
+        Grid.paint(painter)
         self._timeRuler.paint(painter, rect, self.scene().width(), self.font())
 
     def wheelEvent(self, e: QWheelEvent) -> None:
