@@ -14,8 +14,8 @@ from time_ruler import __height__
 
 
 class PlayHeadItem(QGraphicsObject):
-    __color__ = QColor(50, 205, 50)
-    __shadow__ = QColor(220, 220, 220, 200)
+    __color__ = QColor(120, 228, 87)
+    __shadow__ = QColor(200, 200, 200, 255)
     __size__ = grid.__pxPerFrame__
 
     sigPlayHeadPositionChange = pyqtSignal(float)

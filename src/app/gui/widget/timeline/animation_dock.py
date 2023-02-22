@@ -8,14 +8,12 @@ from timeline import TimeLineView, TimeLineScene
 from play_back_controller import PlayBackController
 from track_model import TrackModel
 from track_item import TrackItem
+from track_manager import TrackManager
 
 
 class AnimationDock(QWidget):
     def __init__(self, parent: typing.Optional[QWidget] = None) -> None:
         super().__init__(parent)
-
-        self._trackModel = TrackModel()
-        self._playBackControl = PlayBackController()
 
         self._animCombo = QComboBox()
         self._animCombo.addItems(["Iddle", "Run", "Attack"])
@@ -24,6 +22,7 @@ class AnimationDock(QWidget):
         self._trackView.setMouseTracking(True)
         self._trackView.setUniformRowHeights(True)
         self._trackView.setAnimated(True)
+        self._trackModel = TrackModel()
         self._trackView.setModel(self._trackModel)
 
         trackBox = QVBoxLayout()
@@ -33,6 +32,8 @@ class AnimationDock(QWidget):
 
         self._timeLineScene = TimeLineScene()
         self._timeLineView = TimeLineView(self._timeLineScene, self)
+        self._trackManager = TrackManager(self._timeLineScene)
+        self._playBackControl = PlayBackController()
 
         hbox = QHBoxLayout(self)
         hbox.addLayout(trackBox, 2)
@@ -59,11 +60,12 @@ if __name__ == "__main__":
             key_1 = KeyFrameItem(50, 60, 10, 20)
             key_2 = KeyFrameItem(160 + 50, 60, 150, 20)
 
-            track = TrackItem()
-            self.dock._timeLineScene.addItem(track)
-            track.addedToScene()
-            self.dock._timeLineScene.addItem(key_1)
-            self.dock._timeLineScene.addItem(key_2)
+            self.dock._trackManager.newTrack()
+            self.dock._trackManager.newTrack()
+            self.dock._trackManager.newTrack()
+
+            # self.dock._timeLineScene.addItem(key_1)
+            # self.dock._timeLineScene.addItem(key_2)
 
     app = QApplication([])
     styles.dark(app)

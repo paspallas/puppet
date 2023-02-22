@@ -1,3 +1,5 @@
+import random
+
 from PyQt5.QtCore import QPoint, QRect, QRectF, QSize, Qt
 from PyQt5.QtGui import QColor, QImage, QPainter, QPainterPath, QPixmap, QTransform
 from PyQt5.QtWidgets import QGraphicsItem, QGraphicsPixmapItem, QGraphicsScene
@@ -86,3 +88,12 @@ class Image:
             )
 
         return image
+
+    @staticmethod
+    def randomColor() -> QColor:
+        color = lambda: [
+            random.randint(0, 255),
+            random.randint(0, 255),
+            random.randint(0, 255),
+        ]
+        return QColor(*color)

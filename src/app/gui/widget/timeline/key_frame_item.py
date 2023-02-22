@@ -28,7 +28,7 @@ class KeyFrameItem(QGraphicsObject):
     __selectedColor__ = QColor(Qt.cyan)
     __normalColor__ = QColor(Qt.magenta)
     __handleWidth__ = 2
-    __handleHeight__ = grid.__height__
+    __handleHeight__ = grid.__trackHeight__
 
     keyDurationChange = pyqtSignal(float)
 
@@ -164,8 +164,8 @@ class KeyFrameItem(QGraphicsObject):
             super().mouseMoveEvent(e)
 
     def mouseReleaseEvent(self, e: QGraphicsSceneMouseEvent) -> None:
-        if self._state == State.Resize:
-            self._state = State.Iddle
+        self._state = State.Iddle
+        self.update()
 
         super().mouseReleaseEvent(e)
 
