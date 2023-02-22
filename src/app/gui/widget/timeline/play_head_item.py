@@ -32,7 +32,6 @@ class PlayHeadItem(QGraphicsObject):
             | QGraphicsItem.ItemIsFocusable
             | QGraphicsItem.ItemSendsScenePositionChanges
             | QGraphicsItem.ItemIsMovable
-            | QGraphicsItem.ItemIgnoresTransformations
         )
         self.setFlags(flags)
         self.setZValue(10000)
