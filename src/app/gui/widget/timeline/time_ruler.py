@@ -33,11 +33,11 @@ class TimeRuler(QObject):
 
         fm = QFontMetrics(font)
 
-        for x in range(0, int(width), grid.__width__):
+        for x in range(0, int(width), grid.__pxPerFrame__):
             posx = x + grid.__xoffset__ + __tickOffset__
 
-            if x % (grid.__width__ * __tickOffset__) == 0:
-                label = f"{x // grid.__width__}f"
+            if x % (grid.__pxPerFrame__ * __tickOffset__) == 0:
+                label = f"{x // grid.__pxPerFrame__}f"
 
                 # center the text in the time mark
                 r = QRectF(fm.boundingRect(label).translated(posx, 0))

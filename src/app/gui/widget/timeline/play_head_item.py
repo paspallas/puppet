@@ -16,7 +16,7 @@ from time_ruler import __height__
 class PlayHeadItem(QGraphicsObject):
     __color__ = QColor(50, 205, 50)
     __shadow__ = QColor(220, 220, 220, 200)
-    __size__ = grid.__width__
+    __size__ = grid.__pxPerFrame__
 
     sigPlayHeadPositionChange = pyqtSignal(float)
 
@@ -51,7 +51,7 @@ class PlayHeadItem(QGraphicsObject):
 
     def keyPressEvent(self, e: QKeyEvent) -> None:
         if e.key() in [Qt.Key_A, Qt.Key_Left]:
-            self.setX(self.x() - (grid.__width__ + self.__size__ / 2))
+            self.setX(self.x() - (grid.__pxPerFrame__ + self.__size__ / 2))
         elif e.key() in [Qt.Key_D, Qt.Key_Right]:
             self.setX(self.x() + self.__size__ / 2)
         else:

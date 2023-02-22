@@ -3,7 +3,7 @@ import typing
 from PyQt5.QtCore import QLineF, QRectF, Qt
 from PyQt5.QtGui import QColor, QPainter, QPen
 
-__width__ = 10
+__pxPerFrame__ = 10
 __height__ = 20
 __xoffset__ = 50
 __yoffset__ = 60
@@ -17,12 +17,12 @@ class Grid:
     def computeGrid(self, rect: QRectF) -> None:
         self._lines.clear()
 
-        left = int(rect.left() - (rect.left() % __width__)) + __xoffset__
+        left = int(rect.left() - (rect.left() % __pxPerFrame__)) + __xoffset__
         right = int(rect.right())
         top = int(rect.top() - rect.top() % __height__) + __yoffset__
         bottom = int(rect.bottom())
 
-        for x in range(left, right, __width__):
+        for x in range(left, right, __pxPerFrame__):
             self._lines.append(QLineF(x, top, x, bottom))
 
         for y in range(top, bottom, __height__):
@@ -37,7 +37,7 @@ class Grid:
 
     @staticmethod
     def alignTo(x: float, offset: float = 0) -> float:
-        pos = round(x / __width__) * __width__
+        pos = round(x / __pxPerFrame__) * __pxPerFrame__
         if pos < __xoffset__:
             pos = __xoffset__
 

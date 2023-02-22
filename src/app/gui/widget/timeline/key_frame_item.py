@@ -89,7 +89,7 @@ class KeyFrameItem(QGraphicsObject):
 
     def changeItemWidth(self, pos: QPointF) -> None:
         delta = pos.x() - self._resizeOrigin
-        if abs(delta) < grid.__width__:
+        if abs(delta) < grid.__pxPerFrame__:
             return
 
         r = QRectF(self._rect)
@@ -97,37 +97,45 @@ class KeyFrameItem(QGraphicsObject):
 
         if self._selectedHandle == Handle.Left:
             if delta > 0:
-                r.adjust(grid.__width__, 0, 0, 0)
+                r.adjust(grid.__pxPerFrame__, 0, 0, 0)
 
-                if r.width() >= grid.__width__:
+                if r.width() >= grid.__pxPerFrame__:
                     self._rect = r
-                    self._leftHandle.adjust(grid.__width__, 0, grid.__width__, 0)
+                    self._leftHandle.adjust(
+                        grid.__pxPerFrame__, 0, grid.__pxPerFrame__, 0
+                    )
                     self.keyDurationChange.emit(self._rect.width())
             elif delta < 0:
-                self._rect.adjust(-grid.__width__, 0, 0, 0)
-                self._leftHandle.adjust(-grid.__width__, 0, -grid.__width__, 0)
+                self._rect.adjust(-grid.__pxPerFrame__, 0, 0, 0)
+                self._leftHandle.adjust(
+                    -grid.__pxPerFrame__, 0, -grid.__pxPerFrame__, 0
+                )
                 self.keyDurationChange.emit(self._rect.width())
 
         elif self._selectedHandle == Handle.Right:
             if delta > 0:
-                self._rect.adjust(0, 0, grid.__width__, 0)
-                self._rightHandle.adjust(grid.__width__, 0, grid.__width__, 0)
+                self._rect.adjust(0, 0, grid.__pxPerFrame__, 0)
+                self._rightHandle.adjust(grid.__pxPerFrame__, 0, grid.__pxPerFrame__, 0)
                 self.keyDurationChange.emit(self._rect.width())
             elif delta < 0:
-                r.adjust(0, 0, -grid.__width__, 0)
+                r.adjust(0, 0, -grid.__pxPerFrame__, 0)
 
-                if r.width() >= grid.__width__:
+                if r.width() >= grid.__pxPerFrame__:
                     self._rect = r
-                    self._rightHandle.adjust(-grid.__width__, 0, -grid.__width__, 0)
+                    self._rightHandle.adjust(
+                        -grid.__pxPerFrame__, 0, -grid.__pxPerFrame__, 0
+                    )
                     self.keyDurationChange.emit(self._rect.width())
 
         self._resizeOrigin = pos.x()
 
     def start(self) -> int:
-        return int(self.x() + self._rect.x()) // grid.__width__
+        return int(self.x() + self._rect.x()) // grid.__pxPerFrame__
 
     def end(self) -> int:
-        return int(self.x() + self._rect.x() + self._rect.width()) // grid.__width__
+        return (
+            int(self.x() + self._rect.x() + self._rect.width()) // grid.__pxPerFrame__
+        )
 
     def hoverMoveEvent(self, e: QGraphicsSceneHoverEvent) -> None:
         if self.isSelected():
@@ -188,7 +196,7 @@ class KeyFrameItem(QGraphicsObject):
         pen.setColor(Qt.white)
         painter.setPen(pen)
 
-        label = f"{int(self._rect.width() // grid.__width__)}f"
+        label = f"{int(self._rect.width() // grid.__pxPerFrame__)}f"
         fm = self.scene().views()[0].viewport().fontMetrics()
         r = QRectF(
             fm.boundingRect(label).translated(
