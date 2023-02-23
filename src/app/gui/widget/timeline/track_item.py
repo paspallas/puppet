@@ -1,18 +1,11 @@
 import typing
 
 import grid
-from PyQt5.QtCore import (
-    QPointF,
-    QRectF,
-    Qt,
-    pyqtSignal,
-    pyqtSlot,
-)
+from PyQt5.QtCore import QPointF, QRectF, Qt, pyqtSignal, pyqtSlot
 from PyQt5.QtGui import QColor, QPainter, QPen
 from PyQt5.QtWidgets import (
     QGraphicsItem,
     QGraphicsObject,
-    QGraphicsRectItem,
     QStyleOptionGraphicsItem,
     QWidget,
 )
@@ -46,20 +39,38 @@ class TrackItem(QGraphicsObject):
         self.setX(grid.__xoffset__ + x)
         self.setY(y)
 
-        self.rect1 = QGraphicsRectItem(0, 20, 100, 20, self)
-        self.rect1.setFlag(QGraphicsItem.ItemIsSelectable)
-        self.rect1.setBrush(Qt.red)
-        self.rect2 = QGraphicsRectItem(0, 40, 120, 20, self)
-        self.rect2.setBrush(Qt.green)
+    def addPropertyTrack(self, item: QGraphicsItem) -> None:
+        childs = self.childItems()
+        parentOffset = grid.__trackHeight__ + grid.__innerTrackSpacing__
+        childOffset = grid.__trackHeight__ + grid.__subTrackVSpacing__
 
-    def trackHeight(self) -> float:
-        height = 0
-        for child in self.childItems():
-            height += grid.__trackHeight__ if child.isVisible() else 0
+        if len(childs) > 0:
+            item.setY(childs[-1].y() + childOffset)
+        else:
+            item.setY(parentOffset)
+
+        item.setParentItem(self)
+
+    def expandedHeight(self) -> float:
+        height = grid.__trackHeight__
+
+        for i, _ in enumerate(self.childItems()):
+            height += grid.__trackHeight__
+            if i > 0:
+                height += grid.__subTrackVSpacing__
+            else:
+                # first child
+                height += grid.__innerTrackSpacing__
 
         return height
 
-    def collapsed(self) -> bool:
+    def trackHeight(self) -> float:
+        if self._collapsed:
+            return grid.__trackHeight__
+
+        return self.expandedHeight()
+
+    def isCollapsed(self) -> bool:
         return self._collapsed
 
     def itemChange(
@@ -78,7 +89,7 @@ class TrackItem(QGraphicsObject):
         if self._collapsed:
             return self._rect
 
-        return self._rect.adjusted(0, 0, 0, self.trackHeight())
+        return self._rect.adjusted(0, 0, 0, self.trackHeight() - grid.__trackHeight__)
 
     def mousePressEvent(self, e) -> None:
         if e.buttons() == Qt.LeftButton:

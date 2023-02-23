@@ -8,26 +8,23 @@ __xoffset__ = 20
 __yoffset__ = 70
 
 __trackHeight__ = 20
-__trackVSpacing__ = 6
+__trackVSpacing__ = 8
+__innerTrackSpacing__ = 5
 __subTrackVSpacing__ = 3
 
 __pencolor__ = QColor(30, 30, 30)
-__lightBrush__ = QColor(89, 89, 89)
+__lightBrush__ = QColor(100, 100, 100)
 __darkBrush__ = QColor(72, 72, 72)
 
-__lines__: typing.List[QLineF] = []
 __lightRects__: typing.List[QRectF] = []
 __darkRects__: typing.List[QRectF] = []
 
 
 class Grid:
     @staticmethod
-    def computeGrid(sceneRect: QRectF) -> None:
-        __lines__.clear()
+    def computeGrid(sceneRect: QRectF, itemsPerTrack: typing.List[int]) -> None:
         __lightRects__.clear()
         __darkRects__.clear()
-
-        tracks = [1, 3, 4, 1]
 
         left = int(sceneRect.left() - (sceneRect.left() % __pxPerFrame__)) + __xoffset__
         right = int(sceneRect.right())
@@ -35,36 +32,34 @@ class Grid:
         bottom = int(sceneRect.bottom())
 
         start = top
-        for nTracks in tracks:
+        for nItems in itemsPerTrack:
             vSpacing = 0
             nSubTrack = 0
-            totalTrackHeight = nTracks * __trackHeight__
+            totalTrackHeight = nItems * __trackHeight__
             end = start + totalTrackHeight
 
             for y in range(start, end, __trackHeight__):
-                vSpacing += __subTrackVSpacing__ if nSubTrack > 0 else 0
-                dy = y + vSpacing
+                if nSubTrack > 0:
+                    if nSubTrack == 1:
+                        vSpacing += __innerTrackSpacing__
+                        totalTrackHeight += __innerTrackSpacing__
+                    else:
+                        vSpacing += __subTrackVSpacing__
+                        totalTrackHeight += __subTrackVSpacing__
 
-                for dx in range(left, right, __pxPerFrame__):
+                for x in range(left, right, __pxPerFrame__):
                     if nSubTrack % 2 == 0:
                         __darkRects__.append(
-                            QRectF(dx, dy, __pxPerFrame__, __trackHeight__)
+                            QRectF(x, y + vSpacing, __pxPerFrame__, __trackHeight__)
                         )
                     else:
                         __lightRects__.append(
-                            QRectF(dx, dy, __pxPerFrame__, __trackHeight__)
+                            QRectF(x, y + vSpacing, __pxPerFrame__, __trackHeight__)
                         )
                 nSubTrack += 1
 
-            start += (
-                totalTrackHeight
-                + __trackVSpacing__
-                + (nTracks - 1) * __subTrackVSpacing__
-            )
-
-        # horizontal
-        # for y in range(top, bottom + 1, __trackHeight__):
-        #     __lines__.append(QLineF(0, y, right, y))
+            # next parentTrack
+            start += totalTrackHeight + __trackVSpacing__
 
     @staticmethod
     def paint(painter: QPainter) -> None:
