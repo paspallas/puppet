@@ -1,7 +1,16 @@
 import typing
 
 from PyQt5.QtCore import Qt, pyqtSignal, pyqtSlot
-from PyQt5.QtWidgets import QWidget, QHBoxLayout, QTreeView, QVBoxLayout, QComboBox
+from PyQt5.QtWidgets import (
+    QWidget,
+    QHBoxLayout,
+    QTreeView,
+    QVBoxLayout,
+    QComboBox,
+    QSpinBox,
+    QLabel,
+    QPushButton,
+)
 
 from key_frame_item import KeyFrameItem
 from timeline import TimeLineView, TimeLineScene
@@ -15,19 +24,27 @@ class AnimationDock(QWidget):
     def __init__(self, parent: typing.Optional[QWidget] = None) -> None:
         super().__init__(parent)
 
-        self._animCombo = QComboBox()
-        self._animCombo.addItems(["Iddle", "Run", "Attack"])
         self._trackView = QTreeView()
         self._trackView.setHeaderHidden(True)
         self._trackView.setMouseTracking(True)
         self._trackView.setUniformRowHeights(True)
-        self._trackView.setAnimated(True)
+        self._trackView.setAlternatingRowColors(True)
         self._trackModel = TrackModel()
         self._trackView.setModel(self._trackModel)
 
+        self._animCombo = QComboBox()
+        self._animCombo.addItems(["Iddle", "Run", "Attack"])
+        self._newAnimBtn = QPushButton("+", self)
+        self._delAnimBtn = QPushButton("-", self)
+
+        animBox = QHBoxLayout()
+        animBox.addWidget(self._animCombo)
+        animBox.addStretch()
+        animBox.addWidget(self._newAnimBtn, 0, Qt.AlignLeft)
+        animBox.addWidget(self._delAnimBtn, 0, Qt.AlignLeft)
+
         trackBox = QVBoxLayout()
-        trackBox.addSpacing(60)
-        trackBox.addWidget(self._animCombo)
+        trackBox.addLayout(animBox)
         trackBox.addWidget(self._trackView)
 
         self._timeLineScene = TimeLineScene()
@@ -35,9 +52,30 @@ class AnimationDock(QWidget):
         self._trackManager = TrackManager(self._timeLineScene)
         self._playBackControl = PlayBackController()
 
+        self._fpsLabel = QLabel("Fps", self)
+        self._fpsSpin = QSpinBox(self)
+        self._fpsSpin.setRange(1, 60)
+        self._fpsSpin.setValue(15)
+
+        self._lengthLabel = QLabel("Length", self)
+        self._lengthSpin = QSpinBox(self)
+        self._lengthSpin.setRange(60, 2000)
+
+        playbackBox = QHBoxLayout()
+        playbackBox.addStretch()
+        playbackBox.addWidget(self._fpsLabel)
+        playbackBox.addWidget(self._fpsSpin)
+        playbackBox.addSpacing(30)
+        playbackBox.addWidget(self._lengthLabel)
+        playbackBox.addWidget(self._lengthSpin)
+
+        timelineBox = QVBoxLayout()
+        timelineBox.addLayout(playbackBox)
+        timelineBox.addWidget(self._timeLineView)
+
         hbox = QHBoxLayout(self)
         hbox.addLayout(trackBox, 2)
-        hbox.addWidget(self._timeLineView, 5)
+        hbox.addLayout(timelineBox, 5)
 
 
 if __name__ == "__main__":

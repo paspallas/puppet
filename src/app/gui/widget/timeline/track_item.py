@@ -28,6 +28,7 @@ class TrackItem(QGraphicsObject):
         self._color = color
         self._collapsed = False
         self._rect = QRectF(0, 0, span, grid.__trackHeight__)
+        self._expandedRect = QRectF(0, 0, span, grid.__trackHeight__)
 
         flags = (
             QGraphicsItem.ItemIsSelectable
@@ -50,6 +51,9 @@ class TrackItem(QGraphicsObject):
             item.setY(parentOffset)
 
         item.setParentItem(self)
+
+    def _computeExpandedRect(self) -> None:
+        pass
 
     def expandedHeight(self) -> float:
         height = grid.__trackHeight__
