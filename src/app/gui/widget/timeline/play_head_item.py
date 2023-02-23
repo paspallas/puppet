@@ -14,8 +14,8 @@ from PyQt5.QtWidgets import (
 
 
 class PlayHeadItem(QGraphicsObject):
-    __color__ = QColor(120, 228, 87)
-    __shadow__ = QColor(200, 200, 200, 255)
+    __color__ = QColor(220, 25, 29)
+    __shadow__ = QColor(65, 0, 0, 220)
     __size__ = grid.__pxPerFrame__
 
     sigPlayHeadPositionChange = pyqtSignal(float)
@@ -37,7 +37,7 @@ class PlayHeadItem(QGraphicsObject):
         self.setZValue(10000)
 
     def boundingRect(self) -> QRectF:
-        return self._rect
+        return self._rect.adjusted(0, 0, 0, self.scene().sceneRect().height())
 
     def itemChange(
         self, change: QGraphicsItem.GraphicsItemChange, value: typing.Any

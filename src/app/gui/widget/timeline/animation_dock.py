@@ -60,9 +60,12 @@ if __name__ == "__main__":
             key_1 = KeyFrameItem(50, 60, 10, 20)
             key_2 = KeyFrameItem(160 + 50, 60, 150, 20)
 
-            self.dock._trackManager.newTrack()
-            self.dock._trackManager.newTrack()
-            self.dock._trackManager.newTrack()
+            # self.dock._trackManager.newTrack()
+            # self.dock._trackManager.newTrack()
+            # self.dock._trackManager.newTrack()
+            # self.dock._trackManager.newTrack()
+            # self.dock._trackManager.newTrack()
+            # self.dock._trackManager.newTrack()
 
             # self.dock._timeLineScene.addItem(key_1)
             # self.dock._timeLineScene.addItem(key_2)

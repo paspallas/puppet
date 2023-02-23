@@ -26,7 +26,7 @@ from time_ruler import TimeRuler
 
 class TimeLineScene(QGraphicsScene):
     def __init__(self, *args, **kwargs) -> None:
-        super().__init__(0, 0, 2000, 200)
+        super().__init__(0, 0, 2000, 600)
 
 
 class TimeLineView(QGraphicsView):
@@ -34,9 +34,9 @@ class TimeLineView(QGraphicsView):
         super().__init__(scene, parent)
 
         self.setAlignment(Qt.AlignTop)
+        self.setStyleSheet("background-color: rgb(56, 56, 56);")
         self.setMouseTracking(True)
         self.setRenderHint(QPainter.Antialiasing)
-        self.setOptimizationFlag(QGraphicsView.DontAdjustForAntialiasing)
         self.setViewportUpdateMode(QGraphicsView.FullViewportUpdate)
         self.setTransformationAnchor(QGraphicsView.AnchorUnderMouse)
         self.setResizeAnchor(QGraphicsView.AnchorViewCenter)
@@ -73,3 +73,5 @@ class TimeLineView(QGraphicsView):
 
             factor = 1.0 + (self.scalings / 160.0)
             self.scale(factor, 1.0)
+        else:
+            super().wheelEvent(e)

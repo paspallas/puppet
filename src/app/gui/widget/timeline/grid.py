@@ -4,37 +4,79 @@ from PyQt5.QtCore import QLineF, QRectF, Qt
 from PyQt5.QtGui import QColor, QPainter, QPen
 
 __pxPerFrame__ = 10
+__xoffset__ = 20
+__yoffset__ = 70
+
 __trackHeight__ = 20
-__xoffset__ = 50
-__yoffset__ = 60
-__color__ = QColor(30, 30, 30)
+__trackVSpacing__ = 6
+__subTrackVSpacing__ = 3
+
+__pencolor__ = QColor(30, 30, 30)
+__lightBrush__ = QColor(89, 89, 89)
+__darkBrush__ = QColor(72, 72, 72)
 
 __lines__: typing.List[QLineF] = []
+__lightRects__: typing.List[QRectF] = []
+__darkRects__: typing.List[QRectF] = []
 
 
 class Grid:
     @staticmethod
-    def computeGrid(rect: QRectF) -> None:
+    def computeGrid(sceneRect: QRectF) -> None:
         __lines__.clear()
+        __lightRects__.clear()
+        __darkRects__.clear()
 
-        left = int(rect.left() - (rect.left() % __pxPerFrame__)) + __xoffset__
-        right = int(rect.right())
-        top = int(rect.top() - rect.top() % __trackHeight__) + __yoffset__
-        bottom = int(rect.bottom())
+        tracks = [1, 3, 4, 1]
 
-        for x in range(left, right, __pxPerFrame__):
-            __lines__.append(QLineF(x, top, x, bottom))
+        left = int(sceneRect.left() - (sceneRect.left() % __pxPerFrame__)) + __xoffset__
+        right = int(sceneRect.right())
+        top = int(sceneRect.top() - sceneRect.top() % __trackHeight__) + __yoffset__
+        bottom = int(sceneRect.bottom())
 
-        for y in range(top, bottom + 1, __trackHeight__):
-            __lines__.append(QLineF(0, y, right, y))
+        start = top
+        for nTracks in tracks:
+            vSpacing = 0
+            nSubTrack = 0
+            totalTrackHeight = nTracks * __trackHeight__
+            end = start + totalTrackHeight
+
+            for y in range(start, end, __trackHeight__):
+                vSpacing += __subTrackVSpacing__ if nSubTrack > 0 else 0
+                dy = y + vSpacing
+
+                for dx in range(left, right, __pxPerFrame__):
+                    if nSubTrack % 2 == 0:
+                        __darkRects__.append(
+                            QRectF(dx, dy, __pxPerFrame__, __trackHeight__)
+                        )
+                    else:
+                        __lightRects__.append(
+                            QRectF(dx, dy, __pxPerFrame__, __trackHeight__)
+                        )
+                nSubTrack += 1
+
+            start += (
+                totalTrackHeight
+                + __trackVSpacing__
+                + (nTracks - 1) * __subTrackVSpacing__
+            )
+
+        # horizontal
+        # for y in range(top, bottom + 1, __trackHeight__):
+        #     __lines__.append(QLineF(0, y, right, y))
 
     @staticmethod
     def paint(painter: QPainter) -> None:
         painter.setRenderHint(QPainter.Antialiasing)
-        pen = QPen(__color__, 0, Qt.SolidLine, Qt.SquareCap)
+        pen = QPen(__pencolor__, 0, Qt.SolidLine, Qt.SquareCap)
         pen.setCosmetic(True)
         painter.setPen(pen)
-        painter.drawLines(*__lines__)
+
+        painter.setBrush(__darkBrush__)
+        painter.drawRects(__darkRects__)
+        painter.setBrush(__lightBrush__)
+        painter.drawRects(__lightRects__)
 
     @staticmethod
     def alignTo(x: float, offset: float = 0) -> float:
