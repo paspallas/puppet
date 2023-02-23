@@ -46,6 +46,9 @@ class TimeLineView(QGraphicsView):
 
         self._playHead = PlayHeadItem()
         self.scene().addItem(self._playHead)
+        self.scene().sceneRectChanged.connect(
+            lambda rect: self._playHead.onSceneRectHeightChange(rect.height())
+        )
 
         self._timeRuler = TimeRuler()
         Grid.computeGrid(self.scene().sceneRect(), [])
