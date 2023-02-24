@@ -54,14 +54,6 @@ class PlayHeadItem(QGraphicsObject):
 
         return super().itemChange(change, value)
 
-    def keyPressEvent(self, e: QKeyEvent) -> None:
-        if e.key() in [Qt.Key_A, Qt.Key_Left]:
-            self.setX(self.x() - (grid.__pxPerFrame__ + __size__ / 2))
-        elif e.key() in [Qt.Key_D, Qt.Key_Right]:
-            self.setX(self.x() + __size__ / 2)
-        else:
-            super().keyPressEvent(e)
-
     def paint(
         self, painter: QPainter, option: QStyleOptionGraphicsItem, widget: QWidget
     ) -> None:
@@ -71,6 +63,12 @@ class PlayHeadItem(QGraphicsObject):
         painter.setPen(pen)
         painter.setBrush(__color__)
         painter.drawRoundedRect(self._rect, 1, 1, Qt.AbsoluteSize)
+
+    def advance(self) -> None:
+        self.setX(self.x() + __size__ / 2)
+
+    def rewind(self) -> None:
+        self.setX(self.x() - (grid.__pxPerFrame__ + __size__ / 2))
 
     @pyqtSlot(int)
     def setPlaybackPosition(frame: int) -> None:

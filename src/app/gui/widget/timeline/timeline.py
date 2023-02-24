@@ -16,7 +16,7 @@ from PyQt5.QtWidgets import (
     QGraphicsSceneHoverEvent,
     qApp,
 )
-from PyQt5.QtGui import QColor, QBrush, QPainter, QPen, QWheelEvent, QFontMetrics
+from PyQt5.QtGui import QColor, QBrush, QPainter, QPen, QWheelEvent, QFontMetrics, QKeyEvent
 
 from grid import Grid
 from key_frame_item import KeyFrameItem
@@ -65,6 +65,14 @@ class TimeLineView(QGraphicsView):
     def drawBackground(self, painter: QPainter, rect: QRectF) -> None:
         Grid.paint(painter)
         self._timeRuler.paint(painter, rect, self.scene().width(), self.font())
+        
+    def keyPressEvent(self, e: QKeyEvent) -> None:
+        if e.key() in [Qt.Key_Left, Qt.Key_A]:
+            self._playHead.rewind()
+        elif e.key() in [Qt.Key_Right, Qt.Key_D]:
+            self._playHead.advance()
+        else:
+            super().keyPressEvent(e)
 
     def wheelEvent(self, e: QWheelEvent) -> None:
         if e.modifiers() & Qt.Modifier.CTRL:
