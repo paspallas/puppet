@@ -11,6 +11,7 @@ from PyQt5.QtWidgets import (
     QLabel,
     QPushButton,
     QSplitter,
+    QCheckBox,
 )
 
 from key_frame_item import KeyFrameItem
@@ -54,6 +55,10 @@ class AnimationDock(QWidget):
         self._trackManager = TrackManager(self._timeLineScene)
         self._playBackControl = PlayBackController()
 
+        self._followChk = QCheckBox("Follow")
+        self._followChk.setToolTip("Follow playhead")
+        self._followChk.stateChanged.connect(self._timeLineView.setFollowPlayHead)
+
         self._fpsLabel = QLabel("Fps")
         self._fpsSpin = QSpinBox()
         self._fpsSpin.setToolTip("Playback speed")
@@ -67,9 +72,9 @@ class AnimationDock(QWidget):
 
         playbackBox = QHBoxLayout()
         playbackBox.addStretch()
+        playbackBox.addWidget(self._followChk)
         playbackBox.addWidget(self._fpsLabel)
         playbackBox.addWidget(self._fpsSpin)
-        playbackBox.addSpacing(30)
         playbackBox.addWidget(self._lengthLabel)
         playbackBox.addWidget(self._lengthSpin)
 

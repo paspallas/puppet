@@ -54,6 +54,7 @@ class TimeLineView(QGraphicsView):
         self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOn)
         self.centerOn(0, 0)
 
+        self._follow = False
         self._playHead = PlayHeadItem()
         self.scene().addItem(self._playHead)
         self.scene().sceneRectChanged.connect(
@@ -98,9 +99,14 @@ class TimeLineView(QGraphicsView):
         else:
             super().wheelEvent(e)
 
+    @pyqtSlot(int)
+    def setFollowPlayHead(self, follow: int) -> None:
+        self._follow = follow
+
     @pyqtSlot(float)
     def onPlayHeadPositionChange(self, pos: float) -> None:
-        self.centerOn(
-            self._playHead.x(),
-            self.mapToScene(self.viewport().rect()).boundingRect().center().y(),
-        )
+        if self._follow:
+            self.centerOn(
+                self._playHead.x(),
+                self.mapToScene(self.viewport().rect()).boundingRect().center().y(),
+            )
