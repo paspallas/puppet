@@ -2,7 +2,7 @@ from enum import IntEnum
 import typing
 
 import grid
-from PyQt5.QtCore import Qt, QRectF, QPointF, QPoint, pyqtSignal
+from PyQt5.QtCore import Qt, QRectF, QPointF, QPoint, pyqtSignal, pyqtSlot
 from PyQt5.QtWidgets import (
     QGraphicsView,
     QGraphicsScene,
@@ -60,6 +60,7 @@ class TimeLineView(QGraphicsView):
         self._playHead.sigPlayHeadPositionChange.connect(
             self._timeRuler.onPlayBackPositionChange
         )
+        self._playHead.sigPlayHeadPositionChange.connect(self.onPlayHeadPositionChange)
 
     def drawBackground(self, painter: QPainter, rect: QRectF) -> None:
         Grid.paint(painter)
@@ -78,3 +79,11 @@ class TimeLineView(QGraphicsView):
             self.scale(factor, 1.0)
         else:
             super().wheelEvent(e)
+
+    @pyqtSlot(float)
+    def onPlayHeadPositionChange(self, pos: float) -> None:
+        if pos >= self.viewport().rect().center().x() - grid.__xoffset__:
+            self.centerOn(
+                self._playHead.x(),
+                self.mapToScene(self.viewport().rect()).boundingRect().center().y(),
+            )

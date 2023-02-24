@@ -29,6 +29,7 @@ class TrackItem(QGraphicsObject):
         self._collapsed = False
         self._rect = QRectF(0, 0, span, grid.__trackHeight__)
         self._expandedRect = QRectF(0, 0, span, grid.__trackHeight__)
+        self._expandedHeight = 0.0
 
         flags = (
             QGraphicsItem.ItemIsSelectable
@@ -93,7 +94,9 @@ class TrackItem(QGraphicsObject):
         if self._collapsed:
             return self._rect
 
-        return self._rect.adjusted(0, 0, 0, self.trackHeight() - grid.__trackHeight__)
+        return self._rect.adjusted(
+            0, 0, 0, self.expandedHeight() - grid.__trackHeight__
+        )
 
     def mousePressEvent(self, e) -> None:
         if e.buttons() == Qt.LeftButton:
@@ -115,4 +118,4 @@ class TrackItem(QGraphicsObject):
             painter.restore()
 
         painter.setPen(Qt.black)
-        painter.drawRect(self._rect)
+        painter.drawRoundedRect(self._rect, 2, 2, Qt.AbsoluteSize)

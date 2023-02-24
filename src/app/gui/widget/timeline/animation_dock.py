@@ -10,6 +10,7 @@ from PyQt5.QtWidgets import (
     QSpinBox,
     QLabel,
     QPushButton,
+    QSplitter,
 )
 
 from key_frame_item import KeyFrameItem
@@ -33,6 +34,7 @@ class AnimationDock(QWidget):
         self._trackView.setModel(self._trackModel)
 
         self._animCombo = QComboBox()
+        self._animCombo.setFixedWidth(150)
         self._animCombo.addItems(["Iddle", "Run", "Attack"])
         self._newAnimBtn = QPushButton("+", self)
         self._delAnimBtn = QPushButton("-", self)
@@ -40,8 +42,8 @@ class AnimationDock(QWidget):
         animBox = QHBoxLayout()
         animBox.addWidget(self._animCombo)
         animBox.addStretch()
-        animBox.addWidget(self._newAnimBtn, 0, Qt.AlignLeft)
-        animBox.addWidget(self._delAnimBtn, 0, Qt.AlignLeft)
+        animBox.addWidget(self._newAnimBtn)
+        animBox.addWidget(self._delAnimBtn)
 
         trackBox = QVBoxLayout()
         trackBox.addLayout(animBox)
@@ -54,12 +56,14 @@ class AnimationDock(QWidget):
 
         self._fpsLabel = QLabel("Fps", self)
         self._fpsSpin = QSpinBox(self)
+        self._fpsSpin.setToolTip("Playback speed")
         self._fpsSpin.setRange(1, 60)
         self._fpsSpin.setValue(15)
 
         self._lengthLabel = QLabel("Length", self)
         self._lengthSpin = QSpinBox(self)
         self._lengthSpin.setRange(60, 2000)
+        self._lengthSpin.setToolTip("Max animation length")
 
         playbackBox = QHBoxLayout()
         playbackBox.addStretch()
@@ -72,6 +76,10 @@ class AnimationDock(QWidget):
         timelineBox = QVBoxLayout()
         timelineBox.addLayout(playbackBox)
         timelineBox.addWidget(self._timeLineView)
+
+        # splitter = QSplitter(self)
+        # splitter.addLayout(playbackBox)
+        # splitter.addLayout(timelineBox)
 
         hbox = QHBoxLayout(self)
         hbox.addLayout(trackBox, 2)
