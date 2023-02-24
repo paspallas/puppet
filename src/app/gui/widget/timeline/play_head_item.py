@@ -48,7 +48,10 @@ class PlayHeadItem(QGraphicsObject):
         self, change: QGraphicsItem.GraphicsItemChange, value: typing.Any
     ) -> typing.Any:
         if change == QGraphicsItem.ItemPositionChange and self.scene():
-            x = grid.Grid.alignTo(value.x(), __size__ / 2)
+            max_ = self.scene().sceneRect().right()
+            x = value.x() if value.x() < max_ - __size__ else max_ - __size__
+            x = grid.Grid.alignTo(x, __size__ / 2)
+
             self.sigPlayHeadPositionChange.emit(x)
             return QPointF(x, self.pos().y())
 
