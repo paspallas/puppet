@@ -100,8 +100,7 @@ class TimeLineView(QGraphicsView):
 
     @pyqtSlot(float)
     def onPlayHeadPositionChange(self, pos: float) -> None:
-        if pos >= self.viewport().rect().center().x() - grid.__xoffset__:
-            self.centerOn(
-                self._playHead.x(),
-                self.mapToScene(self.viewport().rect()).boundingRect().center().y(),
-            )
+        self.centerOn(
+            self._playHead.x(),
+            self.mapToScene(self.viewport().rect()).boundingRect().center().y(),
+        )
