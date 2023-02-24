@@ -1,16 +1,16 @@
 import typing
 
 import grid
-import time_ruler
+import time_scale
 from PyQt5.QtCore import QLineF, QPointF, QRectF, Qt, pyqtSignal, pyqtSlot
-from PyQt5.QtGui import QColor, QKeyEvent, QPainter, QPainterPath, QPen
+from PyQt5.QtGui import QColor, QKeyEvent, QPainter, QPen
 from PyQt5.QtWidgets import (
+    QGraphicsDropShadowEffect,
     QGraphicsItem,
     QGraphicsLineItem,
     QGraphicsObject,
     QGraphicsSceneMouseEvent,
     QStyleOptionGraphicsItem,
-    QGraphicsDropShadowEffect,
     QWidget,
 )
 
@@ -27,7 +27,7 @@ class PlayHeadItem(QGraphicsObject):
 
         self._rect = QRectF(-__size__ / 2, 0, __size__, __size__)
         self.setX(grid.__xoffset__)
-        self.setY(time_ruler.__height__)
+        self.setY(time_scale.__height__)
 
         flags = (
             QGraphicsItem.ItemIsSelectable
@@ -47,6 +47,8 @@ class PlayHeadItem(QGraphicsObject):
         fx.setYOffset(1)
         self._marker.setGraphicsEffect(fx)
 
+        self._currentY = time_scale.__height__
+
     def boundingRect(self) -> QRectF:
         return self._rect
 
@@ -54,12 +56,16 @@ class PlayHeadItem(QGraphicsObject):
         self, change: QGraphicsItem.GraphicsItemChange, value: typing.Any
     ) -> typing.Any:
         if change == QGraphicsItem.ItemPositionChange and self.scene():
+            # vertical scrolling triggers y position changes
+            if self.x() == value.x():
+                return QPointF(value.x(), self._currentY)
+
             max_ = self.scene().sceneRect().right()
             x = value.x() if value.x() < max_ - __size__ else max_ - __size__
             x = grid.Grid.alignTo(x, __size__ / 2)
 
             self.sigPlayHeadPositionChange.emit(x)
-            return QPointF(x, self.pos().y())
+            return QPointF(x, self._currentY)
 
         return super().itemChange(change, value)
 
@@ -73,16 +79,24 @@ class PlayHeadItem(QGraphicsObject):
         painter.setBrush(__color__)
         painter.drawRoundedRect(self._rect, 1, 1, Qt.AbsoluteSize)
 
+    @pyqtSlot()
     def advance(self) -> None:
         self.setX(self.x() + __size__ / 2)
 
+    @pyqtSlot()
     def rewind(self) -> None:
         self.setX(self.x() - (grid.__pxPerFrame__ + __size__ / 2))
 
     @pyqtSlot(int)
-    def setPlaybackPosition(frame: int) -> None:
-        pass
+    def setPlaybackPosition(pos: float) -> None:
+        self.setX(pos)
 
     @pyqtSlot(float)
     def onSceneRectHeightChange(self, height: float) -> None:
-        self._marker.setLine(0, __size__, 0, height - time_ruler.__height__)
+        self._marker.setLine(0, __size__, 0, height - self.y())
+
+    @pyqtSlot(int)
+    def onVerticalScrollBarChange(self, scroll: int) -> None:
+        # Keep the item in a fixed y position
+        self._currentY = time_scale.__height__ + scroll
+        self.setY(self._currentY)

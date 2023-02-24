@@ -2,7 +2,6 @@ import typing
 import random
 
 import grid
-import time_ruler
 from PyQt5.QtCore import Qt, QObject, pyqtSignal, pyqtSlot
 from PyQt5.QtWidgets import QGraphicsScene, QGraphicsRectItem
 from PyQt5.QtGui import QColor

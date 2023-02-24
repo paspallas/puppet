@@ -29,7 +29,7 @@ from PyQt5.QtGui import (
 from grid import Grid
 from key_frame_item import KeyFrameItem
 from play_head_item import PlayHeadItem
-from time_ruler import TimeRuler
+from time_scale import TimeScale
 
 
 class TimeLineScene(QGraphicsScene):
@@ -45,37 +45,51 @@ class TimeLineView(QGraphicsView):
 
         self.setAlignment(Qt.AlignTop)
         self.setStyleSheet("background-color: rgb(43, 42, 51);")
+
         self.setMouseTracking(True)
+        self.setFocusPolicy(Qt.WheelFocus)
+
         self.setRenderHint(QPainter.Antialiasing)
         self.setViewportUpdateMode(QGraphicsView.FullViewportUpdate)
+
         self.setTransformationAnchor(QGraphicsView.AnchorUnderMouse)
         self.setResizeAnchor(QGraphicsView.AnchorViewCenter)
+
         self.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
         self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOn)
         self.centerOn(0, 0)
 
-        self._follow = False
+        self._follow = True
         self._playHead = PlayHeadItem()
         self.scene().addItem(self._playHead)
         self.scene().sceneRectChanged.connect(
             lambda rect: self._playHead.onSceneRectHeightChange(rect.height())
         )
+        self._scale = TimeScale(self.scene().width())
+        self.scene().addItem(self._scale)
+        self.scene().sceneRectChanged.connect(
+            lambda rect: self._scale.onAnimationLengthChanged
+        )
 
-        self._timeRuler = TimeRuler()
         Grid.computeGrid(self.scene().sceneRect(), [])
         self.scalings = 0
 
         self._makeConnections()
 
     def _makeConnections(self) -> None:
-        self._playHead.sigPlayHeadPositionChange.connect(
-            self._timeRuler.onPlayBackPositionChange
-        )
         self._playHead.sigPlayHeadPositionChange.connect(self.onPlayHeadPositionChange)
+        self._playHead.sigPlayHeadPositionChange.connect(
+            self._scale.onPlayHeadPositionChanged
+        )
+        self.verticalScrollBar().valueChanged.connect(
+            self._playHead.onVerticalScrollBarChange
+        )
+        self.verticalScrollBar().valueChanged.connect(
+            self._scale.onVerticalScrollBarChange
+        )
 
     def drawBackground(self, painter: QPainter, rect: QRectF) -> None:
         Grid.paint(painter)
-        self._timeRuler.paint(painter, rect, self.scene().width(), self.font())
 
     def keyPressEvent(self, e: QKeyEvent) -> None:
         if e.key() in [Qt.Key_Left, Qt.Key_A]:
@@ -99,8 +113,8 @@ class TimeLineView(QGraphicsView):
         else:
             super().wheelEvent(e)
 
-    @pyqtSlot(int)
-    def setFollowPlayHead(self, follow: int) -> None:
+    @pyqtSlot(bool)
+    def setFollowPlayHead(self, follow: bool) -> None:
         self._follow = follow
 
     @pyqtSlot(float)

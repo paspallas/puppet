@@ -57,7 +57,10 @@ class AnimationDock(QWidget):
 
         self._followChk = QCheckBox("Follow")
         self._followChk.setToolTip("Follow playhead")
-        self._followChk.stateChanged.connect(self._timeLineView.setFollowPlayHead)
+        self._followChk.setChecked(True)
+        self._followChk.stateChanged.connect(
+            lambda: self._timeLineView.setFollowPlayHead(self._followChk.isChecked())
+        )
 
         self._fpsLabel = QLabel("Fps")
         self._fpsSpin = QSpinBox()
