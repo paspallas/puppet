@@ -34,15 +34,17 @@ from time_ruler import TimeRuler
 
 class TimeLineScene(QGraphicsScene):
     def __init__(self, *args, **kwargs) -> None:
-        super().__init__(0, 0, 2000, 600)
+        super().__init__(0, 0, 1200, 400)
 
 
 class TimeLineView(QGraphicsView):
-    def __init__(self, scene: QGraphicsScene, parent) -> None:
+    def __init__(
+        self, scene: QGraphicsScene, parent: typing.Optional[QWidget] = None
+    ) -> None:
         super().__init__(scene, parent)
 
         self.setAlignment(Qt.AlignTop)
-        self.setStyleSheet("background-color: rgb(56, 56, 56);")
+        self.setStyleSheet("background-color: rgb(43, 42, 51);")
         self.setMouseTracking(True)
         self.setRenderHint(QPainter.Antialiasing)
         self.setViewportUpdateMode(QGraphicsView.FullViewportUpdate)

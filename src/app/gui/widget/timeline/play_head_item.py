@@ -10,6 +10,7 @@ from PyQt5.QtWidgets import (
     QGraphicsObject,
     QGraphicsSceneMouseEvent,
     QStyleOptionGraphicsItem,
+    QGraphicsDropShadowEffect,
     QWidget,
 )
 
@@ -40,6 +41,11 @@ class PlayHeadItem(QGraphicsObject):
         self._marker = QGraphicsLineItem(0, __size__, 0, 0, self)
         self._marker.setFlag(QGraphicsItem.ItemIsSelectable, False)
         self._marker.setPen(__color__)
+
+        fx = QGraphicsDropShadowEffect()
+        fx.setXOffset(1)
+        fx.setYOffset(1)
+        self._marker.setGraphicsEffect(fx)
 
     def boundingRect(self) -> QRectF:
         return self._rect

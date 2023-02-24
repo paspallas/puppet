@@ -36,8 +36,8 @@ class AnimationDock(QWidget):
         self._animCombo = QComboBox()
         self._animCombo.setFixedWidth(150)
         self._animCombo.addItems(["Iddle", "Run", "Attack"])
-        self._newAnimBtn = QPushButton("+", self)
-        self._delAnimBtn = QPushButton("-", self)
+        self._newAnimBtn = QPushButton("+")
+        self._delAnimBtn = QPushButton("-")
 
         animBox = QHBoxLayout()
         animBox.addWidget(self._animCombo)
@@ -50,18 +50,18 @@ class AnimationDock(QWidget):
         trackBox.addWidget(self._trackView)
 
         self._timeLineScene = TimeLineScene()
-        self._timeLineView = TimeLineView(self._timeLineScene, self)
+        self._timeLineView = TimeLineView(self._timeLineScene)
         self._trackManager = TrackManager(self._timeLineScene)
         self._playBackControl = PlayBackController()
 
-        self._fpsLabel = QLabel("Fps", self)
-        self._fpsSpin = QSpinBox(self)
+        self._fpsLabel = QLabel("Fps")
+        self._fpsSpin = QSpinBox()
         self._fpsSpin.setToolTip("Playback speed")
         self._fpsSpin.setRange(1, 60)
         self._fpsSpin.setValue(15)
 
-        self._lengthLabel = QLabel("Length", self)
-        self._lengthSpin = QSpinBox(self)
+        self._lengthLabel = QLabel("Length")
+        self._lengthSpin = QSpinBox()
         self._lengthSpin.setRange(60, 2000)
         self._lengthSpin.setToolTip("Max animation length")
 
@@ -77,13 +77,19 @@ class AnimationDock(QWidget):
         timelineBox.addLayout(playbackBox)
         timelineBox.addWidget(self._timeLineView)
 
-        # splitter = QSplitter(self)
-        # splitter.addLayout(playbackBox)
-        # splitter.addLayout(timelineBox)
+        self._rightWidget = QWidget()
+        self._rightWidget.setLayout(timelineBox)
+        self._leftWidget = QWidget()
+        self._leftWidget.setLayout(trackBox)
+
+        self._splitter = QSplitter(Qt.Horizontal)
+        self._splitter.addWidget(self._leftWidget)
+        self._splitter.addWidget(self._rightWidget)
+        self._splitter.setStretchFactor(0, 1)
+        self._splitter.setStretchFactor(1, 5)
 
         hbox = QHBoxLayout(self)
-        hbox.addLayout(trackBox, 2)
-        hbox.addLayout(timelineBox, 5)
+        hbox.addWidget(self._splitter)
 
 
 if __name__ == "__main__":
