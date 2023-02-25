@@ -5,7 +5,6 @@ import time_scale
 from PyQt5.QtCore import QLineF, QPointF, QRectF, Qt, pyqtSignal, pyqtSlot
 from PyQt5.QtGui import QColor, QKeyEvent, QPainter, QPen
 from PyQt5.QtWidgets import (
-    QGraphicsDropShadowEffect,
     QGraphicsItem,
     QGraphicsLineItem,
     QGraphicsObject,
@@ -42,13 +41,11 @@ class PlayHeadItem(QGraphicsObject):
         self._marker.setFlag(QGraphicsItem.ItemIsSelectable, False)
         self._marker.setPen(__color__)
 
-        fx = QGraphicsDropShadowEffect()
-        fx.setXOffset(1)
-        fx.setYOffset(1)
-        self._marker.setGraphicsEffect(fx)
-
         self._currentY = time_scale.__height__
         self._dragOrigin = 0
+
+        self._pen = QPen(__shadow__, 0, Qt.SolidLine)
+        self._pen.setCosmetic(True)
 
     def boundingRect(self) -> QRectF:
         return self._rect
@@ -92,9 +89,7 @@ class PlayHeadItem(QGraphicsObject):
         self, painter: QPainter, option: QStyleOptionGraphicsItem, widget: QWidget
     ) -> None:
         painter.setRenderHint(QPainter.Antialiasing)
-        pen = QPen(__shadow__, 0, Qt.SolidLine)
-        pen.setCosmetic(True)
-        painter.setPen(pen)
+        painter.setPen(self._pen)
         painter.setBrush(__color__)
         painter.drawRoundedRect(self._rect, 1, 1, Qt.AbsoluteSize)
 

@@ -71,7 +71,7 @@ class Grid:
 
     @staticmethod
     def paint(painter: QPainter) -> None:
-        painter.setRenderHint(QPainter.Antialiasing)
+        painter.setRenderHint(QPainter.Antialiasing, False)
         pen = QPen(__pencolor__, 0, Qt.SolidLine, Qt.SquareCap)
         pen.setCosmetic(True)
         painter.setPen(pen)

@@ -16,6 +16,7 @@ from PyQt5.QtWidgets import (
     QGraphicsSceneMouseEvent,
     QGraphicsSceneHoverEvent,
     qApp,
+    QOpenGLWidget,
 )
 from PyQt5.QtGui import (
     QColor,
@@ -37,6 +38,7 @@ from time_scale import TimeScale
 class TimeLineScene(QGraphicsScene):
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(0, 0, 1200, 400)
+        self.setItemIndexMethod(QGraphicsScene.NoIndex)
 
 
 class TimeLineView(QGraphicsView):
@@ -51,17 +53,16 @@ class TimeLineView(QGraphicsView):
         self.setMouseTracking(True)
         self.setFocusPolicy(Qt.WheelFocus)
 
-        self.setRenderHint(QPainter.Antialiasing)
+        self.setOptimizationFlag(QGraphicsView.DontAdjustForAntialiasing)
         self.setViewportUpdateMode(QGraphicsView.FullViewportUpdate)
-
         self.setTransformationAnchor(QGraphicsView.AnchorUnderMouse)
         self.setResizeAnchor(QGraphicsView.AnchorViewCenter)
 
         self.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
-        self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOn)
+        self.setHorizontalScrollBarPolicy(Qt.ScrollBarAsNeeded)
         self.centerOn(0, 0)
 
-        self._follow = True
+        self._followPlayHead = True
         self._playHead = PlayHeadItem()
         self.scene().addItem(self._playHead)
         self.scene().sceneRectChanged.connect(
@@ -135,7 +136,7 @@ class TimeLineView(QGraphicsView):
 
     @pyqtSlot(bool)
     def setFollowPlayHead(self, follow: bool) -> None:
-        self._follow = follow
+        self._followPlayHead = follow
 
     @pyqtSlot(float)
     def onPlayHeadPositionChange(self, pos: float) -> None:
@@ -144,7 +145,7 @@ class TimeLineView(QGraphicsView):
             self._scale.clicked = False
             return
 
-        if self._follow:
+        if self._followPlayHead:
             self.centerOn(
                 self._playHead.x(),
                 self.mapToScene(self.viewport().rect()).boundingRect().center().y(),

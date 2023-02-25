@@ -4,7 +4,6 @@ import grid
 from PyQt5.QtCore import QRectF, Qt, pyqtSignal, pyqtSlot
 from PyQt5.QtGui import QColor, QFontMetrics, QPainter, QPen
 from PyQt5.QtWidgets import (
-    QGraphicsDropShadowEffect,
     QGraphicsItem,
     QGraphicsObject,
     QGraphicsSceneMouseEvent,
@@ -33,15 +32,11 @@ class TimeScale(QGraphicsObject):
         self.setFlag(QGraphicsItem.ItemIsSelectable, False)
         self.setFlag(QGraphicsItem.ItemIsMovable, False)
 
-        fx = QGraphicsDropShadowEffect()
-        self.setGraphicsEffect(fx)
-        fx.setXOffset(0)
-        fx.setYOffset(2)
-        fx.setColor(QColor(60, 60, 60, 60))
-        fx.setBlurRadius(4)
-
         self._playPos = grid.__xoffset__ + __tickOffset__
         self._clicked = False
+
+        self._pen = QPen(__markerColor__, 0, Qt.SolidLine)
+        self._pen.setCosmetic(True)
 
     @property
     def clicked(self) -> bool:
@@ -62,15 +57,12 @@ class TimeScale(QGraphicsObject):
     def paint(
         self, painter: QPainter, option: QStyleOptionGraphicsItem, widget: QWidget
     ) -> None:
-        painter.setRenderHints(QPainter.Antialiasing | QPainter.TextAntialiasing)
-
-        pen = QPen(__markerColor__, 0, Qt.SolidLine)
-        pen.setCosmetic(True)
+        painter.setRenderHints(QPainter.TextAntialiasing | QPainter.Antialiasing)
 
         painter.setPen(Qt.NoPen)
         painter.setBrush(Qt.black)
         painter.drawRect(self._rect)
-        painter.setPen(pen)
+        painter.setPen(self._pen)
         painter.setBrush(Qt.NoBrush)
 
         fm = self.scene().views()[0].viewport().fontMetrics()
@@ -86,20 +78,20 @@ class TimeScale(QGraphicsObject):
                 r.translate(-r.width() / 2, r.height())
 
                 if self._playPos == posx:
-                    pen.setColor(__hilightColor__)
+                    self._pen.setColor(__hilightColor__)
                 else:
-                    pen.setColor(__textColor__)
+                    self._pen.setColor(__textColor__)
 
-                painter.setPen(pen)
+                painter.setPen(self._pen)
                 painter.drawText(r, label)
                 painter.drawLine(posx, __height__ - __bigTick__, posx, __height__)
 
             else:
                 if self._playPos == posx:
-                    pen.setColor(__hilightColor__)
+                    self._pen.setColor(__hilightColor__)
                 else:
-                    pen.setColor(__markerColor__)
-                painter.setPen(pen)
+                    self._pen.setColor(__markerColor__)
+                painter.setPen(self._pen)
                 painter.drawLine(posx, __height__ - __smallTick__, posx, __height__)
 
     @pyqtSlot(float)
@@ -110,7 +102,6 @@ class TimeScale(QGraphicsObject):
     def onPlayHeadPositionChanged(self, value: float) -> None:
         if self._playPos != value:
             self._playPos = value
-            self.update()
 
     @pyqtSlot(int)
     def onVerticalScrollBarChange(self, scroll: int) -> None:

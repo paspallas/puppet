@@ -132,7 +132,6 @@ class TrackItem(QGraphicsObject):
     def paint(
         self, painter: QPainter, option: QStyleOptionGraphicsItem, widget: QWidget
     ) -> None:
-        painter.setRenderHint(QPainter.Antialiasing)
         painter.setBrush(self._color)
         pen = QPen(Qt.black, 0, Qt.SolidLine)
         pen.setCosmetic(True)
@@ -143,7 +142,9 @@ class TrackItem(QGraphicsObject):
         else:
             painter.setOpacity(0.5)
             painter.setPen(Qt.NoPen)
-            painter.drawRect(self._expandedRect.adjusted(0, 0, 0, grid.__subTrackVSpacing__))
+            painter.drawRect(
+                self._expandedRect.adjusted(0, 0, 0, grid.__subTrackVSpacing__)
+            )
             painter.setPen(pen)
             painter.setOpacity(1)
             painter.drawRect(self._collapsedRect)
