@@ -13,9 +13,11 @@ __innerTrackSpacing__ = 5
 __subTrackVSpacing__ = 3
 
 __pencolor__ = QColor(30, 30, 30)
-__lightBrush__ = QColor(100, 100, 100)
+__hilightBrush__ = QColor(60, 60, 60)
+__lightBrush__ = QColor(90, 90, 90)
 __darkBrush__ = QColor(72, 72, 72)
 
+__hilightRects__: typing.List[QRectF] = []
 __lightRects__: typing.List[QRectF] = []
 __darkRects__: typing.List[QRectF] = []
 
@@ -23,6 +25,7 @@ __darkRects__: typing.List[QRectF] = []
 class Grid:
     @staticmethod
     def computeGrid(sceneRect: QRectF, itemsPerTrack: typing.List[int]) -> None:
+        __hilightRects__.clear()
         __lightRects__.clear()
         __darkRects__.clear()
 
@@ -48,7 +51,12 @@ class Grid:
                         totalTrackHeight += __subTrackVSpacing__
 
                 for x in range(left, right, __pxPerFrame__):
-                    if nSubTrack % 2 == 0:
+                    if (x - left) % (__pxPerFrame__ * 5) == 0:
+                        __hilightRects__.append(
+                            QRectF(x, y + vSpacing, __pxPerFrame__, __trackHeight__)
+                        )
+
+                    elif nSubTrack % 2 == 0:
                         __darkRects__.append(
                             QRectF(x, y + vSpacing, __pxPerFrame__, __trackHeight__)
                         )
@@ -72,6 +80,8 @@ class Grid:
         painter.drawRects(__darkRects__)
         painter.setBrush(__lightBrush__)
         painter.drawRects(__lightRects__)
+        painter.setBrush(__hilightBrush__)
+        painter.drawRects(__hilightRects__)
 
     @staticmethod
     def alignTo(x: float, offset: float = 0) -> float:
