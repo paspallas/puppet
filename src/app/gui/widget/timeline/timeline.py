@@ -70,7 +70,6 @@ class TimeLineView(QGraphicsView):
         self.scene().sceneRectChanged.connect(
             lambda rect: self._scale.onAnimationLengthChanged
         )
-
         Grid.computeGrid(self.scene().sceneRect(), [])
         self.scalings = 0
 
@@ -81,6 +80,7 @@ class TimeLineView(QGraphicsView):
         self._playHead.sigPlayHeadPositionChange.connect(
             self._scale.onPlayHeadPositionChanged
         )
+        self._scale.sigSetPlayHeadPosition.connect(self._playHead.setPlaybackPosition)
         self.verticalScrollBar().valueChanged.connect(
             self._playHead.onVerticalScrollBarChange
         )

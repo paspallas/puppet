@@ -87,9 +87,9 @@ class PlayHeadItem(QGraphicsObject):
     def rewind(self) -> None:
         self.setX(self.x() - (grid.__pxPerFrame__ + __size__ / 2))
 
-    @pyqtSlot(int)
-    def setPlaybackPosition(pos: float) -> None:
-        self.setX(pos)
+    @pyqtSlot(float)
+    def setPlaybackPosition(self, x: float) -> None:
+        self.setX(x)
 
     @pyqtSlot(float)
     def onSceneRectHeightChange(self, height: float) -> None:
