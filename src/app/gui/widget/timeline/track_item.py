@@ -122,7 +122,7 @@ class TrackItem(QGraphicsObject):
         if self._collapsed:
             return self._collapsedRect
 
-        return self._expandedRect
+        return self._expandedRect.adjusted(0, 0, 0, grid.__subTrackVSpacing__)
 
     def mousePressEvent(self, e) -> None:
         if e.buttons() == Qt.LeftButton:
@@ -134,14 +134,16 @@ class TrackItem(QGraphicsObject):
     ) -> None:
         painter.setRenderHint(QPainter.Antialiasing)
         painter.setBrush(self._color)
+        pen = QPen(Qt.black, 0, Qt.SolidLine)
+        pen.setCosmetic(True)
 
         if self._collapsed:
-            painter.setPen(Qt.black)
+            painter.setPen(pen)
             painter.drawRoundedRect(self._collapsedRect, 2, 2, Qt.AbsoluteSize)
         else:
             painter.setOpacity(0.5)
             painter.setPen(Qt.NoPen)
-            painter.drawRect(self._expandedRect)
-            painter.setPen(Qt.black)
+            painter.drawRect(self._expandedRect.adjusted(0, 0, 0, grid.__subTrackVSpacing__))
+            painter.setPen(pen)
             painter.setOpacity(1)
             painter.drawRect(self._collapsedRect)
