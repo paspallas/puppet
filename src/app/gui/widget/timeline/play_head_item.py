@@ -1,7 +1,5 @@
 import typing
 
-import grid
-import time_scale
 from PyQt5.QtCore import QLineF, QPointF, QRectF, Qt, pyqtSignal, pyqtSlot
 from PyQt5.QtGui import QColor, QKeyEvent, QPainter, QPen
 from PyQt5.QtWidgets import (
@@ -12,6 +10,8 @@ from PyQt5.QtWidgets import (
     QStyleOptionGraphicsItem,
     QWidget,
 )
+
+from . import grid, time_scale
 
 __color__ = QColor(220, 25, 29)
 __shadow__ = QColor(65, 0, 0, 220)

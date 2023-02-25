@@ -1,12 +1,12 @@
-import typing
 import random
+import typing
 
-import grid
-from PyQt5.QtCore import Qt, QObject, pyqtSignal, pyqtSlot
-from PyQt5.QtWidgets import QGraphicsScene, QGraphicsRectItem
+from PyQt5.QtCore import QObject, Qt, pyqtSignal, pyqtSlot
 from PyQt5.QtGui import QColor
+from PyQt5.QtWidgets import QGraphicsRectItem, QGraphicsScene
 
-from track_item import TrackItem
+from . import grid
+from .track_item import TrackItem
 
 
 def randomColor() -> QColor:

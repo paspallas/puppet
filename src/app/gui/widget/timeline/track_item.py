@@ -1,6 +1,5 @@
 import typing
 
-import grid
 from PyQt5.QtCore import QPointF, QRectF, Qt, pyqtSignal, pyqtSlot
 from PyQt5.QtGui import QColor, QPainter, QPen
 from PyQt5.QtWidgets import (
@@ -9,6 +8,8 @@ from PyQt5.QtWidgets import (
     QStyleOptionGraphicsItem,
     QWidget,
 )
+
+from . import grid
 
 
 class TrackItem(QGraphicsObject):

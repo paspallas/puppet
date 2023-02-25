@@ -20,4 +20,4 @@ class AppWindow(QMainWindow):
 
         self._ui.charEditor.setDocument(self._document)
         self._ui.spritePaletteDock.setDocument(self._document)
-        self._ui.animEditorDock.setDocument(self._document)
+        #self._ui.animEditorDock.setDocument(self._document)

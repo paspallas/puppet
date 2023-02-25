@@ -1,7 +1,7 @@
 from enum import IntEnum
 import typing
 
-import grid
+
 from PyQt5.QtCore import Qt, QRectF, QPointF, QPoint, pyqtSignal, pyqtSlot
 from PyQt5.QtWidgets import (
     QApplication,
@@ -29,10 +29,11 @@ from PyQt5.QtGui import (
     QKeyEvent,
 )
 
-from grid import Grid
-from key_frame_item import KeyFrameItem
-from play_head_item import PlayHeadItem
-from time_scale import TimeScale
+from .grid import Grid
+from .key_frame_item import KeyFrameItem
+from .play_head_item import PlayHeadItem
+from .time_scale import TimeScale
+from . import grid
 
 
 class TimeLineScene(QGraphicsScene):

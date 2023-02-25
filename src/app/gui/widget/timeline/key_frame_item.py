@@ -1,7 +1,7 @@
 import typing
 from enum import IntEnum
 
-import grid
+
 from PyQt5.QtCore import QPointF, QRectF, Qt, pyqtSignal
 from PyQt5.QtGui import QColor, QFontMetrics, QPainter, QPen
 from PyQt5.QtWidgets import (
@@ -12,6 +12,8 @@ from PyQt5.QtWidgets import (
     QStyleOptionGraphicsItem,
     QWidget,
 )
+
+from . import grid
 
 
 class Handle(IntEnum):

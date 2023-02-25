@@ -1,6 +1,5 @@
 import typing
 
-import grid
 from PyQt5.QtCore import QRectF, Qt, pyqtSignal, pyqtSlot
 from PyQt5.QtGui import QColor, QFontMetrics, QPainter, QPen
 from PyQt5.QtWidgets import (
@@ -10,6 +9,8 @@ from PyQt5.QtWidgets import (
     QStyleOptionGraphicsItem,
     QWidget,
 )
+
+from . import grid
 
 __height__ = 40
 __textColor__ = QColor(240, 240, 240)

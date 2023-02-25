@@ -11,7 +11,7 @@ from PyQt5.QtCore import (
     pyqtSlot,
 )
 
-from track import Track
+from .track import Track
 
 
 class TrackModel(QAbstractItemModel):
