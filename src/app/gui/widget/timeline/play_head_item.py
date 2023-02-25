@@ -48,6 +48,7 @@ class PlayHeadItem(QGraphicsObject):
         self._marker.setGraphicsEffect(fx)
 
         self._currentY = time_scale.__height__
+        self._dragOrigin = 0
 
     def boundingRect(self) -> QRectF:
         return self._rect
@@ -68,6 +69,24 @@ class PlayHeadItem(QGraphicsObject):
             return QPointF(x, self._currentY)
 
         return super().itemChange(change, value)
+
+    def mousePressEvent(self, e: QGraphicsSceneMouseEvent) -> None:
+        if e.buttons() & Qt.LeftButton:
+            self._dragOrigin = e.scenePos().x()
+        super().mousePressEvent(e)
+
+    def mouseMoveEvent(self, e: QGraphicsSceneMouseEvent) -> None:
+        delta = e.scenePos().x() - self._dragOrigin
+
+        if abs(delta) >= grid.__pxPerFrame__:
+            if delta > 0:
+                self.advance()
+            else:
+                self.rewind()
+
+            self._dragOrigin = e.scenePos().x()
+
+        e.accept()
 
     def paint(
         self, painter: QPainter, option: QStyleOptionGraphicsItem, widget: QWidget
