@@ -121,10 +121,10 @@ if __name__ == "__main__":
             key_2 = KeyFrameItem(160 + 50, 60, 150, 20)
 
             self.dock._trackManager.newTrack()
-            self.dock._trackManager.addPropertyTrack(0)
-            self.dock._trackManager.addPropertyTrack(0)
-            self.dock._trackManager.addPropertyTrack(0)
-            self.dock._trackManager.addPropertyTrack(0)
+            # self.dock._trackManager.addPropertyTrack(0)
+            # self.dock._trackManager.addPropertyTrack(0)
+            # self.dock._trackManager.addPropertyTrack(0)
+            # self.dock._trackManager.addPropertyTrack(0)
 
             self.dock._trackManager.newTrack()
             self.dock._trackManager.addPropertyTrack(1)

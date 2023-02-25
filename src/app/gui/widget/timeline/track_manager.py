@@ -47,14 +47,8 @@ class TrackManager(QObject):
     @pyqtSlot(bool, int)
     def onTrackCollapseChange(self, collapse: bool, index: int) -> None:
         track = self._tracks[index]
+        offset = -track.childBoxHeight if collapse else track.childBoxHeight
 
-        # take the parent track height into account
-        offset = track.expandedHeight() - grid.__trackHeight__
-
-        if collapse:
-            offset = -offset
-
-        self._setChildVisible(not collapse, index)
         self._updateTrackPositions(offset, index)
         self._updateSceneRect()
 
@@ -81,11 +75,6 @@ class TrackManager(QObject):
         # adjust all track positions below the collapsed/expanded one
         for t in self._tracks[index + 1 :]:
             t.setY(t.y() + offset)
-
-    def _setChildVisible(self, visible: bool, index: int) -> None:
-        track = self._tracks[index]
-        for child in track.childItems():
-            child.setVisible(visible)
 
     def _updateSceneRect(self) -> None:
         height = grid.__yoffset__

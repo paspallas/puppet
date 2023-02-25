@@ -26,10 +26,11 @@ class TrackItem(QGraphicsObject):
         self._index = index
         self._y = 0.0
         self._color = color
-        self._collapsed = False
-        self._rect = QRectF(0, 0, span, grid.__trackHeight__)
-        self._expandedRect = QRectF(0, 0, span, grid.__trackHeight__)
-        self._expandedHeight = 0.0
+        self._collapsed = True
+
+        self._collapsedRect = QRectF(0, 0, span, grid.__trackHeight__)
+        self._expandedRect = QRectF(0, 0, span, 0)
+        self.childBoxHeight = 0.0
 
         flags = (
             QGraphicsItem.ItemIsSelectable
@@ -53,11 +54,46 @@ class TrackItem(QGraphicsObject):
 
         item.setParentItem(self)
 
-    def _computeExpandedRect(self) -> None:
-        pass
+        if self._collapsed:
+            item.setVisible(False)
 
-    def expandedHeight(self) -> float:
-        height = grid.__trackHeight__
+        self._computeExpandedHeight()
+
+    def trackHeight(self) -> float:
+        if self._collapsed:
+            return grid.__trackHeight__
+
+        return self.childBoxHeight + grid.__trackHeight__
+
+    def isCollapsed(self) -> bool:
+        return self._collapsed
+
+    def canExpand(self) -> bool:
+        return len(self.childItems()) > 0
+
+    def expand(self) -> None:
+        if self.canExpand():
+            self._collapsed = False
+            self._updatePropertyTrackVisibility(True)
+            self.sigCollapseChange.emit(False, self._index)
+
+    def collapse(self) -> None:
+        self._collapsed = True
+        self._updatePropertyTrackVisibility(False)
+        self.sigCollapseChange.emit(True, self._index)
+
+    def changeState(self) -> None:
+        if self._collapsed:
+            self.expand()
+        else:
+            self.collapse()
+
+    def _updatePropertyTrackVisibility(self, visible: bool) -> None:
+        for child in self.childItems():
+            child.setVisible(visible)
+
+    def _computeExpandedHeight(self):
+        height = 0
 
         for i, _ in enumerate(self.childItems()):
             height += grid.__trackHeight__
@@ -67,16 +103,8 @@ class TrackItem(QGraphicsObject):
                 # first child
                 height += grid.__innerTrackSpacing__
 
-        return height
-
-    def trackHeight(self) -> float:
-        if self._collapsed:
-            return grid.__trackHeight__
-
-        return self.expandedHeight()
-
-    def isCollapsed(self) -> bool:
-        return self._collapsed
+        self._expandedRect.setHeight(height + grid.__trackHeight__)
+        self.childBoxHeight = height
 
     def itemChange(
         self, change: QGraphicsItem.GraphicsItemChange, value: typing.Any
@@ -92,16 +120,13 @@ class TrackItem(QGraphicsObject):
 
     def boundingRect(self) -> QRectF:
         if self._collapsed:
-            return self._rect
+            return self._collapsedRect
 
-        return self._rect.adjusted(
-            0, 0, 0, self.expandedHeight() - grid.__trackHeight__
-        )
+        return self._expandedRect
 
     def mousePressEvent(self, e) -> None:
         if e.buttons() == Qt.LeftButton:
-            self._collapsed = not self._collapsed
-            self.sigCollapseChange.emit(self._collapsed, self._index)
+            self.changeState()
         super().mousePressEvent(e)
 
     def paint(
@@ -109,13 +134,14 @@ class TrackItem(QGraphicsObject):
     ) -> None:
         painter.setRenderHint(QPainter.Antialiasing)
         painter.setBrush(self._color)
-        painter.setPen(Qt.NoPen)
 
-        if not self._collapsed:
-            painter.save()
+        if self._collapsed:
+            painter.setPen(Qt.black)
+            painter.drawRoundedRect(self._collapsedRect, 2, 2, Qt.AbsoluteSize)
+        else:
             painter.setOpacity(0.5)
-            painter.drawRect(self.boundingRect())
-            painter.restore()
-
-        painter.setPen(Qt.black)
-        painter.drawRoundedRect(self._rect, 2, 2, Qt.AbsoluteSize)
+            painter.setPen(Qt.NoPen)
+            painter.drawRect(self._expandedRect)
+            painter.setPen(Qt.black)
+            painter.setOpacity(1)
+            painter.drawRect(self._collapsedRect)
