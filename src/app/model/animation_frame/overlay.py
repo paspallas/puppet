@@ -66,8 +66,7 @@ class Overlay(QGraphicsItem):
 
     def paint(self, painter: QPainter, option, widget: QWidget) -> None:
         if self._enabled and self._selected:
-            pen = QPen(Qt.cyan, 0, Qt.SolidLine, Qt.SquareCap)
-            painter.setRenderHint(QPainter.Antialiasing)
+            pen = QPen(Qt.magenta, 0, Qt.SolidLine, Qt.SquareCap)
             painter.setPen(pen)
             painter.drawPath(self._outline)
             painter.drawLines(*self._anchors)

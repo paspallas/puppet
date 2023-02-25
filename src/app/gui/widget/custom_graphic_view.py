@@ -45,7 +45,6 @@ class CustomGraphicView(QGraphicsView):
         self.setViewportUpdateMode(QGraphicsView.FullViewportUpdate)
         self.setOptimizationFlag(QGraphicsView.DontAdjustForAntialiasing)
         self.setCacheMode(QGraphicsView.CacheBackground)
-        self.setRenderHints(QPainter.Antialiasing)
         self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         self.setMouseTracking(True)
 
@@ -60,7 +59,6 @@ class CustomGraphicView(QGraphicsView):
             e.accept()
 
     def drawBackground(self, painter: QPainter, rect: QRectF) -> None:
-        painter.setRenderHint(QPainter.Antialiasing)
         painter.setPen(QPen(Qt.NoPen))
 
         left = int(rect.left() - rect.left() % self._gridSize)

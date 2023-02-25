@@ -49,7 +49,6 @@ class FrameSpriteItem(QGraphicsPixmapItem, Publisher):
         )
 
         self.setCacheMode(QGraphicsItem.DeviceCoordinateCache)
-        self.computeCenterIndicator()
 
         # make the item selectable regardless of transparency level
         self._outline = Image.outline(pixmap)
@@ -59,36 +58,6 @@ class FrameSpriteItem(QGraphicsPixmapItem, Publisher):
             self._outline,
         )
         self._overlay.setZValue(self.zValue())
-
-    def computeCenterIndicator(self) -> None:
-        offset = 100
-        b = self.boundingRect()
-        self._centerIndicator = [
-            QLineF(
-                b.left() - offset,
-                b.height() // 2,
-                b.left(),
-                b.height() // 2,
-            ),
-            QLineF(
-                b.right(),
-                b.height() // 2,
-                b.right() + offset,
-                b.height() // 2,
-            ),
-            QLineF(
-                b.width() // 2,
-                b.top() - offset,
-                b.width() // 2,
-                b.top(),
-            ),
-            QLineF(
-                b.width() // 2,
-                b.bottom(),
-                b.width() // 2,
-                b.bottom() + offset,
-            ),
-        ]
 
     def addedToScene(self):
         self.scene().addItem(self._overlay)
@@ -181,7 +150,6 @@ class FrameSpriteItem(QGraphicsPixmapItem, Publisher):
         option,
         widget: QWidget = None,
     ) -> None:
-        painter.setRenderHint(QPainter.Antialiasing)
         painter.setRenderHint(QPainter.SmoothPixmapTransform, False)
         painter.drawPixmap(QPoint(), self.pixmap())
 
@@ -190,8 +158,3 @@ class FrameSpriteItem(QGraphicsPixmapItem, Publisher):
             pen = QPen(color, 0, Qt.SolidLine, Qt.SquareCap)
             painter.setPen(pen)
             painter.drawRect(self.boundingRect())
-
-            if self.isCentered():
-                pen.setColor(Qt.cyan)
-                painter.setPen(pen)
-                painter.drawLines(*self._centerIndicator)
