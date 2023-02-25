@@ -6,16 +6,8 @@ from PyQt5.QtGui import QColor
 from PyQt5.QtWidgets import QGraphicsRectItem, QGraphicsScene
 
 from . import grid
-from .track_item import TrackItem
-
-
-def randomColor() -> QColor:
-    color = [
-        random.randint(0, 255),
-        random.randint(0, 255),
-        random.randint(0, 255),
-    ]
-    return QColor(*color)
+from ....util import Image
+from .items import TrackItem
 
 
 class TrackManager(QObject):
@@ -27,7 +19,7 @@ class TrackManager(QObject):
 
     def newTrack(self) -> TrackItem:
         track = TrackItem(
-            len(self._tracks), y=self._computeTrackPosition(), color=randomColor()
+            len(self._tracks), y=self._computeTrackPosition(), color=Image.randomColor()
         )
         track.sigCollapseChange.connect(self.onTrackCollapseChange)
 
@@ -39,7 +31,7 @@ class TrackManager(QObject):
 
     def addPropertyTrack(self, parentTrack: int) -> None:
         track = QGraphicsRectItem(0, 0, 50, grid.__trackHeight__)
-        track.setBrush(randomColor())
+        track.setBrush(Image.randomColor())
 
         self._tracks[parentTrack].addPropertyTrack(track)
         self._updateSceneRect()

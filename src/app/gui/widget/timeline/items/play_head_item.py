@@ -11,7 +11,8 @@ from PyQt5.QtWidgets import (
     QWidget,
 )
 
-from . import grid, time_scale
+from .. import grid
+from . import time_scale_item
 
 __color__ = QColor(220, 25, 29)
 __shadow__ = QColor(65, 0, 0, 220)
@@ -26,7 +27,7 @@ class PlayHeadItem(QGraphicsObject):
 
         self._rect = QRectF(-__size__ / 2, 0, __size__, __size__)
         self.setX(grid.__xoffset__)
-        self.setY(time_scale.__height__)
+        self.setY(time_scale_item.__height__)
 
         flags = (
             QGraphicsItem.ItemIsSelectable
@@ -41,7 +42,7 @@ class PlayHeadItem(QGraphicsObject):
         self._marker.setFlag(QGraphicsItem.ItemIsSelectable, False)
         self._marker.setPen(__color__)
 
-        self._currentY = time_scale.__height__
+        self._currentY = time_scale_item.__height__
         self._dragOrigin = 0
 
         self._pen = QPen(__shadow__, 0, Qt.SolidLine)
@@ -112,5 +113,5 @@ class PlayHeadItem(QGraphicsObject):
     @pyqtSlot(int)
     def onVerticalScrollBarChange(self, scroll: int) -> None:
         # Keep the item in a fixed y position
-        self._currentY = time_scale.__height__ + scroll
+        self._currentY = time_scale_item.__height__ + scroll
         self.setY(self._currentY)

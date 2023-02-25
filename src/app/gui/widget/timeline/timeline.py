@@ -16,7 +16,6 @@ from PyQt5.QtWidgets import (
     QGraphicsSceneMouseEvent,
     QGraphicsSceneHoverEvent,
     qApp,
-    QOpenGLWidget,
 )
 from PyQt5.QtGui import (
     QColor,
@@ -30,9 +29,7 @@ from PyQt5.QtGui import (
 )
 
 from .grid import Grid
-from .key_frame_item import KeyFrameItem
-from .play_head_item import PlayHeadItem
-from .time_scale import TimeScale
+from .items import KeyFrameItem, PlayHeadItem, TimeScaleItem
 from . import grid
 
 
@@ -69,7 +66,7 @@ class TimeLineView(QGraphicsView):
         self.scene().sceneRectChanged.connect(
             lambda rect: self._playHead.onSceneRectHeightChange(rect.height())
         )
-        self._scale = TimeScale(self.scene().width())
+        self._scale = TimeScaleItem(self.scene().width())
         self.scene().addItem(self._scale)
         self.scene().sceneRectChanged.connect(
             lambda rect: self._scale.onAnimationLengthChanged

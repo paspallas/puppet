@@ -91,7 +91,7 @@ class Image:
 
     @staticmethod
     def randomColor() -> QColor:
-        color = lambda: [
+        color = [
             random.randint(0, 255),
             random.randint(0, 255),
             random.randint(0, 255),

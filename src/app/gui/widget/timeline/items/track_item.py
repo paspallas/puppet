@@ -9,7 +9,7 @@ from PyQt5.QtWidgets import (
     QWidget,
 )
 
-from . import grid
+from .. import grid
 
 
 class TrackItem(QGraphicsObject):

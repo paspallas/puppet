@@ -10,7 +10,7 @@ from PyQt5.QtWidgets import (
     QWidget,
 )
 
-from . import grid
+from .. import grid
 
 __height__ = 40
 __textColor__ = QColor(240, 240, 240)
@@ -21,7 +21,7 @@ __smallTick__ = 5
 __bigTick__ = 15
 
 
-class TimeScale(QGraphicsObject):
+class TimeScaleItem(QGraphicsObject):
     sigSetPlayHeadPosition = pyqtSignal(float)
     sigClickedTimeScale = pyqtSignal()
 

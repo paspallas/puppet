@@ -15,11 +15,10 @@ from PyQt5.QtWidgets import (
     QDockWidget,
 )
 
-from .key_frame_item import KeyFrameItem
+from .items import KeyFrameItem, TrackItem
 from .timeline import TimeLineView, TimeLineScene
 from .play_back_controller import PlayBackController
 from .track_model import TrackModel
-from .track_item import TrackItem
 from .track_manager import TrackManager
 
 
