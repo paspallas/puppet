@@ -23,6 +23,7 @@ __bigTick__ = 15
 
 class TimeScale(QGraphicsObject):
     sigSetPlayHeadPosition = pyqtSignal(float)
+    sigClickedTimeScale = pyqtSignal()
 
     def __init__(self, width: float) -> None:
         super().__init__()
@@ -40,12 +41,22 @@ class TimeScale(QGraphicsObject):
         fx.setBlurRadius(4)
 
         self._playPos = grid.__xoffset__ + __tickOffset__
+        self._clicked = False
+
+    @property
+    def clicked(self) -> bool:
+        return self._clicked
+
+    @clicked.setter
+    def clicked(self, value: bool) -> None:
+        self._clicked = value
 
     def boundingRect(self) -> QRectF:
         return self._rect
 
     def mousePressEvent(self, e: QGraphicsSceneMouseEvent) -> None:
-        if e.buttons() & Qt.LeftButton:
+        if e.button() == Qt.LeftButton:
+            self._clicked = True
             self.sigSetPlayHeadPosition.emit(e.scenePos().x())
 
     def paint(

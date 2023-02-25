@@ -139,6 +139,11 @@ class TimeLineView(QGraphicsView):
 
     @pyqtSlot(float)
     def onPlayHeadPositionChange(self, pos: float) -> None:
+        if self._scale.clicked:
+            # don't scroll the view
+            self._scale.clicked = False
+            return
+
         if self._follow:
             self.centerOn(
                 self._playHead.x(),
