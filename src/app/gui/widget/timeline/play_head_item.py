@@ -71,22 +71,22 @@ class PlayHeadItem(QGraphicsObject):
         return super().itemChange(change, value)
 
     def mousePressEvent(self, e: QGraphicsSceneMouseEvent) -> None:
-        if e.buttons() & Qt.LeftButton:
+        if e.button() == Qt.LeftButton:
             self._dragOrigin = e.scenePos().x()
         super().mousePressEvent(e)
 
     def mouseMoveEvent(self, e: QGraphicsSceneMouseEvent) -> None:
-        delta = e.scenePos().x() - self._dragOrigin
+        if (e.buttons() & Qt.LeftButton) == Qt.LeftButton:
+            delta = e.scenePos().x() - self._dragOrigin
 
-        if abs(delta) >= grid.__pxPerFrame__:
-            if delta > 0:
-                self.advance()
-            else:
-                self.rewind()
-
-            self._dragOrigin = e.scenePos().x()
-
-        e.accept()
+            if abs(delta) >= grid.__pxPerFrame__:
+                if delta > 0:
+                    self.advance()
+                else:
+                    self.rewind()
+                self._dragOrigin = e.scenePos().x()
+        else:
+            super().mouseMoveEvent(e)
 
     def paint(
         self, painter: QPainter, option: QStyleOptionGraphicsItem, widget: QWidget

@@ -121,10 +121,10 @@ if __name__ == "__main__":
             key_2 = KeyFrameItem(160 + 50, 60, 150, 20)
 
             self.dock._trackManager.newTrack()
-            # self.dock._trackManager.addPropertyTrack(0)
-            # self.dock._trackManager.addPropertyTrack(0)
-            # self.dock._trackManager.addPropertyTrack(0)
-            # self.dock._trackManager.addPropertyTrack(0)
+            self.dock._trackManager.addPropertyTrack(0)
+            self.dock._trackManager.addPropertyTrack(0)
+            self.dock._trackManager.addPropertyTrack(0)
+            self.dock._trackManager.addPropertyTrack(0)
 
             self.dock._trackManager.newTrack()
             self.dock._trackManager.addPropertyTrack(1)
@@ -136,12 +136,24 @@ if __name__ == "__main__":
             self.dock._trackManager.addPropertyTrack(2)
 
             self.dock._trackManager.newTrack()
+            self.dock._trackManager.addPropertyTrack(3)
+            self.dock._trackManager.addPropertyTrack(3)
 
-            # self.dock._trackManager.newTrack()
-            # self.dock._trackManager.newTrack()
-            # self.dock._trackManager.newTrack()
-            # self.dock._trackManager.newTrack()
+            self.dock._trackManager.newTrack()
+            self.dock._trackManager.addPropertyTrack(4)
+            self.dock._trackManager.addPropertyTrack(4)
 
+            self.dock._trackManager.newTrack()
+            self.dock._trackManager.addPropertyTrack(5)
+            self.dock._trackManager.addPropertyTrack(5)
+
+            self.dock._trackManager.newTrack()
+            self.dock._trackManager.addPropertyTrack(6)
+            self.dock._trackManager.addPropertyTrack(6)
+
+            self.dock._trackManager.newTrack()
+            self.dock._trackManager.addPropertyTrack(7)
+            self.dock._trackManager.addPropertyTrack(7)
             # self.dock._timeLineScene.addItem(key_1)
             # self.dock._timeLineScene.addItem(key_2)
 

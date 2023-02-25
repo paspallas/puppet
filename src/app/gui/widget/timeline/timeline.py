@@ -4,6 +4,7 @@ import typing
 import grid
 from PyQt5.QtCore import Qt, QRectF, QPointF, QPoint, pyqtSignal, pyqtSlot
 from PyQt5.QtWidgets import (
+    QApplication,
     QGraphicsView,
     QGraphicsScene,
     QGraphicsItem,
@@ -22,6 +23,7 @@ from PyQt5.QtGui import (
     QPainter,
     QPen,
     QWheelEvent,
+    QMouseEvent,
     QFontMetrics,
     QKeyEvent,
 )
@@ -112,6 +114,24 @@ class TimeLineView(QGraphicsView):
             self.scale(factor, 1.0)
         else:
             super().wheelEvent(e)
+
+    def mousePressEvent(self, e: QMouseEvent) -> None:
+        if e.button() == Qt.MidButton:
+            QApplication.setOverrideCursor(Qt.OpenHandCursor)
+            self._start_pan_x = self.horizontalScrollBar().value() + e.x()
+        else:
+            super().mousePressEvent(e)
+
+    def mouseMoveEvent(self, e: QMouseEvent) -> None:
+        if (e.buttons() & Qt.MidButton) == Qt.MidButton:
+            self.horizontalScrollBar().setValue(self._start_pan_x - e.x())
+        else:
+            super().mouseMoveEvent(e)
+
+    def mouseReleaseEvent(self, e: QMouseEvent) -> None:
+        if e.button() == Qt.MidButton:
+            QApplication.restoreOverrideCursor()
+        super().mouseReleaseEvent(e)
 
     @pyqtSlot(bool)
     def setFollowPlayHead(self, follow: bool) -> None:
