@@ -1,14 +1,14 @@
 import typing
 
 import grid
-from PyQt5.QtCore import Qt, QRectF, pyqtSlot, pyqtSignal
-from PyQt5.QtGui import QFontMetrics, QPainter, QPen, QColor
+from PyQt5.QtCore import QRectF, Qt, pyqtSignal, pyqtSlot
+from PyQt5.QtGui import QColor, QFontMetrics, QPainter, QPen
 from PyQt5.QtWidgets import (
-    QGraphicsObject,
+    QGraphicsDropShadowEffect,
     QGraphicsItem,
+    QGraphicsObject,
     QGraphicsSceneMouseEvent,
     QStyleOptionGraphicsItem,
-    QGraphicsDropShadowEffect,
     QWidget,
 )
 
@@ -22,9 +22,8 @@ __bigTick__ = 15
 
 
 class TimeScale(QGraphicsObject):
-    
     sigSetPlayHeadPosition = pyqtSignal(float)
-    
+
     def __init__(self, width: float) -> None:
         super().__init__()
 
@@ -44,11 +43,10 @@ class TimeScale(QGraphicsObject):
 
     def boundingRect(self) -> QRectF:
         return self._rect
-    
+
     def mousePressEvent(self, e: QGraphicsSceneMouseEvent) -> None:
         if e.buttons() & Qt.LeftButton:
             self.sigSetPlayHeadPosition.emit(e.scenePos().x())
-            
 
     def paint(
         self, painter: QPainter, option: QStyleOptionGraphicsItem, widget: QWidget
@@ -83,11 +81,14 @@ class TimeScale(QGraphicsObject):
 
                 painter.setPen(pen)
                 painter.drawText(r, label)
-                pen.setColor(__markerColor__)
-                painter.setPen(pen)
                 painter.drawLine(posx, __height__ - __bigTick__, posx, __height__)
 
             else:
+                if self._playPos == posx:
+                    pen.setColor(__hilightColor__)
+                else:
+                    pen.setColor(__markerColor__)
+                painter.setPen(pen)
                 painter.drawLine(posx, __height__ - __smallTick__, posx, __height__)
 
     @pyqtSlot(float)
