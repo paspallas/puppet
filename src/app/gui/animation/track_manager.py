@@ -1,12 +1,11 @@
-import random
 import typing
 
 from PyQt5.QtCore import QObject, Qt, pyqtSignal, pyqtSlot
 from PyQt5.QtGui import QColor
 from PyQt5.QtWidgets import QGraphicsRectItem, QGraphicsScene
 
+from ...util import Image
 from . import grid
-from ....util import Image
 from .items import TrackItem
 
 

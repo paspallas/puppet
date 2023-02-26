@@ -1,4 +1,5 @@
 import random
+import typing
 
 from PyQt5.QtCore import QPoint, QRect, QRectF, QSize, Qt
 from PyQt5.QtGui import QColor, QImage, QPainter, QPainterPath, QPixmap, QTransform

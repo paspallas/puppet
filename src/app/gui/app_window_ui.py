@@ -1,10 +1,9 @@
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QMainWindow, QTabWidget
 
-# from .animation import AnimationEditorDock
+from .animation import AnimationEditorDock
 from .editor import CharEditorWidget
 from .palette import SpritePaletteDock
-from .widget.timeline.animation_dock import AnimationEditorDock
 
 
 class EditModeUi:
