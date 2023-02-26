@@ -1,3 +1,5 @@
+import typing
+
 from PyQt5.QtCore import QFileInfo, Qt
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import QFileDialog, QLabel, QVBoxLayout, QWidget
@@ -43,10 +45,10 @@ class OpenImageDialog(QFileDialog):
                 )
             )
 
-    def _onFileSelected(self, file: str):
-        self._fileSelected = file
+    def _onFileSelected(self, file_: str):
+        self._fileSelected = file_
 
-    def _onFilesSelected(self, files: [str]):
+    def _onFilesSelected(self, files: typing.List[str]):
         self._filesSelected = files
 
     def getFileSelected(self) -> str:

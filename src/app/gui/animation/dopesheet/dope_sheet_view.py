@@ -72,9 +72,9 @@ class DopeSheetView(QGraphicsView):
         grid.Grid.paint(painter)
 
     def keyPressEvent(self, e: QKeyEvent) -> None:
-        if e.key() in [Qt.Key_Left, Qt.Key_A]:
+        if e.key() == Qt.Key_Q:
             self._playHead.rewind()
-        elif e.key() in [Qt.Key_Right, Qt.Key_D]:
+        elif e.key() == Qt.Key_E:
             self._playHead.advance()
         else:
             super().keyPressEvent(e)

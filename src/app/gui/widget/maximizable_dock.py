@@ -11,7 +11,7 @@ class MaximizableDock(QDockWidget):
         self.topLevelChanged.connect(self.onTopLevelChanged)
 
         self.fullScreen = QAction("Full Screen")
-        self.fullScreen.setShortcut("F11")
+        self.fullScreen.setShortcut("F12")
         self.fullScreen.triggered.connect(self.onFullScreen)
         self.addAction(self.fullScreen)
 
