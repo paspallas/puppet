@@ -14,7 +14,7 @@ from PyQt5.QtCore import (
 from .track import Track
 
 
-class TrackModel(QAbstractItemModel):
+class TrackModelAdapter(QAbstractItemModel):
     """Interface between the view and the collection of tracks of animation"""
 
     def __init__(self):

@@ -23,13 +23,13 @@ class MainMenu(QObject):
         file_quit.triggered.connect(self.quitApplication)
         file_menu.addAction(file_quit)
 
-        view_palette = parent._ui.spritePaletteDock.toggleViewAction()
-        view_palette.setShortcut("F1")
-        view_menu.addAction(view_palette)
-
         view_timeline = parent._ui.animEditorDock.toggleViewAction()
-        view_timeline.setShortcut("F2")
+        view_timeline.setShortcut("F1")
         view_menu.addAction(view_timeline)
+
+        view_palette = parent._ui.spritePaletteDock.toggleViewAction()
+        view_palette.setShortcut("F2")
+        view_menu.addAction(view_palette)
 
         view_togglePropertyVisibility = QAction("Hide Sprite Properties", parent)
         view_togglePropertyVisibility.setCheckable(True)

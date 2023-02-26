@@ -1,49 +1,24 @@
-from enum import IntEnum
 import typing
 
-
-from PyQt5.QtCore import Qt, QRectF, QPointF, QPoint, pyqtSignal, pyqtSlot
+from PyQt5.QtCore import QRectF, Qt, pyqtSignal, pyqtSlot
+from PyQt5.QtGui import QFontMetrics, QKeyEvent, QMouseEvent, QPainter, QWheelEvent
 from PyQt5.QtWidgets import (
     QApplication,
-    QGraphicsView,
     QGraphicsScene,
-    QGraphicsItem,
-    QGraphicsRectItem,
-    QGraphicsObject,
-    QGraphicsDropShadowEffect,
+    QGraphicsView,
     QStyleOptionGraphicsItem,
     QWidget,
-    QGraphicsSceneMouseEvent,
-    QGraphicsSceneHoverEvent,
-    qApp,
-)
-from PyQt5.QtGui import (
-    QColor,
-    QBrush,
-    QPainter,
-    QPen,
-    QWheelEvent,
-    QMouseEvent,
-    QFontMetrics,
-    QKeyEvent,
 )
 
-from .grid import Grid
-from .items import KeyFrameItem, PlayHeadItem, TimeScaleItem
-from . import grid
+from .. import grid
+from ..items import KeyFrameItem, PlayHeadItem, TimeScaleItem
 
 
-class TimeLineScene(QGraphicsScene):
-    def __init__(self, *args, **kwargs) -> None:
-        super().__init__(0, 0, 1200, 400)
-        self.setItemIndexMethod(QGraphicsScene.NoIndex)
-
-
-class TimeLineView(QGraphicsView):
-    def __init__(
-        self, scene: QGraphicsScene, parent: typing.Optional[QWidget] = None
-    ) -> None:
-        super().__init__(scene, parent)
+class DopeSheetView(QGraphicsView):
+    def __init__(self, parent: typing.Optional[QWidget] = None) -> None:
+        self._scene = QGraphicsScene(0, 0, 1200, 400)
+        self._scene.setItemIndexMethod(QGraphicsScene.NoIndex)
+        super().__init__(self._scene, parent)
 
         self.setAlignment(Qt.AlignTop)
         self.setStyleSheet("background-color: rgb(43, 42, 51);")
@@ -53,26 +28,30 @@ class TimeLineView(QGraphicsView):
 
         self.setOptimizationFlag(QGraphicsView.DontAdjustForAntialiasing)
         self.setViewportUpdateMode(QGraphicsView.FullViewportUpdate)
+
         self.setTransformationAnchor(QGraphicsView.AnchorUnderMouse)
         self.setResizeAnchor(QGraphicsView.AnchorViewCenter)
-
         self.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
         self.setHorizontalScrollBarPolicy(Qt.ScrollBarAsNeeded)
         self.centerOn(0, 0)
 
         self._followPlayHead = True
+        self.scalings = 0
+
         self._playHead = PlayHeadItem()
-        self.scene().addItem(self._playHead)
-        self.scene().sceneRectChanged.connect(
+        self._scale = TimeScaleItem(self._scene.width())
+
+        self._scene.addItem(self._playHead)
+        self._scene.addItem(self._scale)
+
+        self._scene.sceneRectChanged.connect(
             lambda rect: self._playHead.onSceneRectHeightChange(rect.height())
         )
-        self._scale = TimeScaleItem(self.scene().width())
-        self.scene().addItem(self._scale)
-        self.scene().sceneRectChanged.connect(
+        self._scene.sceneRectChanged.connect(
             lambda rect: self._scale.onAnimationLengthChanged
         )
-        Grid.computeGrid(self.scene().sceneRect(), [])
-        self.scalings = 0
+
+        grid.Grid.computeGrid(self._scene.sceneRect(), [])
 
         self._makeConnections()
 
@@ -90,7 +69,7 @@ class TimeLineView(QGraphicsView):
         )
 
     def drawBackground(self, painter: QPainter, rect: QRectF) -> None:
-        Grid.paint(painter)
+        grid.Grid.paint(painter)
 
     def keyPressEvent(self, e: QKeyEvent) -> None:
         if e.key() in [Qt.Key_Left, Qt.Key_A]:

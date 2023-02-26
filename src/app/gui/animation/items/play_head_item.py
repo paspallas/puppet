@@ -14,7 +14,7 @@ from PyQt5.QtWidgets import (
 from .. import grid
 from . import time_scale_item
 
-__color__ = QColor(220, 25, 29)
+__color__ = QColor(240, 25, 29)
 __shadow__ = QColor(65, 0, 0, 220)
 __size__ = grid.__pxPerFrame__
 
@@ -26,7 +26,7 @@ class PlayHeadItem(QGraphicsObject):
         super().__init__()
 
         self._rect = QRectF(-__size__ / 2, 0, __size__, __size__)
-        self.setX(grid.__xoffset__)
+        self.setX(grid.Grid.alignTo(grid.__xoffset__, __size__ / 2))
         self.setY(time_scale_item.__height__)
 
         flags = (

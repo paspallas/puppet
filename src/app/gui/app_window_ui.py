@@ -16,9 +16,9 @@ class EditModeUi:
 
         parent.setTabPosition(Qt.BottomDockWidgetArea, QTabWidget.South)
         parent.setTabShape(QTabWidget.Rounded)
-        parent.addDockWidget(Qt.BottomDockWidgetArea, self.spritePaletteDock)
         parent.addDockWidget(Qt.BottomDockWidgetArea, self.animEditorDock)
-        parent.tabifyDockWidget(self.spritePaletteDock, self.animEditorDock)
+        parent.addDockWidget(Qt.BottomDockWidgetArea, self.spritePaletteDock)
+        parent.tabifyDockWidget(self.animEditorDock, self.spritePaletteDock)
 
         self.spritePaletteDock.hide()
         self.animEditorDock.hide()

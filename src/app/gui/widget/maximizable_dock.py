@@ -1,6 +1,6 @@
 import typing
 
-from PyQt5.QtCore import Qt, pyqtSlot, pyqtSignal
+from PyQt5.QtCore import Qt, pyqtSignal, pyqtSlot
 from PyQt5.QtWidgets import QAction, QDockWidget, QWidget
 
 
@@ -11,7 +11,7 @@ class MaximizableDock(QDockWidget):
         self.topLevelChanged.connect(self.onTopLevelChanged)
 
         self.fullScreen = QAction("Full Screen")
-        self.fullScreen.setShortcut("Ctrl+F11")
+        self.fullScreen.setShortcut("F11")
         self.fullScreen.triggered.connect(self.onFullScreen)
         self.addAction(self.fullScreen)
 
