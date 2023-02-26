@@ -86,6 +86,8 @@ class CustomGraphicView(QGraphicsView):
             pen.setCosmetic(True)
             painter.setPen(pen)
             painter.drawLines(*lines)
+            pen.setColor(Qt.white)
+            painter.setPen(pen)
             painter.drawRect(QRectF(-160, -112, 320, 224))
 
     def drawForeground(self, painter: QPainter, rect: QRectF) -> None:

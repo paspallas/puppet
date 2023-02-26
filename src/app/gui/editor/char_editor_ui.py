@@ -21,7 +21,7 @@ class CharEditorUi:
         self.editorView = CustomGraphicView(
             self.editorScene,
             parent,
-            options=CustomGraphicViewOptions(True, True, 32, True),
+            options=CustomGraphicViewOptions(True, False, 32, True),
         )
 
         PanControl(self.editorView)
@@ -36,17 +36,19 @@ class CharEditorUi:
         sliderVbox.addStretch()
         sliderVbox.addWidget(self.zoomSlider)
 
+        self.spriteProperty = SpritePropertyWidget(parent)
+        self.spriteListBox = SpriteListBox()
+
         hbox = QHBoxLayout()
         hbox.addLayout(sliderVbox, 0)
         hbox.addStretch()
-        self.spriteProperty = SpritePropertyWidget(parent)
         hbox.addWidget(self.spriteProperty, 0, Qt.AlignBottom)
         hbox.addStretch()
-        self.spriteListBox = SpriteListBox()
         hbox.addWidget(self.spriteListBox, 0, Qt.AlignRight)
-
         vbox = QVBoxLayout(self.editorView.viewport())
         vbox.addLayout(hbox)
 
         main = QHBoxLayout(parent)
         main.addWidget(self.editorView)
+
+        parent.setMinimumHeight(320)

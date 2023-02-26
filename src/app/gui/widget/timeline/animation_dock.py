@@ -13,6 +13,7 @@ from PyQt5.QtWidgets import (
     QSplitter,
     QCheckBox,
     QDockWidget,
+    QAction,
 )
 
 from .items import KeyFrameItem, TrackItem
@@ -20,9 +21,10 @@ from .timeline import TimeLineView, TimeLineScene
 from .play_back_controller import PlayBackController
 from .track_model import TrackModel
 from .track_manager import TrackManager
+from ..maximizable_dock import MaximizableDock
 
 
-class AnimationEditorDock(QDockWidget):
+class AnimationEditorDock(MaximizableDock):
     def __init__(self, parent: typing.Optional[QWidget] = None) -> None:
         super().__init__(parent)
 

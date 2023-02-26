@@ -52,5 +52,10 @@ class CharEditorWidget(QWidget):
         self._ui.spriteListBox.setModel(self._document._currentFrameModel)
 
     @pyqtSlot(str, bool)
-    def sltSetTool(self, tool_cls: str, activate: bool) -> None:
+    def setTool(self, tool_cls: str, activate: bool) -> None:
         self._toolmanaget.setTool(tool_cls, activate)
+
+    @pyqtSlot(bool)
+    def toggleSpritePropertyVisibility(self, visible: bool) -> None:
+        self._ui.spriteListBox.setVisible(not visible)
+        self._ui.spriteProperty.setVisible(not visible)

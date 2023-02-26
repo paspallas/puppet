@@ -31,6 +31,14 @@ class MainMenu(QObject):
         view_timeline.setShortcut("F2")
         view_menu.addAction(view_timeline)
 
+        view_togglePropertyVisibility = QAction("Hide Sprite Properties", parent)
+        view_togglePropertyVisibility.setCheckable(True)
+        view_togglePropertyVisibility.setShortcut("F3")
+        view_togglePropertyVisibility.triggered.connect(
+            parent._ui.charEditor.toggleSpritePropertyVisibility
+        )
+        view_menu.addAction(view_togglePropertyVisibility)
+
         view_menu.addSeparator()
         view_fullscreen = QAction("Full Screen", parent)
         view_fullscreen.setCheckable(True)
