@@ -17,8 +17,19 @@ class AnimationEditorDock(MaximizableDock):
 
         self._ui = AnimationDockUi()
         self._ui.setupUi(self)
-
         self.TestPopulate()
+
+    @pyqtSlot()
+    def advance(self) -> None:
+        self._ui.dopeSheet._advance()
+
+    @pyqtSlot()
+    def rewind(self) -> None:
+        self._ui.dopeSheet._rewind()
+
+    @pyqtSlot()
+    def setKeyframe(self) -> None:
+        self._ui.dopeSheet._setKeyFrame()
 
     def TestPopulate(self) -> None:
         self._trackManager = TrackManager(self._ui.dopeSheet.getScene())

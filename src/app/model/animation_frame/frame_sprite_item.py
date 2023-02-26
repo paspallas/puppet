@@ -67,7 +67,7 @@ class FrameSpriteItem(QGraphicsPixmapItem, Publisher):
 
     def keyPressEvent(self, e: QKeyEvent) -> None:
         if e.isAutoRepeat():
-            return
+            return super().keyPressEvent(e)
 
         if e.key() == Qt.Key_R:
             z = int(self.zValue()) + 1
@@ -98,15 +98,19 @@ class FrameSpriteItem(QGraphicsPixmapItem, Publisher):
         elif e.key() == Qt.Key_T:
             self.publish(ItemEvent.enableHint)
 
-        elif e.key() == Qt.Key_Space:
+        elif e.key() == Qt.Key_O:
             self._overlay.enabled = not self._overlay.enabled
+
+        super().keyPressEvent(e)
 
     def keyReleaseEvent(self, e: QKeyEvent) -> None:
         if e.isAutoRepeat():
-            return
+            return super().keyReleaseEvent(e)
 
         if e.key() == Qt.Key_T:
             self.publish(ItemEvent.disableHint)
+
+        super().keyReleaseEvent(e)
 
     def setOffset(self, x: float, y: float) -> None:
         self.setX(self.x() + x)

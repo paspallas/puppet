@@ -72,6 +72,7 @@ class DopeSheetView(QGraphicsView):
         grid.Grid.paint(painter)
 
     def keyPressEvent(self, e: QKeyEvent) -> None:
+        print("received")
         if e.key() == Qt.Key_Q:
             self._playHead.rewind()
         elif e.key() == Qt.Key_E:
@@ -127,3 +128,9 @@ class DopeSheetView(QGraphicsView):
                 self._playHead.x(),
                 self.mapToScene(self.viewport().rect()).boundingRect().center().y(),
             )
+
+    def advance(self) -> None:
+        self._playHead.advance()
+
+    def rewind(self) -> None:
+        self._playHead.rewind()
