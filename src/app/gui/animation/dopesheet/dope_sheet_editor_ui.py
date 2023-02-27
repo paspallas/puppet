@@ -19,6 +19,7 @@ class DopeSheetEditorUi:
         parent.setMinimumWidth(800)
 
         self.dopeSheetView = DopeSheetView()
+        self.dopeSheetView.setStyleSheet("background-color: rgb(60, 60, 60);")
 
         self.followChk = QCheckBox("Follow")
         self.followChk.setToolTip("Follow playhead")

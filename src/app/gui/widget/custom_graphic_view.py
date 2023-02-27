@@ -91,7 +91,7 @@ class CustomGraphicView(QGraphicsView):
             pen.setCosmetic(True)
             painter.setPen(pen)
             painter.drawLines(*lines)
-            pen.setColor(Qt.white)
+            pen.setColor(__foreGridColor__)
             painter.setPen(pen)
             painter.drawRect(QRectF(-160, -112, 320, 224))
 

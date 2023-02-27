@@ -69,11 +69,11 @@ class FrameSpriteItem(QGraphicsPixmapItem, Publisher):
         if e.isAutoRepeat():
             return super().keyPressEvent(e)
 
-        if e.key() == Qt.Key_R:
+        if e.key() == Qt.Key_Z:
             z = int(self.zValue()) + 1
             self.publish(ItemEvent.zChanged, z)
 
-        elif e.key() == Qt.Key_F:
+        elif e.key() == Qt.Key_X:
             z = int(self.zValue() - 1)
             self.publish(ItemEvent.zChanged, z)
 
@@ -140,8 +140,6 @@ class FrameSpriteItem(QGraphicsPixmapItem, Publisher):
         if change == QGraphicsItem.ItemPositionChange and self.scene():
             self._overlay.setPos(value.x(), value.y())
             self.publish(ItemEvent.posChanged, value.x(), value.y())
-        elif change == QGraphicsItem.ItemSelectedChange and self.scene():
-            self._overlay.selected = value
 
         return value
 

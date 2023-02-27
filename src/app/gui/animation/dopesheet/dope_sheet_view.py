@@ -21,7 +21,6 @@ class DopeSheetView(QGraphicsView):
         super().__init__(self._scene, parent)
 
         self.setAlignment(Qt.AlignTop)
-        self.setStyleSheet("background-color: rgb(43, 42, 51);")
 
         self.setMouseTracking(True)
         self.setFocusPolicy(Qt.WheelFocus)
@@ -31,17 +30,18 @@ class DopeSheetView(QGraphicsView):
 
         self.setTransformationAnchor(QGraphicsView.AnchorUnderMouse)
         self.setResizeAnchor(QGraphicsView.AnchorViewCenter)
-        self.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
-        self.setHorizontalScrollBarPolicy(Qt.ScrollBarAsNeeded)
+        self.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOn)
+        self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOn)
         self.centerOn(0, 0)
 
         self._followPlayHead = True
         self.scalings = 0
 
-        self._playHead = PlayHeadItem()
-        self._scale = TimeScaleItem(self._scene.width())
+        self._playHead = PlayHeadItem(self.fontMetrics())
+        self._scale = TimeScaleItem(self._scene.width(), self.fontMetrics())
 
         self._scene.addItem(self._playHead)
+        self._playHead.updateLabel(0)
         self._scene.addItem(self._scale)
 
         self._scene.sceneRectChanged.connect(
@@ -57,9 +57,6 @@ class DopeSheetView(QGraphicsView):
 
     def _makeConnections(self) -> None:
         self._playHead.sigPlayHeadPositionChange.connect(self.onPlayHeadPositionChange)
-        self._playHead.sigPlayHeadPositionChange.connect(
-            self._scale.onPlayHeadPositionChanged
-        )
         self._scale.sigSetPlayHeadPosition.connect(self._playHead.setPlaybackPosition)
         self.verticalScrollBar().valueChanged.connect(
             self._playHead.onVerticalScrollBarChange
@@ -72,7 +69,6 @@ class DopeSheetView(QGraphicsView):
         grid.Grid.paint(painter)
 
     def keyPressEvent(self, e: QKeyEvent) -> None:
-        print("received")
         if e.key() == Qt.Key_Q:
             self._playHead.rewind()
         elif e.key() == Qt.Key_E:

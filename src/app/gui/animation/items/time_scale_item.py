@@ -10,22 +10,22 @@ from PyQt5.QtWidgets import (
     QWidget,
 )
 
-from .. import grid
+from ..grid import __midFrame__, __pxPerFrame__, __xoffset__
 
-__height__ = 40
-__textColor__ = QColor(240, 240, 240)
-__hilightColor__ = QColor(Qt.cyan)
-__markerColor__ = QColor(200, 200, 200)
-__tickOffset__ = 5
-__smallTick__ = 5
-__bigTick__ = 15
+__rectColor__ = QColor("#2A2A2A")
+__textColor__ = QColor("#7C7C7C")
+
+__height__ = 30
+__tickOffset__ = 10
+__tickHeight__ = 4
+__textY__ = 3
 
 
 class TimeScaleItem(QGraphicsObject):
     sigSetPlayHeadPosition = pyqtSignal(float)
     sigClickedTimeScale = pyqtSignal()
 
-    def __init__(self, width: float) -> None:
+    def __init__(self, width: float, fm: QFontMetrics) -> None:
         super().__init__()
 
         self._rect = QRectF(0, 0, width, __height__)
@@ -33,10 +33,10 @@ class TimeScaleItem(QGraphicsObject):
         self.setFlag(QGraphicsItem.ItemIsSelectable, False)
         self.setFlag(QGraphicsItem.ItemIsMovable, False)
 
-        self._playPos = grid.__xoffset__ + __tickOffset__
         self._clicked = False
 
-        self._pen = QPen(__markerColor__, 0, Qt.SolidLine)
+        self._fm = fm
+        self._pen = QPen(__textColor__, 0, Qt.SolidLine)
         self._pen.setCosmetic(True)
 
     @property
@@ -58,51 +58,33 @@ class TimeScaleItem(QGraphicsObject):
     def paint(
         self, painter: QPainter, option: QStyleOptionGraphicsItem, widget: QWidget
     ) -> None:
-        painter.setRenderHints(QPainter.TextAntialiasing | QPainter.Antialiasing)
-
+        painter.setRenderHints(QPainter.TextAntialiasing)
         painter.setPen(Qt.NoPen)
-        painter.setBrush(Qt.black)
+        painter.setBrush(__rectColor__)
         painter.drawRect(self._rect)
+
         painter.setPen(self._pen)
         painter.setBrush(Qt.NoBrush)
 
-        fm = self.scene().views()[0].viewport().fontMetrics()
+        max_ = int(self._rect.width())
+        for x in range(0, max_, __pxPerFrame__):
+            posx = x + __xoffset__ + __tickOffset__ - __midFrame__
 
-        for x in range(0, int(self._rect.width()), grid.__pxPerFrame__):
-            posx = x + grid.__xoffset__ + __tickOffset__
+            if x % (__pxPerFrame__ * __tickOffset__) == 0:
+                label = f"{x // __pxPerFrame__}"
 
-            if x % (grid.__pxPerFrame__ * __tickOffset__) == 0:
-                label = f"{x // grid.__pxPerFrame__}f"
-
-                # center the text in the time mark
-                r = QRectF(fm.boundingRect(label).translated(posx, 0))
+                r = QRectF(self._fm.boundingRect(label).translated(posx, __textY__))
                 r.translate(-r.width() / 2, r.height())
-
-                if self._playPos == posx:
-                    self._pen.setColor(__hilightColor__)
-                else:
-                    self._pen.setColor(__textColor__)
-
-                painter.setPen(self._pen)
                 painter.drawText(r, label)
-                painter.drawLine(posx, __height__ - __bigTick__, posx, __height__)
 
-            else:
-                if self._playPos == posx:
-                    self._pen.setColor(__hilightColor__)
-                else:
-                    self._pen.setColor(__markerColor__)
-                painter.setPen(self._pen)
-                painter.drawLine(posx, __height__ - __smallTick__, posx, __height__)
+            if posx <= max_:
+                painter.drawLine(
+                    posx, __height__ - __tickHeight__, posx, __height__ - 1
+                )
 
     @pyqtSlot(float)
     def onAnimationLengthChanged(self, length: float) -> None:
         self._rect.setWidth(length)
-
-    @pyqtSlot(float)
-    def onPlayHeadPositionChanged(self, value: float) -> None:
-        if self._playPos != value:
-            self._playPos = value
 
     @pyqtSlot(int)
     def onVerticalScrollBarChange(self, scroll: int) -> None:

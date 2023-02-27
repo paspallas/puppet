@@ -3,14 +3,16 @@ import typing
 from PyQt5.QtCore import QLineF, QRectF, Qt
 from PyQt5.QtGui import QColor, QPainter, QPen
 
-__pxPerFrame__ = 10
-__xoffset__ = 20
-__yoffset__ = 70
-
 __trackHeight__ = 20
 __trackVSpacing__ = 8
 __innerTrackSpacing__ = 5
 __subTrackVSpacing__ = 3
+
+__pxPerFrame__ = 10
+__midFrame__ = __pxPerFrame__ // 2
+__framesPerHilight__ = 10
+__xoffset__ = 20
+__yoffset__ = 50
 
 __pencolor__ = QColor(30, 30, 30)
 __hilightBrush__ = QColor(60, 60, 60)
@@ -51,7 +53,7 @@ class Grid:
                         totalTrackHeight += __subTrackVSpacing__
 
                 for x in range(left, right, __pxPerFrame__):
-                    if (x - left) % (__pxPerFrame__ * 5) == 0:
+                    if (x - left) % (__pxPerFrame__ * __framesPerHilight__) == 0:
                         __hilightRects__.append(
                             QRectF(x, y + vSpacing, __pxPerFrame__, __trackHeight__)
                         )
@@ -84,9 +86,16 @@ class Grid:
         painter.drawRects(__hilightRects__)
 
     @staticmethod
-    def alignTo(x: float, offset: float = 0) -> float:
+    def alignTo(x: float) -> float:
         pos = round(x / __pxPerFrame__) * __pxPerFrame__
         if pos < __xoffset__:
             pos = __xoffset__
 
-        return pos + offset
+        return pos
+
+    @staticmethod
+    def pixelToFrame(x: float) -> int:
+        if x > __xoffset__:
+            return int((x - __xoffset__) // __pxPerFrame__)
+
+        return 0
