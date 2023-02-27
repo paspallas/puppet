@@ -30,10 +30,7 @@ class PlayHeadItem(QGraphicsObject):
         self.setY(time_scale_item.__height__)
 
         flags = (
-            QGraphicsItem.ItemIsSelectable
-            | QGraphicsItem.ItemIsFocusable
-            | QGraphicsItem.ItemSendsScenePositionChanges
-            | QGraphicsItem.ItemIsMovable
+            QGraphicsItem.ItemIsFocusable | QGraphicsItem.ItemSendsScenePositionChanges
         )
         self.setFlags(flags)
         self.setZValue(10000)
@@ -43,7 +40,6 @@ class PlayHeadItem(QGraphicsObject):
         self._marker.setPen(__color__)
 
         self._currentY = time_scale_item.__height__
-        self._dragOrigin = 0
 
         self._pen = QPen(__shadow__, 0, Qt.SolidLine)
         self._pen.setCosmetic(True)
@@ -67,24 +63,6 @@ class PlayHeadItem(QGraphicsObject):
             return QPointF(x, self._currentY)
 
         return super().itemChange(change, value)
-
-    def mousePressEvent(self, e: QGraphicsSceneMouseEvent) -> None:
-        if e.button() == Qt.LeftButton:
-            self._dragOrigin = e.scenePos().x()
-        super().mousePressEvent(e)
-
-    def mouseMoveEvent(self, e: QGraphicsSceneMouseEvent) -> None:
-        if (e.buttons() & Qt.LeftButton) == Qt.LeftButton:
-            delta = e.scenePos().x() - self._dragOrigin
-
-            if abs(delta) >= grid.__pxPerFrame__:
-                if delta > 0:
-                    self.advance()
-                else:
-                    self.rewind()
-                self._dragOrigin = e.scenePos().x()
-        else:
-            super().mouseMoveEvent(e)
 
     def paint(
         self, painter: QPainter, option: QStyleOptionGraphicsItem, widget: QWidget
