@@ -1,13 +1,22 @@
 import typing
 
-from PyQt5.QtCore import Qt, pyqtSlot
-from PyQt5.QtWidgets import QDialog, QDialogButtonBox, QLineEdit, QVBoxLayout, QWidget
+from PyQt5.QtCore import Qt, pyqtSlot, QRegExp
+from PyQt5.QtGui import QRegExpValidator
+from PyQt5.QtWidgets import (
+    QDialog,
+    QDialogButtonBox,
+    QHBoxLayout,
+    QLabel,
+    QLineEdit,
+    QVBoxLayout,
+    QWidget,
+)
 
 
 class NewAnimationDialog(QDialog):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.setWindowTitle("Create new animation")
+        self.setWindowTitle("Create a new animation")
         self.setFixedSize(300, 100)
 
         buttons = QDialogButtonBox.Ok | QDialogButtonBox.Cancel
@@ -16,17 +25,18 @@ class NewAnimationDialog(QDialog):
         self._buttonBox.accepted.connect(self.accept)
         self._buttonBox.rejected.connect(self.reject)
 
-        self._name = QLineEdit("Name")
+        self._name = QLineEdit("")
+        self._name.setValidator(QRegExpValidator(QRegExp("[a-zA-Z0-9_()]*")))
+        self._label = QLabel("Name")
 
-        self._vbox = QVBoxLayout(self)
-        self._vbox.addWidget(self._name)
-        self._vbox.addStretch()
-        self._vbox.addWidget(self._buttonBox)
+        hbox = QHBoxLayout()
+        hbox.addWidget(self._label)
+        hbox.addWidget(self._name)
+
+        vbox = QVBoxLayout(self)
+        vbox.addLayout(hbox)
+        vbox.addStretch()
+        vbox.addWidget(self._buttonBox)
 
     def name(self) -> str:
-        name = self._name.text().lstrip().rstrip()
-
-        if len(name) > 0:
-            return name.replace(" ", "_")
-
-        return "New_animation"
+        return self._name.text()

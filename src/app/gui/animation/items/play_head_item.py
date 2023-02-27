@@ -14,7 +14,7 @@ from PyQt5.QtWidgets import (
 from ..grid import Grid, __midFrame__, __pxPerFrame__, __xoffset__
 from . import time_scale_item as scale
 
-__color__ = QColor("#4379BF")
+__color__ = QColor("#2A82DA")
 __border__ = QColor("#5680C2")
 __width__ = 30
 __height__ = 20

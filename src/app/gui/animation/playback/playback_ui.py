@@ -1,26 +1,18 @@
-import typing
-
-from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import (
-    QWidget,
-    QHBoxLayout,
-    QVBoxLayout,
-    QSpinBox,
-    QLabel,
-    QPushButton,
+    QAction,
     QCheckBox,
+    QComboBox,
+    QHBoxLayout,
+    QLabel,
+    QSpinBox,
+    QToolButton,
+    QVBoxLayout,
+    QWidget,
 )
 
-from .dope_sheet_view import DopeSheetView
 
-
-class DopeSheetEditorUi:
+class PlayBackUi:
     def setupUi(self, parent: QWidget) -> None:
-        parent.setMinimumWidth(800)
-
-        self.dopeSheetView = DopeSheetView()
-        self.dopeSheetView.setStyleSheet("background-color: rgb(60, 60, 60);")
-
         self.followChk = QCheckBox("Follow")
         self.followChk.setToolTip("Follow playhead")
         self.followChk.setChecked(True)
@@ -36,14 +28,25 @@ class DopeSheetEditorUi:
         self.lengthSpin.setRange(60, 2000)
         self.lengthSpin.setToolTip("Max animation length in frames")
 
-        hbox = QHBoxLayout()
+        self.currentViewLabel = QLabel("View")
+        self.currentView = QComboBox()
+        self.currentView.setToolTip("Current edit view")
+        self.currentView.addItem("Dope sheet")
+        self.currentView.addItem("Easing curve")
+
+        # self.editor = QToolButton()
+        # self.editor.setPopupMode(QToolButton.MenuButtonPopup)
+        # self.editor.triggered.connect(self.editor.setDefaultAction)
+        # self.editor.addAction(QAction("Dopesheet", parent))
+        # self.editor.addAction(QAction("Curve editor", parent))
+
+        hbox = QHBoxLayout(parent)
+        hbox.setContentsMargins(0, 0, 0, 5)
+        hbox.addWidget(self.currentViewLabel)
+        hbox.addWidget(self.currentView)
         hbox.addStretch()
         hbox.addWidget(self.followChk)
         hbox.addWidget(self.fpsLabel)
         hbox.addWidget(self.fpsSpin)
         hbox.addWidget(self.lengthSpin)
         hbox.addWidget(self.lengthLabel)
-
-        vbox = QVBoxLayout(parent)
-        vbox.addLayout(hbox)
-        vbox.addWidget(self.dopeSheetView)
