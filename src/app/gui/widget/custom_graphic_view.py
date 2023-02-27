@@ -10,6 +10,11 @@ from PyQt5.QtWidgets import (
     QStyleOptionGraphicsItem,
 )
 
+__backGridColor__ = QColor("#080808")
+__foreGridColor__ = QColor(210, 210, 210, 200)
+__darkColor__ = QColor("#404040")
+__lightColor__ = QColor("#666666")
+
 
 class CustomGraphicViewOptions(NamedTuple):
     drag: bool
@@ -68,7 +73,7 @@ class CustomGraphicView(QGraphicsView):
             for x in range(left, int(rect.right()), self._gridSize):
                 is_dark = (x / self._gridSize + y / self._gridSize) % 2
 
-                color = QColor("#505050") if is_dark else QColor("#767676")
+                color = __darkColor__ if is_dark else __lightColor__
                 painter.fillRect(
                     QRectF(x, y, self._gridSize, self._gridSize), QBrush(color)
                 )
@@ -82,7 +87,7 @@ class CustomGraphicView(QGraphicsView):
             # center visual indicator
             lines = [QLineF(l, 0, r, 0), QLineF(0, t, 0, b)]
 
-            pen = QPen(QColor("#080808"), 0, Qt.SolidLine)
+            pen = QPen(__backGridColor__, 0, Qt.SolidLine)
             pen.setCosmetic(True)
             painter.setPen(pen)
             painter.drawLines(*lines)
@@ -105,7 +110,7 @@ class CustomGraphicView(QGraphicsView):
         ]
 
         painter.setRenderHint(QPainter.Antialiasing)
-        pen = QPen(QColor(210, 210, 210, 200), 2, Qt.SolidLine)
+        pen = QPen(__foreGridColor__, 2, Qt.SolidLine)
         pen.setCosmetic(True)
         painter.setPen(pen)
         painter.drawLines(*lines)

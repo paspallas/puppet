@@ -6,4 +6,5 @@ from .double_slider import DoubleSlider
 from .fancy_slider import FancySlider
 from .maximizable_dock import MaximizableDock
 from .ruler import Ruler
+from .radial_menu import RadialMenu
 from .zoom_slider import ZoomSlider

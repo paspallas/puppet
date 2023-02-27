@@ -7,7 +7,6 @@ from PyQt5.QtWidgets import QDialog, QDialogButtonBox, QLineEdit, QVBoxLayout, Q
 class NewAnimationDialog(QDialog):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-
         self.setWindowTitle("Create new animation")
         self.setFixedSize(300, 100)
 
