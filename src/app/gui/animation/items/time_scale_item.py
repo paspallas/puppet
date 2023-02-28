@@ -1,7 +1,7 @@
 import typing
 
-from PyQt5.QtCore import QRectF, Qt, pyqtSignal, pyqtSlot
-from PyQt5.QtGui import QColor, QFontMetrics, QPainter, QPen
+from PyQt5.QtCore import QRectF, Qt, QPoint, pyqtSignal, pyqtSlot
+from PyQt5.QtGui import QColor, QFontMetrics, QPainter, QPen, QPixmap
 from PyQt5.QtWidgets import (
     QGraphicsItem,
     QGraphicsObject,
@@ -15,8 +15,11 @@ from ..grid import __midFrame__, __pxPerFrame__, __xoffset__
 __rectColor__ = QColor("#2A2A2A")
 __textColor__ = QColor("#7C7C7C")
 
+__tickOffset__ = 10 - __pxPerFrame__ // 2
+__labelPerFrame__ = 10
+__labelPosition__ = __pxPerFrame__ * __labelPerFrame__
+
 __height__ = 30
-__tickOffset__ = 10
 __tickHeight__ = 4
 __textY__ = 3
 
@@ -32,6 +35,8 @@ class TimeScaleItem(QGraphicsObject):
         self.setZValue(9999)
         self.setFlag(QGraphicsItem.ItemIsSelectable, False)
         self.setFlag(QGraphicsItem.ItemIsMovable, False)
+        self.setFlag(QGraphicsItem.ItemIgnoresTransformations)
+        self.setCacheMode(QGraphicsItem.DeviceCoordinateCache)
 
         self._clicked = False
 
@@ -39,20 +44,29 @@ class TimeScaleItem(QGraphicsObject):
         self._pen = QPen(__textColor__, 0, Qt.SolidLine)
         self._pen.setCosmetic(True)
 
-        self._labelCache: typing.List[typing.Tuple[str, QRectF]] = []
+        self._cachedPixmap: QPixMap = None
+        self._resetCachedPixmap()
 
-        self._updateLabelCache()
+    def _resetCachedPixmap(self) -> None:
+        length = self._rect.toRect().width()
 
-    def _updateLabelCache(self) -> None:
-        for x in range(0, int(self._rect.width()), __pxPerFrame__):
-            posx = x + __xoffset__ + __tickOffset__ - __midFrame__
+        self._cachedPixmap = QPixmap(length, __height__)
+        self._cachedPixmap.fill(__rectColor__)
 
-            if x % (__pxPerFrame__ * __tickOffset__) == 0:
-                label = f"{x // __pxPerFrame__}"
-                r = QRectF(self._fm.boundingRect(label).translated(posx, __textY__))
-                r.translate(-r.width() / 2, r.height())
+        start = __tickOffset__ + __xoffset__
 
-                self._labelCache.append((label, r))
+        with QPainter(self._cachedPixmap) as p:
+            p.setRenderHint(QPainter.TextAntialiasing)
+            p.setPen(self._pen)
+
+            for x in range(start, length, __pxPerFrame__):
+                p.drawLine(x, __height__ - __tickHeight__, x, __height__ - 1)
+
+                if (x - start) % __labelPosition__ == 0:
+                    label = str((x - start) // __pxPerFrame__)
+                    r = QRectF(self._fm.boundingRect(label).translated(x, __textY__))
+                    r.translate(-r.width() / 2, r.height())
+                    p.drawText(r, label)
 
     @property
     def clicked(self) -> bool:
@@ -73,29 +87,13 @@ class TimeScaleItem(QGraphicsObject):
     def paint(
         self, painter: QPainter, option: QStyleOptionGraphicsItem, widget: QWidget
     ) -> None:
-        painter.setRenderHints(QPainter.TextAntialiasing)
-        painter.setPen(Qt.NoPen)
-        painter.setBrush(__rectColor__)
-        painter.drawRect(self._rect)
-
-        painter.setPen(self._pen)
-        painter.setBrush(Qt.NoBrush)
-
-        length = int(self._rect.width())
-        for x in range(0, length, __pxPerFrame__):
-            posx = x + __xoffset__ + __tickOffset__ - __midFrame__
-            if posx <= length:
-                painter.drawLine(
-                    posx, __height__ - __tickHeight__, posx, __height__ - 1
-                )
-
-        for label, r in self._labelCache:
-            painter.drawText(r, label)
+        painter.setRenderHint(QPainter.SmoothPixmapTransform)
+        painter.drawPixmap(QPoint(), self._cachedPixmap)
 
     @pyqtSlot(float)
     def onAnimationLengthChanged(self, length: float) -> None:
         self._rect.setWidth(length)
-        self._updateLabelCache()
+        self._resetLabelCache()
 
     @pyqtSlot(int)
     def onVerticalScrollBarChange(self, scroll: int) -> None:
