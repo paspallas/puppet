@@ -15,8 +15,6 @@ from .track import Track
 
 
 class TrackModelAdapter(QAbstractItemModel):
-    """Interface between the view and the collection of tracks of animation"""
-
     def __init__(self):
         super().__init__()
 

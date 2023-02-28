@@ -39,6 +39,21 @@ class TimeScaleItem(QGraphicsObject):
         self._pen = QPen(__textColor__, 0, Qt.SolidLine)
         self._pen.setCosmetic(True)
 
+        self._labelCache: typing.List[typing.Tuple[str, QRectF]] = []
+
+        self._updateLabelCache()
+
+    def _updateLabelCache(self) -> None:
+        for x in range(0, int(self._rect.width()), __pxPerFrame__):
+            posx = x + __xoffset__ + __tickOffset__ - __midFrame__
+
+            if x % (__pxPerFrame__ * __tickOffset__) == 0:
+                label = f"{x // __pxPerFrame__}"
+                r = QRectF(self._fm.boundingRect(label).translated(posx, __textY__))
+                r.translate(-r.width() / 2, r.height())
+
+                self._labelCache.append((label, r))
+
     @property
     def clicked(self) -> bool:
         return self._clicked
@@ -66,25 +81,21 @@ class TimeScaleItem(QGraphicsObject):
         painter.setPen(self._pen)
         painter.setBrush(Qt.NoBrush)
 
-        max_ = int(self._rect.width())
-        for x in range(0, max_, __pxPerFrame__):
+        length = int(self._rect.width())
+        for x in range(0, length, __pxPerFrame__):
             posx = x + __xoffset__ + __tickOffset__ - __midFrame__
-
-            if x % (__pxPerFrame__ * __tickOffset__) == 0:
-                label = f"{x // __pxPerFrame__}"
-
-                r = QRectF(self._fm.boundingRect(label).translated(posx, __textY__))
-                r.translate(-r.width() / 2, r.height())
-                painter.drawText(r, label)
-
-            if posx <= max_:
+            if posx <= length:
                 painter.drawLine(
                     posx, __height__ - __tickHeight__, posx, __height__ - 1
                 )
 
+        for label, r in self._labelCache:
+            painter.drawText(r, label)
+
     @pyqtSlot(float)
     def onAnimationLengthChanged(self, length: float) -> None:
         self._rect.setWidth(length)
+        self._updateLabelCache()
 
     @pyqtSlot(int)
     def onVerticalScrollBarChange(self, scroll: int) -> None:

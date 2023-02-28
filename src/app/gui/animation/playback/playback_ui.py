@@ -48,5 +48,5 @@ class PlayBackUi:
         hbox.addWidget(self.followChk)
         hbox.addWidget(self.fpsLabel)
         hbox.addWidget(self.fpsSpin)
-        hbox.addWidget(self.lengthSpin)
         hbox.addWidget(self.lengthLabel)
+        hbox.addWidget(self.lengthSpin)
