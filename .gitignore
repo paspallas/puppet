@@ -1,7 +1,4 @@
 build/
-doc/
 dist/
-samples/
-resources/
 __pycache__/
 *.txt

@@ -6,7 +6,7 @@ from PyQt5.QtWidgets import QGraphicsScene
 from .abstract_tool import AbstractTool
 
 
-class SceneToolManager(QObject):
+class ToolManager(QObject):
     """Manage tool operations in the graphics scene"""
 
     def __init__(self, scene: QGraphicsScene):
@@ -43,10 +43,14 @@ class SceneToolManager(QObject):
             self._tool.disable()
             self._tool = None
 
-            if activate:
-                try:
-                    toolCls = getattr(imodule(f"app.tool.{tool_cls}".lower()), tool_cls)
-                    self._tool = toolCls(scene=self.parent())
-                    self._tool.enable()
-                except AttributeError as e:
-                    print(e)
+        if activate:
+            try:
+                class_ = "".join([word.capitalize() for word in tool_cls.split("_")])
+                toolCls = getattr(
+                    imodule(f"app.gui.editor.tool.{tool_cls.lower()}"),
+                    class_,
+                )
+                self._tool = toolCls(scene=self.parent())
+                self._tool.enable()
+            except AttributeError as e:
+                print(e)

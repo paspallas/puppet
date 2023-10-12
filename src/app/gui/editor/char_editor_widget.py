@@ -1,9 +1,9 @@
 from PyQt5.QtCore import Qt, pyqtSignal, pyqtSlot
-from PyQt5.QtWidgets import QGraphicsItem, QWidget
+from PyQt5.QtWidgets import QAction, QGraphicsItem, QWidget
 
 from ...model.document import Document
-from ...tool import SceneToolManager
 from .char_editor_ui import CharEditorUi
+from .tool import ToolManager
 
 
 class CharEditorWidget(QWidget):
@@ -13,10 +13,11 @@ class CharEditorWidget(QWidget):
         self._ui = CharEditorUi()
         self._ui.setupUi(self)
 
-        self._toolmanager = SceneToolManager(self._ui.editorScene)
+        self._toolmanager = ToolManager(self._ui.editorScene)
         self._document: Document = None
 
         self.makeConnections()
+        self.setupActions()
 
     def makeConnections(self) -> None:
         # self._ui.editorScene.sigSelectedItem.connect(
@@ -51,9 +52,20 @@ class CharEditorWidget(QWidget):
         self._ui.spriteProperty.setModel(self._document._currentFrameModel)
         self._ui.spriteListBox.setModel(self._document._currentFrameModel)
 
+    def setupActions(self) -> None:
+        self.boneMode = QAction("bone")
+        self.boneMode.setShortcut("B")
+        self.boneMode.triggered.connect(lambda: self.setTool("edit_bone", True))
+
+        self.spriteMode = QAction("sprite")
+        self.spriteMode.setShortcut("P")
+        self.spriteMode.triggered.connect(lambda: self.setTool("edit_sprite", True))
+
+        self.addActions([self.boneMode, self.spriteMode])
+
     @pyqtSlot(str, bool)
     def setTool(self, tool_cls: str, activate: bool) -> None:
-        self._toolmanaget.setTool(tool_cls, activate)
+        self._toolmanager.setTool(tool_cls, activate)
 
     @pyqtSlot(bool)
     def toggleSpritePropertyVisibility(self, visible: bool) -> None:

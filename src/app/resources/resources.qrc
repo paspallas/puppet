@@ -1,0 +1,25 @@
+<!DOCTYPE RCC>
+<RCC version="1.0">
+    <qresource prefix="icon/32">
+        <file alias="hidden.png">icon/32/eye_toggle_off.png</file>
+        <file alias="visible.png">icon/32/eye_toggle_on.png</file>
+        <file alias="lock.png">icon/32/lock.png</file>
+        <file alias="unlock.png">icon/32/unlock.png</file>
+        <file alias="play.png">icon/32/play.png</file>
+        <file alias="stop.png">icon/32/stop.png</file>
+        <file alias="pause.png">icon/32/pause.png</file>
+        <file alias="rec.png">icon/32/rec.png</file>
+        <file alias="lupe.png">icon/32/lupe.png</file>
+    </qresource>
+    <qresource prefix="icon/16">
+        <file alias="hidden.png">icon/16/hidden.png</file>
+        <file alias="visible.png">icon/16/visible.png</file>
+        <file alias="lock.png">icon/16/locked.png</file>
+        <file alias="unlock.png">icon/16/unlocked.png</file>
+        <file alias="up.png">icon/16/go-up.png</file>
+        <file alias="down.png">icon/16/go-down.png</file>
+        <file alias="delete.png">icon/16/edit-delete.png</file>
+        <file alias="add.png">icon/16/add.png</file>
+        <file alias="copy.png">icon/16/copy.png</file>
+    </qresource>
+</RCC>
